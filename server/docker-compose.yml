@@ -24,16 +24,6 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
 
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-      - minio
-
 volumes:
   pg_data:
   minio_data:
