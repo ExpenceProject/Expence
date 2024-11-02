@@ -1,7 +1,7 @@
+import App from '@/App';
+import Header from '@/components/core/header/header';
+import { LandingPage } from '@/pages/landing/landing';
 import { createBrowserRouter } from 'react-router-dom';
-
-import App from '../../App';
-import { LandingPage } from '../../pages/landing/landing';
 
 export const router = createBrowserRouter([
   {
@@ -11,7 +11,12 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LandingPage />,
+        element: (
+          <>
+            <Header />
+            <LandingPage />
+          </>
+        ),
       },
     ],
   },
