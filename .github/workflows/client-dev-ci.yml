@@ -16,22 +16,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: install dependencies
-        run: cd client && npm install
+      - name: Install dependencies
+        run: npm install
+        working-directory: client
 
       - name: Tar node_modules directory
-        run: tar czf node_modules.tar.gz -C node_modules .
+        run: tar czf node_modules.tar.gz -C client/node_modules .
+        working-directory: client
 
-      - name: Upload node_modules_artifact
+      - name: Upload node_modules artifact
         uses: actions/upload-artifact@v4
         with:
           name: node_modules
-          path: node_modules.tar.gz
+          path: client/node_modules.tar.gz
 
   run-eslint:
     needs: [install-dependencies]
     runs-on: ubuntu-latest
-    container: node:20-alpine
+    container:
+      image: node:20-alpine
 
     steps:
       - uses: actions/checkout@v4
@@ -41,8 +44,9 @@ jobs:
         with:
           name: node_modules
 
-      - name: Extract node_modules/
-        run: mkdir node_modules && tar xzf node_modules.tar.gz -C ./node_modules
+      - name: Extract node_modules
+        run: mkdir -p client/node_modules && tar xzf node_modules.tar.gz -C client/node_modules
 
       - name: Run linter check
         run: npm run lint
+        working-directory: client
