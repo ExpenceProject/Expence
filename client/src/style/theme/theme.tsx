@@ -34,7 +34,7 @@ const semanticTokens = {
     },
     background: {
       value: {
-        _light: '#f7f4ef',
+        _light: '#faf9f7',
         _dark: '#1a1a1a',
       },
     },
@@ -72,6 +72,7 @@ const semanticTokens = {
 };
 
 const breakpoints = {
+  xs: '0px',
   sm: '320px',
   md: '768px',
   lg: '960px',
@@ -82,10 +83,11 @@ const globalCss = {
   '*': {
     boxSizing: 'border-box',
   },
-  'html, body': {
+  'html, body, #root': {
     margin: 0,
     padding: 0,
     minHeight: '100vh',
+    fontFamily: 'Roboto Condensed',
     width: '100vw',
     color: 'var(--ck-colors-text)',
     backgroundColor: 'var(--ck-colors-background)',
@@ -102,5 +104,4 @@ const config = defineConfig({
   globalCss,
 });
 
-// Create the system with default and custom configuration
 export const theme = createSystem(defaultConfig, config);
