@@ -1,0 +1,48 @@
+name: ClientDevelop
+
+on:
+  push:
+    branches:
+      - "dev"
+    paths:
+      - "client/**"
+
+jobs:
+  install-dependencies:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-alpine
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install dependencies
+        run: cd client && npm install
+
+      - name: Tar node_modules directory
+        run: tar czf node_modules.tar.gz -C node_modules .
+
+      - name: Upload node_modules_artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node_modules
+          path: node_modules.tar.gz
+
+  run-eslint:
+    needs: [install-dependencies]
+    runs-on: ubuntu-latest
+    container: node:20-alpine
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download node_modules artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: node_modules
+
+      - name: Extract node_modules/
+        run: mkdir node_modules && tar xzf node_modules.tar.gz -C ./node_modules
+
+      - name: Run linter check
+        run: npm run lint
