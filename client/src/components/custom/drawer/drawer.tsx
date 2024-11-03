@@ -26,7 +26,7 @@ const Drawer = () => {
     xl: 'xl',
   });
 
-  if (currentBreakpoint !== 'sm') {
+  if (currentBreakpoint && currentBreakpoint !== 'sm') {
     return;
   }
 
