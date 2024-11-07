@@ -1,0 +1,27 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5432/expence
+    username: root
+    password: postgres_secret
+
+web:
+  filter:
+    cors:
+      allowed-headers: Origin,Content-Type,Accept,Authorization
+      allowed-methods: GET,POST,PUT,PATCH,DELETE,ORIGIN
+      allowed-origins: "*"
+  security:
+    jwt:
+      secret: ===================================================aSecretThatCannotBeRevealed===================================================
+      expiration-ms: 86400000
+      issuer: "expence-server"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui

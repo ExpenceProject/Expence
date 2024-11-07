@@ -1,0 +1,24 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    clean-disabled: false
+    clean-on-validation-error: true
+
+web:
+  filter:
+    cors:
+      allowed-headers: Origin,Content-Type,Accept,Authorization
+      allowed-methods: GET,POST,PUT,PATCH,DELETE,ORIGIN
+      allowed-origins: "*"
+  security:
+    jwt:
+      secret: ===================================================aSecretThatCannotBeRevealed===================================================
+      expiration-ms: 86400000
+      issuer: "expence-server"
+
+springdoc:
+  api-docs:
+    enabled: false
