@@ -33,9 +33,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
-    ports:
-      - "8080:8080"
+      - "SPRING_PROFILES_ACTIVE=prod"
     networks:
       - backend
       - frontend
