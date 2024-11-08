@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:17.0-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres_secret
+      - POSTGRES_USER=root
+      - POSTGRES_DB=expence
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgres/data
+    networks:
+      - backend
+
+  minio:
+    image: minio/minio:RELEASE.2024-10-02T17-50-41Z
+    environment:
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=minio_secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - backend
+
+  api:
+    container_name: api
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - postgres
+      - minio
+
+  client:
+    container_name: client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    networks:
+      - frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
+
+networks:
+  backend:
+  frontend:
+
+volumes:
+  pg_data:
+  minio_data:
