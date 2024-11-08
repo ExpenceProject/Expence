@@ -29,6 +29,6 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - name: Run unit tests
+      - name: Run tests
         run: ./gradlew test
         working-directory: server
