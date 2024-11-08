@@ -3,51 +3,43 @@ name: ClientDevelop
 on:
   push:
     branches:
+      - "main"
       - "dev"
     paths:
       - "client/**"
 
 jobs:
-  install-dependencies:
+  build:
     runs-on: ubuntu-latest
-    container:
-      image: node:20-alpine
+
+    strategy:
+      matrix:
+        node-version: [20.x]
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js and cache dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
-        run: npm install
         working-directory: client
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
 
-      - name: Tar node_modules directory
-        run: tar czf node_modules.tar.gz -C client/node_modules .
+      - name: Check code formatting with Prettier
         working-directory: client
+        run: npx prettier --check .
 
-      - name: Upload node_modules artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: node_modules
-          path: client/node_modules.tar.gz
-
-  run-eslint:
-    needs: [install-dependencies]
-    runs-on: ubuntu-latest
-    container:
-      image: node:20-alpine
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download node_modules artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: node_modules
-
-      - name: Extract node_modules
-        run: mkdir -p client/node_modules && tar xzf node_modules.tar.gz -C client/node_modules
-
-      - name: Run linter check
+      - name: Lint the client project
+        working-directory: client
         run: npm run lint
+
+      - name: Build the client project (if build script exists)
         working-directory: client
+        run: npm run build --if-present
