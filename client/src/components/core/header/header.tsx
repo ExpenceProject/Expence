@@ -1,7 +1,11 @@
 import Drawer from '@/components/custom/drawer/drawer';
 import Logo from '@/components/custom/logo/logo';
 import { ColorModeButton } from '@/components/ui/color-mode';
-import { maxWebsiteWidth } from '@/style/variables';
+import {
+  coreMobilePaddingX,
+  corePaddingX,
+  maxWebsiteWidth,
+} from '@/style/variables';
 import {
   Box,
   Button,
@@ -21,17 +25,17 @@ const Header = () => {
     xl: 'xl',
   });
 
-  console.log(!currentBreakpoint);
-
   return (
     <Box
       as="header"
-      bg="surface"
+      bg="background"
       display="flex"
       justifyContent="center"
       alignItems="center"
-      p={4}
+      px={{ base: coreMobilePaddingX, md: corePaddingX }}
+      py={4}
       w="100%"
+      borderBottom="1px solid rgba(161, 161, 161, 0.3)"
     >
       <Flex
         w="100%"
@@ -46,13 +50,13 @@ const Header = () => {
           _focus={{ outline: 'none' }}
         >
           <Flex align="center" justify="center" gap="1">
-            <Logo fill="primary" />
+            <Logo fill="primary" width={35} />
             <Span fontSize="2xl" color="textRaw" fontWeight="bold">
               Expence
             </Span>
           </Flex>
         </Link>
-        <Flex align="center" justify="center" gap="2" md={{ gap: '6' }}>
+        <Flex align="center" justify="center" gap={{ base: 2, md: 6 }}>
           {currentBreakpoint === 'sm' || !currentBreakpoint ? (
             <Drawer />
           ) : (
