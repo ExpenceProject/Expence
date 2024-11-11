@@ -3,9 +3,10 @@ package ug.edu.pl.server.domain.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
 import ug.edu.pl.server.domain.common.persistance.Image;
-import ug.edu.pl.server.domain.common.storage.ImageDto;
+import ug.edu.pl.server.domain.common.storage.dto.ImageDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicUpdate
 @Entity
 @Table(name = "users")
 class User extends BaseEntity {

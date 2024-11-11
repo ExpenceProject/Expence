@@ -2,7 +2,7 @@ package ug.edu.pl.server.domain.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
-import ug.edu.pl.server.domain.common.storage.ImageDto;
+import ug.edu.pl.server.domain.common.storage.dto.ImageDto;
 
 import java.time.Instant;
 import java.util.Set;

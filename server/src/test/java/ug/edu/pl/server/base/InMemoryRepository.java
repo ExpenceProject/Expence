@@ -1,4 +1,6 @@
-package ug.edu.pl.server.domain.common.persistance;
+package ug.edu.pl.server.base;
+
+import ug.edu.pl.server.domain.common.persistance.BaseEntity;
 
 public interface InMemoryRepository<T extends BaseEntity> {
 

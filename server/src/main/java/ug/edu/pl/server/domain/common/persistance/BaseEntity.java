@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public abstract class BaseEntity {
     @Column(updatable = false, nullable = false)
     private Long id = TSID.Factory.getTsid().toLong();
 
+    @Setter
     @Version
     private Long version;
 
@@ -28,17 +30,13 @@ public abstract class BaseEntity {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    void setVersion(Long version) {
-        this.version = version;
-    }
-
     @PrePersist
-    void onCreate() {
+    public void onCreate() {
         updatedAt = createdAt = Instant.now();
     }
 
     @PreUpdate
-    void onUpdate() {
+    public void onUpdate() {
         updatedAt = Instant.now();
     }
 

@@ -16,6 +16,13 @@ web:
       expiration-ms: ${EXPIRATION_MS}
       issuer: ${ISSUER}
 
+storage:
+  access-key: ${STORAGE_ACCESS_KEY}
+  secret-key: ${STORAGE_SECRET_KEY}
+  region: ${STORAGE_REGION}
+  url: ${STORAGE_URL}
+  bucket-name: ${STORAGE_BUCKET_NAME}
+
 springdoc:
   api-docs:
     enabled: false

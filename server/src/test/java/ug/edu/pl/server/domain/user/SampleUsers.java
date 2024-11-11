@@ -17,6 +17,14 @@ public final class SampleUsers {
             .phoneNumber("123-456-7890")
             .build();
 
+    public static final CreateUserDto VALID_USER_2 = CreateUserDto.builder()
+            .email("john.doe2@example.com")
+            .password("StrongPassword123!")
+            .firstName("John")
+            .lastName("Doe")
+            .phoneNumber("123-456-7890")
+            .build();
+
     public static final CreateUserDto USER_WITH_INVALID_PASSWORD = CreateUserDto.builder()
             .email("john.doe@example.com")
             .password("short")
