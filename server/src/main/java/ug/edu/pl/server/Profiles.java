@@ -25,4 +25,9 @@ public final class Profiles {
      * Profile used for integration tests
      */
     public static final String TEST = "test";
+
+    /**
+     * Profile used for docker compose
+     */
+    public static final String DOCKER = "docker";
 }
