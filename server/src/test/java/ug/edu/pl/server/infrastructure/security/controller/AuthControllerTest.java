@@ -3,6 +3,7 @@ package ug.edu.pl.server.infrastructure.security.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import ug.edu.pl.server.base.IntegrationTest;
@@ -171,13 +172,13 @@ class AuthControllerTest extends IntegrationTest {
 
     private ResultActions register(CreateUserDto createUserDto) throws Exception {
         return mockMvc.perform(post(URL + "/register")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createUserDto)));
     }
 
     private ResultActions login(LoginDto loginDto) throws Exception {
         return mockMvc.perform(post(URL + "/login")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginDto)));
     }
 }

@@ -3,13 +3,10 @@ package ug.edu.pl.server.domain.user;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.Repository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import ug.edu.pl.server.domain.common.persistance.InMemoryRepository;
 import ug.edu.pl.server.domain.user.exception.SavingUserException;
 import ug.edu.pl.server.domain.user.exception.UserNotFoundException;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 interface UserRepository extends Repository<User, Long> {
 
@@ -37,34 +34,5 @@ interface UserRepository extends Repository<User, Long> {
         } catch (Exception ex) {
             throw new SavingUserException(ex.getMessage());
         }
-    }
-}
-
-class InMemoryUserRepository implements UserRepository, InMemoryRepository<User> {
-
-    private final Map<Long, User> userIdMap = new ConcurrentHashMap<>();
-    private final Map<String, User> userEmailMap = new ConcurrentHashMap<>();
-
-    @Override
-    public User save(User user) {
-        updateTimestampsAndVersion(user);
-        userIdMap.put(user.getId(), user);
-        userEmailMap.put(user.getEmail(), user);
-        return user;
-    }
-
-    @Override
-    public Boolean existsByEmail(String email) {
-        return userEmailMap.containsKey(email);
-    }
-
-    @Override
-    public Optional<User> findById(Long id) {
-        return Optional.ofNullable(userIdMap.get(id));
-    }
-
-    @Override
-    public Optional<User> findByEmail(String email) {
-        return Optional.ofNullable(userEmailMap.get(email));
     }
 }
