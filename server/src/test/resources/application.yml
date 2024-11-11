@@ -19,6 +19,13 @@ web:
       expiration-ms: 86400000
       issuer: "expence-server"
 
+storage:
+  access-key: root
+  secret-key: minio_secret
+  region: eu-central-1
+  url: http://localhost:9000
+  bucket-name: expence
+
 springdoc:
   api-docs:
     enabled: false
