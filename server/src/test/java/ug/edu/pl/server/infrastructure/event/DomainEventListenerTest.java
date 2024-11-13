@@ -30,21 +30,17 @@ class DomainEventListenerTest extends IntegrationTest {
         // then
         await()
                 .atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> assertThat(testEventListener.getEvents()).hasSize(1));
+                .untilAsserted(() -> assertThat(testEventListener.events).hasSize(1));
     }
 }
 
 @Component
 class TestEventListener {
 
-    private final List<TestDomainEvent> events = new ArrayList<>();
+    List<TestDomainEvent> events = new ArrayList<>();
 
     @DomainEventListener
     void handle(TestDomainEvent testDomainEvent) {
         events.add(testDomainEvent);
-    }
-
-    List<TestDomainEvent> getEvents() {
-        return events;
     }
 }

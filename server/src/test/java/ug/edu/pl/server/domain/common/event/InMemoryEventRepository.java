@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 class InMemoryEventRepository implements EventRepository, InMemoryRepository<Event> {
 
-    private final Map<Long, Event> events = new ConcurrentHashMap<>();
+    Map<Long, Event> events = new ConcurrentHashMap<>();
 
     @Override
     public void save(Event event) {
