@@ -17,7 +17,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 class DomainEventListenerTest extends IntegrationTest {
 
     @Autowired
-    private ApplicationEventPublisher publisher;
+    ApplicationEventPublisher publisher;
 
     @Autowired
     TestEventListener testEventListener;

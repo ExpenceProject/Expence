@@ -13,7 +13,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 class EventSchedulerTest extends IntegrationTest {
 
     @SpyBean
-    private EventScheduler eventScheduler;
+    EventScheduler eventScheduler;
 
     @Test
     void shouldRunPublishAllPendingEventsExactlyGivenTimes() {
