@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EventFacadeTest {
 
     EventRepository eventRepository = new InMemoryEventRepository();
-    EventFacade eventFacade = new EventFacade(eventRepository, new InMemoryEventPublisher());
+    EventFacade eventFacade = new TestEventConfiguration().eventFacade(eventRepository);
 
     @Test
     void shouldPublishPendingEventsAndMarksAsPublished() {

@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DomainEventPublisherTest {
 
     EventRepository eventRepository = new InMemoryEventRepository();
-    DomainEventPublisher publisher = new DomainEventPublisher(eventRepository);
+    DomainEventPublisher publisher = new TestEventConfiguration().domainEventPublisher(eventRepository);
 
     @Test
     void shouldSaveEventWithPendingStatus() {
