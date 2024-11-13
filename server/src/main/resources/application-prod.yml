@@ -26,3 +26,8 @@ storage:
 springdoc:
   api-docs:
     enabled: false
+
+scheduler:
+  event:
+    publish: ${SCHEDULER_EVENT_PUBLISH:3000}
+    clean-up: ${SCHEDULER_EVENT_CLEAN_UP:60000}

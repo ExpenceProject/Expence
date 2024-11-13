@@ -29,3 +29,8 @@ storage:
 springdoc:
   api-docs:
     enabled: false
+
+scheduler:
+  event:
+    publish: 800
+    clean-up: 800

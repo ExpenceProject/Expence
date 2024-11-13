@@ -25,3 +25,8 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui
+
+scheduler:
+  event:
+    publish: 3000
+    clean-up: 60000
