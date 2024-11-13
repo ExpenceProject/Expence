@@ -28,7 +28,8 @@ class StorageFacadeImpl implements StorageFacade {
 
     @Override
     public String upload(MultipartFile file) {
-        String uniqueKey = generateUniqueKey(file.getOriginalFilename());
+        var uniqueKey = generateUniqueKey(file.getOriginalFilename());
+
         try {
             var request = PutObjectRequest.builder()
                     .bucket(storageProperties.bucketName())
