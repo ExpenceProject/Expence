@@ -29,11 +29,11 @@ public class IntegrationTest {
 
     private static final String POSTGRES_IMAGE = "postgres:17.0-alpine";
     private static final String MINIO_IMAGE = "minio/minio:RELEASE.2023-09-04T19-57-37Z";
-    protected static final String MINIO_BUCKET = "expence";
     private static final Region REGION = Region.EU_CENTRAL_1;
+    protected static final String MINIO_BUCKET = "expence";
 
     @Autowired
-    public MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
     public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_IMAGE));
     public static MinIOContainer minio = new MinIOContainer(DockerImageName.parse(MINIO_IMAGE));

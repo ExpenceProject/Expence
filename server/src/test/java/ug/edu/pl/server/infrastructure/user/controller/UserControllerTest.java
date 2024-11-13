@@ -24,7 +24,7 @@ class UserControllerTest extends IntegrationTest {
     private static final String URL = "/api/users";
 
     @Autowired
-    private AuthFacade authFacade;
+    AuthFacade authFacade;
 
     @Test
     @Transactional

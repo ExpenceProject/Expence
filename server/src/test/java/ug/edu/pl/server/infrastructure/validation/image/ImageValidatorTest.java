@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ImageValidatorTest {
 
-    private final ImageValidator imageValidator = new ImageValidator();
+    ImageValidator imageValidator = new ImageValidator();
 
     @Test
     void shouldReturnTrueForValidImage() {

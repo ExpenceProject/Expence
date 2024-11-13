@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StorageFacadeTest extends IntegrationTest {
 
     @Autowired
-    private StorageFacade storageFacade;
+    StorageFacade storageFacade;
 
     @Autowired
-    private S3Client s3Client;
+    S3Client s3Client;
 
     @Test
     void shouldUploadAndDeleteFile() {

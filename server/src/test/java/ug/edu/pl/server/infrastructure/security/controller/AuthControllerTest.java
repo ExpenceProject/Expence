@@ -24,10 +24,10 @@ class AuthControllerTest extends IntegrationTest {
     private static final String URL = "/api/auth";
 
     @Autowired
-    private AuthFacade authFacade;
+    AuthFacade authFacade;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Test
     @Transactional
