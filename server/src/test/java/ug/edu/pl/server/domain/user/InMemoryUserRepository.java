@@ -39,12 +39,16 @@ class InMemoryRoleRepository implements RoleRepository, InMemoryRepository<Role>
 
     private final Map<String, Role> rolesNameMap = new ConcurrentHashMap<>();
 
+    InMemoryRoleRepository() {
+        addRoles();
+    }
+
     @Override
     public Optional<Role> findByName(RoleName name) {
         return Optional.ofNullable(rolesNameMap.get(name.name()));
     }
 
-    public void addRoles() {
+    private void addRoles() {
         for (RoleName roleName : RoleName.values()) {
             Role role = new Role(roleName);
             rolesNameMap.put(roleName.name(), role);

@@ -37,3 +37,7 @@ class ValidationExceptionHandler extends BaseExceptionHandler {
         return errors;
     }
 }
+
+record ValidationErrorDto(int statusCode, HttpStatus status, Map<String, String> messages, String path,
+                          Instant timestamp) {
+}
