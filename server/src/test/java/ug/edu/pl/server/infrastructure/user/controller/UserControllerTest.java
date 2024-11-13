@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserControllerTest extends IntegrationTest {
 
-    private static final String URL = "/api/users";
+    static final String URL = "/api/users";
 
     @Autowired
     AuthFacade authFacade;

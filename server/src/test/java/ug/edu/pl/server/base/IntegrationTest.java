@@ -29,14 +29,14 @@ public class IntegrationTest {
 
     private static final String POSTGRES_IMAGE = "postgres:17.0-alpine";
     private static final String MINIO_IMAGE = "minio/minio:RELEASE.2023-09-04T19-57-37Z";
-    private static final Region REGION = Region.EU_CENTRAL_1;
+    protected static final Region REGION = Region.EU_CENTRAL_1;
     protected static final String MINIO_BUCKET = "expence";
+
+    protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_IMAGE));
+    protected static MinIOContainer minio = new MinIOContainer(DockerImageName.parse(MINIO_IMAGE));
 
     @Autowired
     protected MockMvc mockMvc;
-
-    public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_IMAGE));
-    public static MinIOContainer minio = new MinIOContainer(DockerImageName.parse(MINIO_IMAGE));
 
     static {
         postgres.start();
@@ -44,7 +44,7 @@ public class IntegrationTest {
     }
 
     @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
+    private static void registerProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);

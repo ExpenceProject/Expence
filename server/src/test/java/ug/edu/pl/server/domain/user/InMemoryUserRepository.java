@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class InMemoryUserRepository implements UserRepository, InMemoryRepository<User> {
 
-    private final Map<Long, User> userIdMap = new ConcurrentHashMap<>();
-    private final Map<String, User> userEmailMap = new ConcurrentHashMap<>();
+    Map<Long, User> userIdMap = new ConcurrentHashMap<>();
+    Map<String, User> userEmailMap = new ConcurrentHashMap<>();
 
     @Override
     public User save(User user) {
@@ -37,7 +37,7 @@ class InMemoryUserRepository implements UserRepository, InMemoryRepository<User>
 
 class InMemoryRoleRepository implements RoleRepository, InMemoryRepository<Role> {
 
-    private final Map<String, Role> rolesNameMap = new ConcurrentHashMap<>();
+    Map<String, Role> rolesNameMap = new ConcurrentHashMap<>();
 
     InMemoryRoleRepository() {
         addRoles();
