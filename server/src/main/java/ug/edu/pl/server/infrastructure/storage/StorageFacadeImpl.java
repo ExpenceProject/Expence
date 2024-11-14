@@ -8,13 +8,10 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 import ug.edu.pl.server.Log;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.common.storage.exception.DeletingImageException;
 import ug.edu.pl.server.domain.common.storage.exception.UploadingImageException;
-
-import java.io.IOException;
 
 @Log
 @Slf4j
@@ -31,7 +28,8 @@ class StorageFacadeImpl implements StorageFacade {
 
     @Override
     public String upload(MultipartFile file) {
-        String uniqueKey = generateUniqueKey(file.getOriginalFilename());
+        var uniqueKey = generateUniqueKey(file.getOriginalFilename());
+
         try {
             var request = PutObjectRequest.builder()
                     .bucket(storageProperties.bucketName())
@@ -41,7 +39,7 @@ class StorageFacadeImpl implements StorageFacade {
 
             s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
             return uniqueKey;
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Error uploading file: {}", e.getMessage(), e);
             throw new UploadingImageException();
         }
@@ -56,7 +54,7 @@ class StorageFacadeImpl implements StorageFacade {
                     .build();
 
             s3Client.deleteObject(request);
-        } catch (S3Exception e) {
+        } catch (Exception e) {
             log.error("Error deleting file with key {}: {}", key, e.getMessage(), e);
             throw new DeletingImageException();
         }

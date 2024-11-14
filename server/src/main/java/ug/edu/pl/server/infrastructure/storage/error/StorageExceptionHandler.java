@@ -12,7 +12,7 @@ import ug.edu.pl.server.infrastructure.base.BaseExceptionHandler;
 import java.time.Instant;
 
 @ControllerAdvice
-public class StorageExceptionHandler extends BaseExceptionHandler {
+class StorageExceptionHandler extends BaseExceptionHandler {
 
     @ExceptionHandler(UploadingImageException.class)
     ResponseEntity<ErrorDto> handleUploadingImageException(UploadingImageException ex, WebRequest request) {

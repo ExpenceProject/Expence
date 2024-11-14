@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryStorageFacade implements StorageFacade {
 
-    private final Map<String, byte[]> storage = new ConcurrentHashMap<>();
+    Map<String, byte[]> storage = new ConcurrentHashMap<>();
 
     @Override
     public String upload(MultipartFile file) {

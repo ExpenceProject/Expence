@@ -5,25 +5,19 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import ug.edu.pl.server.domain.common.storage.InMemoryStorageFacade;
 import ug.edu.pl.server.domain.common.storage.SampleImages;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 import ug.edu.pl.server.domain.user.exception.UserAlreadyExistsException;
 import ug.edu.pl.server.domain.user.exception.UserNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserFacadeTest {
 
-    InMemoryRoleRepository roleRepository = new InMemoryRoleRepository();
     CacheManager cacheManager = new CaffeineCacheManager();
     Cache cache = cacheManager.getCache(UserFacade.CACHE_NAME);
-    UserFacade userFacade = new UserFacade(new InMemoryUserRepository(), roleRepository, new UserCreator(), new InMemoryStorageFacade(), cacheManager);
-
-    UserFacadeTest() {
-        roleRepository.addRoles();
-    }
+    UserFacade userFacade = new TestUserConfiguration().userFacade(cacheManager);
 
     @Test
     void shouldReturnUserByEmail() {
@@ -40,7 +34,7 @@ class UserFacadeTest {
     @Test
     void shouldThrowExceptionWhenAskedForUserWithEmailThaDoesNotExist() {
         // when & then
-        assertThrows(UsernameNotFoundException.class, () -> userFacade.getByEmail(SampleUsers.INVALID_EMAIL));
+        assertThatThrownBy(() -> userFacade.getByEmail(SampleUsers.INVALID_EMAIL)).isInstanceOf(UsernameNotFoundException.class);
     }
 
     @Test
@@ -58,7 +52,7 @@ class UserFacadeTest {
     @Test
     void shouldThrowExceptionWhenAskedForUserWithIdThaDoesNotExist() {
         // when & then
-        assertThrows(UserNotFoundException.class, () -> userFacade.getById(SampleUsers.ID_THAT_DOES_NOT_EXIST));
+        assertThatThrownBy(() -> userFacade.getById(SampleUsers.ID_THAT_DOES_NOT_EXIST)).isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
@@ -67,7 +61,7 @@ class UserFacadeTest {
         userFacade.create(SampleUsers.VALID_USER);
 
         // when & then
-        assertThrows(UserAlreadyExistsException.class, () -> userFacade.create(SampleUsers.VALID_USER));
+        assertThatThrownBy(() -> userFacade.create(SampleUsers.VALID_USER)).isInstanceOf(UserAlreadyExistsException.class);
     }
 
     @Test
