@@ -13,7 +13,7 @@ web:
     cors:
       allowed-headers: Origin,Content-Type,Accept,Authorization
       allowed-methods: GET,POST,PUT,PATCH,DELETE,ORIGIN
-      allowed-origins: "*"
+      allowed-origins: http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1,https://localhost,https://127.0.0.1
   security:
     jwt:
       secret: ===================================================aSecretThatCannotBeRevealed===================================================
