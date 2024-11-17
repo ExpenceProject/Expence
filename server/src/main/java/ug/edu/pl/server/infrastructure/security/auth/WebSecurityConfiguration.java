@@ -26,7 +26,8 @@ class WebSecurityConfiguration {
 
     private static final String ADMIN = "ADMIN";
     private static final String[] API_PUBLIC_ENDPOINTS = {
-            "/api/auth/**"
+            "/api/auth/register",
+            "/api/auth/login"
     };
     private static final String[] API_ADMIN_ENDPOINTS = {};
 
