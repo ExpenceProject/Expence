@@ -8,22 +8,28 @@ const semanticTokens = {
         _dark: '#3a9e7c',
       },
     },
-    textRaw: {
-      value: {
-        _light: '#000000',
-        _dark: '#ffffff',
-      },
-    },
     text: {
       value: {
         _light: '#656565',
         _dark: '#dedede',
       },
     },
+    textRaw: {
+      value: {
+        _light: '#000000',
+        _dark: '#ffffff',
+      },
+    },
     textBg: {
       value: {
         _light: '#ffffff',
         _dark: '#ededed',
+      },
+    },
+    textError: {
+      value: {
+        _light: '#cc0000',
+        _dark: '#ff8080',
       },
     },
     textHover: {

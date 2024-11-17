@@ -11,6 +11,7 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { HiMiniArrowRight } from 'react-icons/hi2';
 
 export const LandingPage = () => {
   const currentBreakpoint = useBreakpointValue({
@@ -67,8 +68,11 @@ export const LandingPage = () => {
             mt={8}
             w="min-content"
             size={{ base: 'xs', sm: 'sm', md: 'xl' }}
+            display="flex"
+            gap={1}
+            _hover={{ bg: 'hover' }}
           >
-            Get started
+            Get started <HiMiniArrowRight />
           </Button>
         </Flex>
       </Flex>

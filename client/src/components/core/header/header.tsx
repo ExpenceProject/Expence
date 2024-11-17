@@ -1,11 +1,14 @@
 import Drawer from '@/components/custom/drawer/drawer';
 import Logo from '@/components/custom/logo/logo';
+import UserMenu from '@/components/custom/user-menu/user-menu';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import {
   coreMobilePaddingX,
   corePaddingX,
   maxWebsiteWidth,
 } from '@/style/variables';
+import { openLoginModalAtom } from '@/utils/atoms/modal-atoms';
+import { useUser } from '@/utils/providers/user-provider/use-user';
 import {
   Box,
   Button,
@@ -14,6 +17,7 @@ import {
   Span,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 
 import HeaderNav from './header-nav';
 
@@ -24,6 +28,10 @@ const Header = () => {
     lg: 'lg',
     xl: 'xl',
   });
+
+  const [, openLoginModal] = useAtom(openLoginModalAtom);
+
+  const { user } = useUser();
 
   return (
     <Box
@@ -63,14 +71,19 @@ const Header = () => {
             <HeaderNav />
           )}
           <ColorModeButton />
-          <Button
-            fontSize="lg"
-            bg="primary"
-            color="textBg"
-            _hover={{ bg: 'hover' }}
-          >
-            Sign Up
-          </Button>
+          {user ? (
+            <UserMenu />
+          ) : (
+            <Button
+              fontSize="lg"
+              bg="primary"
+              color="textBg"
+              _hover={{ bg: 'hover' }}
+              onClick={openLoginModal}
+            >
+              Sign In
+            </Button>
+          )}
         </Flex>
       </Flex>
     </Box>
