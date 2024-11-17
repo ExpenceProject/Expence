@@ -16,7 +16,7 @@ import java.util.Set;
 @Log
 public class UserFacade {
 
-    static final String CACHE_NAME = "users";
+    public static final String CACHE_NAME = "users";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserCreator userCreator;

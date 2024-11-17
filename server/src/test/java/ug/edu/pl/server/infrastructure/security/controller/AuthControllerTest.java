@@ -3,6 +3,7 @@ package ug.edu.pl.server.infrastructure.security.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import ug.edu.pl.server.infrastructure.security.auth.dto.LoginDto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,8 +45,7 @@ class AuthControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.phoneNumber").value(SampleUsers.VALID_USER.phoneNumber()));
 
         // when
-        var responseBody = result.andReturn().getResponse().getContentAsString();
-        var createdUser = objectMapper.readValue(responseBody, UserDto.class);
+        var createdUser = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), UserDto.class);
         var loginResult = login(new LoginDto(createdUser.email(), SampleUsers.VALID_USER.password()));
 
         // then
@@ -54,7 +55,7 @@ class AuthControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.user").isNotEmpty());
 
         var loggedInUser = objectMapper.readValue(loginResult.andReturn().getResponse().getContentAsString(), AuthDto.class).user();
-        assertThat(createdUser.id()).isEqualTo(loggedInUser.id());
+        assertThat(loggedInUser.id()).isEqualTo(createdUser.id());
         assertThat(loggedInUser.email()).isEqualTo(createdUser.email());
         assertThat(loggedInUser.firstName()).isEqualTo(createdUser.firstName());
         assertThat(loggedInUser.lastName()).isEqualTo(createdUser.lastName());
@@ -170,6 +171,37 @@ class AuthControllerTest extends IntegrationTest {
         result.andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @Transactional
+    void shouldReturnCurrentUser() throws Exception {
+        // given
+        var createdUser = authFacade.register(SampleUsers.VALID_USER);
+        var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleUsers.VALID_USER.email(), SampleUsers.VALID_USER.password()));
+
+        // when
+        var result = me(authenticatedUser);
+
+        // then
+        result.andExpect(status().isOk());
+
+        var loggedInUser = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), UserDto.class);
+        assertThat(loggedInUser.id()).isEqualTo(createdUser.id());
+        assertThat(loggedInUser.email()).isEqualTo(createdUser.email());
+        assertThat(loggedInUser.firstName()).isEqualTo(createdUser.firstName());
+        assertThat(loggedInUser.lastName()).isEqualTo(createdUser.lastName());
+        assertThat(loggedInUser.phoneNumber()).isEqualTo(createdUser.phoneNumber());
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnUnauthorizedWhenGettingCurrentUserWithoutAuthentication() throws Exception {
+        // when
+        var result = mockMvc.perform(get(URL + "/me").contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isUnauthorized());
+    }
+
     private ResultActions register(CreateUserDto createUserDto) throws Exception {
         return mockMvc.perform(post(URL + "/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -180,5 +212,11 @@ class AuthControllerTest extends IntegrationTest {
         return mockMvc.perform(post(URL + "/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginDto)));
+    }
+
+    private ResultActions me(AuthDto authDto) throws Exception {
+        return mockMvc.perform(get(URL + "/me")
+                .header(HttpHeaders.AUTHORIZATION, authDto.tokenType() + " " + authDto.token())
+                .contentType(MediaType.APPLICATION_JSON));
     }
 }

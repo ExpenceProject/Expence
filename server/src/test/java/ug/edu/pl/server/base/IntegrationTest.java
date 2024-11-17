@@ -1,9 +1,10 @@
 package ug.edu.pl.server.base;
 
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -14,14 +15,8 @@ import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.regions.Region;
 import ug.edu.pl.server.Profiles;
 
-// https://stackoverflow.com/questions/25360963/should-i-use-dirtiescontext-on-every-class
-// We use the @DirtiesContext annotation here because issues were caused by the shared CacheManager
-// and the retrieval of data from the cache. By marking the context as dirty,
-// we ensure that the application context is properly reset between tests, preventing potential
-// interference from cached data and ensuring a clean state for each test execution.
-// Unfortunately, this approach causes slower integration tests, but since we are using the cache,
-// it is necessary to handle the cache management this way.
-@DirtiesContext
+import static java.util.Objects.requireNonNull;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Profiles.TEST)
 @AutoConfigureMockMvc
@@ -38,9 +33,17 @@ public class IntegrationTest {
     @Autowired
     protected MockMvc mockMvc;
 
+    @Autowired
+    protected CacheManager cacheManager;
+
     static {
         postgres.start();
         minio.start();
+    }
+
+    @AfterEach
+    protected void clearCache() {
+        cacheManager.getCacheNames().forEach(cacheName -> requireNonNull(cacheManager.getCache(cacheName)).clear());
     }
 
     @DynamicPropertySource
