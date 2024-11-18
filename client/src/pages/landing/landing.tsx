@@ -1,3 +1,4 @@
+import Money from '@/components/icons/money/money';
 import {
   coreMobilePaddingX,
   corePaddingX,
@@ -11,6 +12,7 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { HiMiniArrowRight } from 'react-icons/hi2';
 
 export const LandingPage = () => {
   const currentBreakpoint = useBreakpointValue({
@@ -31,7 +33,11 @@ export const LandingPage = () => {
       pt={20}
     >
       <Flex w="100%" maxW={maxWebsiteWidth}>
-        <Flex direction="column" zIndex={1}>
+        <Flex
+          direction="column"
+          zIndex={1}
+          width={{ lgDown: '100%', md: '65%' }}
+        >
           <Heading
             color="textRaw"
             fontSize={{ base: '4xl', md: '5xl' }}
@@ -67,10 +73,18 @@ export const LandingPage = () => {
             mt={8}
             w="min-content"
             size={{ base: 'xs', sm: 'sm', md: 'xl' }}
+            display="flex"
+            gap={1}
+            _hover={{ bg: 'hover' }}
           >
-            Get started
+            Get started <HiMiniArrowRight />
           </Button>
         </Flex>
+        {(currentBreakpoint === 'xl' || currentBreakpoint === 'lg') && (
+          <Flex align="center" justify="center" width="35%">
+            <Money width={330} height={330} />
+          </Flex>
+        )}
       </Flex>
     </Box>
   );

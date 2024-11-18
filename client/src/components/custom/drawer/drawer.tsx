@@ -1,6 +1,6 @@
 import HeaderNav from '@/components/core/header/header-nav';
-import Burger from '@/components/custom/burger/burger';
-import CloseTrigger from '@/components/custom/close-trigger/close-trigger';
+import Burger from '@/components/icons/burger/burger';
+import CloseTrigger from '@/components/icons/close-trigger/close-trigger';
 import { useColorModeValue } from '@/components/ui/color-mode';
 import {
   DrawerBackdrop,
@@ -31,23 +31,24 @@ const Drawer = () => {
   }
 
   return (
-    <DrawerRoot open={open} closeOnEscape closeOnInteractOutside>
-      <DrawerBackdrop />
-      <DrawerTrigger asChild>
+    <DrawerRoot open={open} placement="end" onEscapeKeyDown={onClose}>
+      <DrawerBackdrop
+        bg="rgba(0, 0, 0, 0.4)"
+        _dark={{ bg: 'rgba(0, 0, 0, 0.7 )' }}
+        css={{ backdropFilter: 'blur(2px)' }}
+        // These two props below are necessary for the backdrop to close the drawer, it's probably a bug in Chakra UI
+        onClick={onClose}
+        pointerEvents="auto"
+      />
+      <DrawerTrigger>
         <Burger
-          onClick={() => onOpen()}
+          onClick={onOpen}
           fill={currentTheme === 'light' ? 'black' : 'white'}
         />
       </DrawerTrigger>
-      <DrawerContent
-        minH="100vh"
-        position="fixed"
-        top={0}
-        right={0}
-        bg="surface"
-      >
+      <DrawerContent h="100vh" position="fixed" top={0} right={0} bg="surface">
         <DrawerHeader py="7">
-          <CloseTrigger onClick={() => onClose()} />
+          <CloseTrigger onClick={onClose} />
         </DrawerHeader>
         <DrawerBody>
           <HeaderNav direction="column" />
