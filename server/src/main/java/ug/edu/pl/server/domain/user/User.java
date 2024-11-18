@@ -1,8 +1,10 @@
 package ug.edu.pl.server.domain.user;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
 import ug.edu.pl.server.domain.common.persistance.Image;
@@ -22,8 +24,7 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 class User extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
-    @Email
+    @Column(nullable = false, unique = true, columnDefinition = "email_address")
     private String email;
 
     @Column(nullable = false)
@@ -43,7 +44,6 @@ class User extends BaseEntity {
 
     @ManyToMany(cascade = {CascadeType.REFRESH})
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @ToString.Exclude
     private Set<Role> roles = new HashSet<>();
 
     UserDto dto() {
