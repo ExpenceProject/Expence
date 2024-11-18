@@ -22,6 +22,7 @@ public abstract class BaseEntity {
 
     @Setter
     @Version
+    @Column(nullable = false)
     private Long version;
 
     @Column(nullable = false, updatable = false)

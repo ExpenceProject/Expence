@@ -17,7 +17,7 @@ import ug.edu.pl.server.domain.user.dto.RoleDto;
 class Role extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 40, unique = true)
+    @Column(length = 40, unique = true, nullable = false)
     public RoleName name;
 
     RoleDto dto() {

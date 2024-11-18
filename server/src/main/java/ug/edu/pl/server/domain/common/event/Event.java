@@ -1,9 +1,6 @@
 package ug.edu.pl.server.domain.common.event;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
 
@@ -12,10 +9,13 @@ import ug.edu.pl.server.domain.common.persistance.BaseEntity;
 @Table(name = "events")
 class Event extends BaseEntity {
 
+    @Column(nullable = false, updatable = false)
     private String serializedEvent;
 
+    @Column(nullable = false, updatable = false)
     private String eventType;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
