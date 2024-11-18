@@ -1,3 +1,4 @@
+import Money from '@/components/icons/money/money';
 import {
   coreMobilePaddingX,
   corePaddingX,
@@ -32,7 +33,11 @@ export const LandingPage = () => {
       pt={20}
     >
       <Flex w="100%" maxW={maxWebsiteWidth}>
-        <Flex direction="column" zIndex={1}>
+        <Flex
+          direction="column"
+          zIndex={1}
+          width={{ lgDown: '100%', md: '65%' }}
+        >
           <Heading
             color="textRaw"
             fontSize={{ base: '4xl', md: '5xl' }}
@@ -75,6 +80,11 @@ export const LandingPage = () => {
             Get started <HiMiniArrowRight />
           </Button>
         </Flex>
+        {(currentBreakpoint === 'xl' || currentBreakpoint === 'lg') && (
+          <Flex align="center" justify="center" width="35%">
+            <Money width={330} height={330} />
+          </Flex>
+        )}
       </Flex>
     </Box>
   );

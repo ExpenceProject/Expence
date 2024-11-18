@@ -1,6 +1,6 @@
 import Drawer from '@/components/custom/drawer/drawer';
-import Logo from '@/components/custom/logo/logo';
 import UserMenu from '@/components/custom/user-menu/user-menu';
+import Logo from '@/components/icons/logo/logo';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import {
   coreMobilePaddingX,

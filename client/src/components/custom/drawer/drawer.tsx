@@ -1,6 +1,6 @@
 import HeaderNav from '@/components/core/header/header-nav';
-import Burger from '@/components/custom/burger/burger';
-import CloseTrigger from '@/components/custom/close-trigger/close-trigger';
+import Burger from '@/components/icons/burger/burger';
+import CloseTrigger from '@/components/icons/close-trigger/close-trigger';
 import { useColorModeValue } from '@/components/ui/color-mode';
 import {
   DrawerBackdrop,
