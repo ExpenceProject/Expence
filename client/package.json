@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prettier:write": "prettier --write .",
+    "prettier:check": "prettier --check .",
+    "prepublish": "npm run lint && npm run prettier:check && npm run build"
   },
   "dependencies": {
     "@chakra-ui/form-control": "^2.2.0",

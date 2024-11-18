@@ -12,17 +12,17 @@ export type User = DeepReadonly<{
     key: string;
   };
   roles: {
-    name: string
+    name: string;
   }[];
   version: number;
   createdAt: string;
   updatedAt: string;
-}>
+}>;
 
 export type UserCredentials = DeepReadonly<{
   email: string;
   password: string;
-}>
+}>;
 
 export type UserRegisterData = DeepReadonly<{
   email: string;
@@ -30,4 +30,4 @@ export type UserRegisterData = DeepReadonly<{
   firstName: string;
   lastName: string;
   phoneNumber?: string;
-}>
+}>;
