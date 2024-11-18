@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/form-control';
 import { Button, Input, Text } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
@@ -31,23 +32,27 @@ const RegisterDialog = () => {
   const [isRegisterModalOpen] = useAtom(isRegisterModalOpenAtom);
   const [, closeRegisterModal] = useAtom(closeRegisterModalAtom);
   const [, openLoginModal] = useAtom(openLoginModalAtom);
+  const [isLoading, setIsLoading] = useState(false);
   const { registerUser } = useUser();
 
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<UserRegisterData>();
 
   function onSubmit(values: UserRegisterData) {
+    setIsLoading(true);
     registerUser(values)
       .then(() => {
         closeRegisterModal();
+        setIsLoading(false);
         toast.success('Account created successfully');
       })
       .catch((error) => {
         console.error(error);
         closeRegisterModal();
+        setIsLoading(false);
         toast.error(
           'Failed to create account, please try again in a few minutes',
         );
@@ -170,7 +175,6 @@ const RegisterDialog = () => {
               </FormLabel>
               <Input
                 id="email"
-                autoComplete="new-password"
                 _focus={{ outline: 'none' }}
                 {...register('email', {
                   required: 'E-mail is required',
@@ -222,7 +226,7 @@ const RegisterDialog = () => {
               bg="primary"
               color="textBg"
               _hover={{ bg: 'hover' }}
-              disabled={isSubmitting}
+              disabled={isLoading}
               type="submit"
               mt={8}
             >
@@ -232,7 +236,12 @@ const RegisterDialog = () => {
         </DialogBody>
         <DialogFooter fontSize="md">
           Already have an account?{' '}
-          <Button variant="outline" color="textRaw" onClick={switchModals}>
+          <Button
+            variant="outline"
+            color="textRaw"
+            onClick={switchModals}
+            disabled={isLoading}
+          >
             Sign In
           </Button>
         </DialogFooter>

@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/form-control';
 import { Button, Input } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
@@ -31,22 +32,26 @@ const LoginDialog = () => {
   const [isLoginModalOpen] = useAtom(isLoginModalOpenAtom);
   const [, closeLoginModal] = useAtom(closeLoginModalAtom);
   const [, openRegisterModal] = useAtom(openRegisterModalAtom);
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useUser();
 
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<UserCredentials>();
 
   function onSubmit(values: UserCredentials) {
+    setIsLoading(true);
     login(values)
       .then(() => {
         closeLoginModal();
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
         closeLoginModal();
+        setIsLoading(false);
         toast.error(
           'Failed to login, please check your credentials and try again',
         );
@@ -136,7 +141,7 @@ const LoginDialog = () => {
               bg="primary"
               color="textBg"
               _hover={{ bg: 'hover' }}
-              disabled={isSubmitting}
+              disabled={isLoading}
               type="submit"
               mt={8}
             >
@@ -146,7 +151,12 @@ const LoginDialog = () => {
         </DialogBody>
         <DialogFooter fontSize="md">
           Don't have an account yet?{' '}
-          <Button variant="outline" color="textRaw" onClick={switchModals}>
+          <Button
+            variant="outline"
+            color="textRaw"
+            onClick={switchModals}
+            disabled={isLoading}
+          >
             Sign Up
           </Button>
         </DialogFooter>
