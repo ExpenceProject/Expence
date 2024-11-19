@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS groups
 (
-    id         BIGINT PRIMARY KEY NOT NULL,
+    id         BIGINT PRIMARY KEY,
     version    BIGINT NOT NULL,
     image_key    VARCHAR(255),
     name VARCHAR(50) NOT NULL,

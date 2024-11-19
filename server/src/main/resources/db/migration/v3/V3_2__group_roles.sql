@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS group_roles
 (
-    id         BIGINT PRIMARY KEY NOT NULL,
+    id         BIGINT PRIMARY KEY,
     version    BIGINT NOT NULL,
     name       VARCHAR(40)        NOT NULL UNIQUE,
     created_at TIMESTAMP          NOT NULL,

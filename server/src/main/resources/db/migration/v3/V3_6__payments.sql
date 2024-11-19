@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS payments
 (
-    id         BIGINT PRIMARY KEY NOT NULL,
+    id         BIGINT PRIMARY KEY,
     version    BIGINT NOT NULL,
     receiver_id BIGINT NOT NULL,
     amount DECIMAL(6, 2) NOT NULL CHECK (amount >= 0),

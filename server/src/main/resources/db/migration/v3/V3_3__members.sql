@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS members
 (
-    id         BIGINT PRIMARY KEY NOT NULL,
+    id         BIGINT PRIMARY KEY,
     version    BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     nickname       VARCHAR(50)        NOT NULL,

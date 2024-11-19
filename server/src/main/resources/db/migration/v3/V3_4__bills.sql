@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS bills
 (
-    id         BIGINT PRIMARY KEY NOT NULL,
+    id         BIGINT PRIMARY KEY,
     version    BIGINT NOT NULL,
     name VARCHAR(50) NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL CHECK (total_amount >= 0),

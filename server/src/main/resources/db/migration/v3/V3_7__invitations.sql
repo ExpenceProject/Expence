@@ -2,7 +2,7 @@ CREATE TYPE invitation_status AS ENUM ('SENT', 'ACCEPTED', 'DECLINED', 'CANCELLE
 
 CREATE TABLE IF NOT EXISTS invitations
 (
-    id         BIGINT PRIMARY KEY NOT NULL,
+    id         BIGINT PRIMARY KEY,
     version    BIGINT NOT NULL,
     invitee_id BIGINT NOT NULL,
     inviter_id BIGINT NOT NULL,
