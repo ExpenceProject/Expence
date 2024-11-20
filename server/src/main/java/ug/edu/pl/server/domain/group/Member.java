@@ -26,7 +26,7 @@ class Member extends BaseEntity {
     @JoinColumn(name = "group_role_id", nullable = false)
     private GroupRole groupRole;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 

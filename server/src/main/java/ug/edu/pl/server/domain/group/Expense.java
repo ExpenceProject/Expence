@@ -18,14 +18,14 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "expenses")
 class Expense extends BaseEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "borrower_id", nullable = false)
     private Member borrower;
 
     @Column(nullable = false, precision = 6, scale = 2)
     private BigDecimal amount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bill_id", nullable = false)
     private Bill bill;
 }

@@ -31,13 +31,13 @@ class Group extends BaseEntity {
     @Column(nullable = false)
     private Boolean settledDown;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private Set<Member> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private Set<Bill> bills = new HashSet<>();
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private Set<Payment> payments = new HashSet<>();
 
 }
