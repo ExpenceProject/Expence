@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
+import ug.edu.pl.server.domain.group.dto.GroupRoleDto;
+import ug.edu.pl.server.domain.user.dto.RoleDto;
 
 @Getter
 @Setter
@@ -19,4 +21,7 @@ class GroupRole extends BaseEntity {
     @Column(nullable = false, unique = true)
     private GroupRoleName name;
 
+    GroupRoleDto dto(){
+        return new GroupRoleDto(name.name());
+    }
 }

@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
 import ug.edu.pl.server.domain.common.persistance.Image;
+import ug.edu.pl.server.domain.common.storage.dto.ImageDto;
+import ug.edu.pl.server.domain.group.dto.GroupDto;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,4 +42,17 @@ class Group extends BaseEntity {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private Set<Payment> payments = new HashSet<>();
 
+    GroupDto dto() {
+        var imageDto = new ImageDto(image == null ? null : image.key());
+
+        return GroupDto.builder()
+                .id(getId())
+                .image(imageDto)
+                .name(name)
+                .settledDown(settledDown)
+                .version(getVersion())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
+    }
 }
