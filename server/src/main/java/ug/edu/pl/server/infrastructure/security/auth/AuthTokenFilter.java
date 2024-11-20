@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 class AuthTokenFilter extends OncePerRequestFilter {
@@ -30,8 +31,8 @@ class AuthTokenFilter extends OncePerRequestFilter {
         try {
             var jwt = parseToken(request);
 
-            if (jwt != null && authFacade.validateToken(jwt)) {
-                var username = authFacade.getUsernameFromToken(jwt);
+            if (jwt.isPresent() && authFacade.validateToken(jwt.get())) {
+                var username = authFacade.getUsernameFromToken(jwt.get());
                 var userDetails = userDetailsService.loadUserByUsername(username);
                 var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -44,13 +45,13 @@ class AuthTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String parseToken(HttpServletRequest request) {
+    private Optional<String> parseToken(HttpServletRequest request) {
         var headerAuth = request.getHeader("Authorization");
 
         if (headerAuth == null || !headerAuth.startsWith("Bearer ")) {
-            return null;
+            return Optional.empty();
         }
 
-        return headerAuth.substring(7);
+        return Optional.of(headerAuth.substring(7));
     }
 }

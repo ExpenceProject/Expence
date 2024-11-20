@@ -3,6 +3,7 @@ package ug.edu.pl.server.infrastructure.security.auth;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 import ug.edu.pl.server.domain.user.UserFacade;
 
 @Configuration
@@ -67,13 +69,15 @@ class WebSecurityConfiguration {
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, AuthFacade authFacade, UserDetailsService userDetailsService, AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, AuthFacade authFacade, UserDetailsService userDetailsService, AuthenticationEntryPoint authenticationEntryPoint, CorsFilter corsFilter) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(authenticationTokenFilter(authFacade, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(authenticationTokenFilter(authFacade, userDetailsService), CorsFilter.class)
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(API_ADMIN_ENDPOINTS).hasRole(ADMIN)
                         .requestMatchers(API_PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers("/api/**").authenticated()
