@@ -62,6 +62,12 @@ const semanticTokens = {
         _dark: '#60b497',
       },
     },
+    hoverError: {
+      value: {
+        _light: '#ffdada',
+        _dark: '#872c2c',
+      },
+    },
     disabled: {
       value: {
         _light: '#a0a0a0',

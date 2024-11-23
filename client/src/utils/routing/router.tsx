@@ -1,6 +1,6 @@
 import App from '@/App';
-import Header from '@/components/core/header/header';
 import { LandingPage } from '@/pages/landing/landing';
+import ProfilePage from '@/pages/landing/profile/profile';
 import { createBrowserRouter } from 'react-router-dom';
 
 export const router = createBrowserRouter([
@@ -11,12 +11,11 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <>
-            <Header />
-            <LandingPage />
-          </>
-        ),
+        element: <LandingPage />,
+      },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
       },
     ],
   },

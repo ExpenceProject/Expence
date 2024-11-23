@@ -7,18 +7,21 @@ import { UserContext } from './user-context';
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  //  TODO: Implement useEffect to check if user is logged in by sending a request to /auth/me based on the token stored in localStorage
+  const storageUser = localStorage.getItem('user');
+  const [user, setUser] = useState<User | null>(
+    storageUser ? JSON.parse(storageUser) : null,
+  );
 
   const login = (userCredentials: UserCredentials): Promise<void> => {
     return new Promise((resolve, reject) => {
       apiClient
         .post('/auth/login', userCredentials)
         .then((response) => {
-          setUser(response.data.user);
-          localStorage.setItem('authToken', response.data.token);
-          localStorage.setItem('authTokenType', response.data.tokenType);
+          const { user, token, tokenType } = response.data;
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('authTokenType', tokenType);
+          localStorage.setItem('user', JSON.stringify(user));
+          setUser(user);
           resolve(response.data);
         })
         .catch((error) => {
@@ -44,13 +47,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     return new Promise(() => {
       localStorage.removeItem('authToken');
       localStorage.removeItem('authTokenType');
+      localStorage.removeItem('user');
       setUser(null);
     });
   };
 
-  const updateUser = (userData: User) => {
+  const updateUser = () => {
     // TODO: Send a request to update the user's data
-    setUser(userData);
   };
 
   return (

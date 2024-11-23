@@ -9,6 +9,16 @@ import { useUser } from '@/utils/providers/user-provider/use-user';
 import { useRef } from 'react';
 import { HiMiniArrowRight } from 'react-icons/hi2';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+const StyledUserMenuLink = styled(Link)`
+  color: var(--ck-colors-text-raw);
+  text-decoration: none;
+  width: 100%;
+  padding: 8px;
+  outline: none;
+`;
 
 const UserMenu = () => {
   const { user, logout } = useUser();
@@ -47,12 +57,12 @@ const UserMenu = () => {
           cursor="pointer"
         />
       </MenuTrigger>
-      <MenuContent>
-        <MenuItem value="profile" cursor="pointer">
-          Profile
+      <MenuContent p={2}>
+        <MenuItem value="profile" cursor="pointer" p={0}>
+          <StyledUserMenuLink to="/profile">Profile</StyledUserMenuLink>
         </MenuItem>
-        <MenuItem value="my-groups" cursor="pointer">
-          My Groups
+        <MenuItem value="my-groups" cursor="pointer" p={0}>
+          <StyledUserMenuLink to="/">My groups</StyledUserMenuLink>
         </MenuItem>
         <MenuItem
           value="logout"
@@ -61,6 +71,8 @@ const UserMenu = () => {
           gap={1}
           cursor="pointer"
           onClick={handleLogout}
+          _hover={{ bgColor: 'hoverError' }}
+          p={2}
         >
           Logout
           <HiMiniArrowRight />

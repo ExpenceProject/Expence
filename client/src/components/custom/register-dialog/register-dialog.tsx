@@ -39,6 +39,7 @@ const RegisterDialog = () => {
     handleSubmit,
     register,
     formState: { errors },
+    reset,
   } = useForm<UserRegisterData>();
 
   function onSubmit(values: UserRegisterData) {
@@ -47,10 +48,18 @@ const RegisterDialog = () => {
       .then(() => {
         closeRegisterModal();
         setIsLoading(false);
+        reset();
         toast.success('Account created successfully');
       })
       .catch((error) => {
         console.error(error);
+
+        if (error.response?.status === 409) {
+          setIsLoading(false);
+          toast.error('User with this email already exists');
+          return;
+        }
+
         closeRegisterModal();
         setIsLoading(false);
         toast.error(
