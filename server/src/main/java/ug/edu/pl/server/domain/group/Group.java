@@ -37,6 +37,9 @@ class Group extends BaseEntity {
     private Set<Member> members = new HashSet<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    private Set<Invitation> invitations = new HashSet<>();
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private Set<Bill> bills = new HashSet<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)

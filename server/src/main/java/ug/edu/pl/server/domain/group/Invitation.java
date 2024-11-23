@@ -16,9 +16,8 @@ import ug.edu.pl.server.domain.common.persistance.BaseEntity;
 @Entity
 @Table(name = "invitations")
 class Invitation extends BaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invitee_id", nullable = false)
-    private Member invitee;
+    @Column(nullable = false)
+    private Long inviteeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inviter_id", nullable = false)
