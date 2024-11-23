@@ -10,9 +10,8 @@ type HeaderNavProps = {
 const HeaderNav: FC<HeaderNavProps> = ({ direction = 'row' }) => {
   return (
     <Flex flexDirection={direction} align="center" justify="center" gap="8">
-      <HeaderLink text="Groups" href="/groups" />
-      <HeaderLink text="Tracker" href="/tracker" />
-      <HeaderLink text="About" href="/about" />
+      <HeaderLink text="Tracker" href="/" />
+      <HeaderLink text="About" href="/" />
     </Flex>
   );
 };
