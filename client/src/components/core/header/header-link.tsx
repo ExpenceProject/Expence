@@ -1,25 +1,29 @@
-import { Link } from '@chakra-ui/react';
 import { FC } from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 type HeaderLinkProps = {
   text: string;
   href: string;
 };
 
+const StyledLink = styled(Link)`
+  color: var(--ck-colors-text);
+  text-decoration: none;
+  font-size: var(--ck-font-sizes-lg);
+  outline: none;
+
+  &:hover {
+    color: var(--ck-colors-text-hover);
+  }
+
+  &:active {
+    color: var(--ck-colors-text-hover);
+  }
+`;
+
 const HeaderLink: FC<HeaderLinkProps> = ({ text, href }) => {
-  return (
-    <Link
-      fontSize="lg"
-      color="text"
-      textDecor="none"
-      href={href}
-      _hover={{ color: 'textHover' }}
-      _active={{ color: 'textHover' }}
-      _focus={{ outline: 'none' }}
-    >
-      {text}
-    </Link>
-  );
+  return <StyledLink to={href}>{text}</StyledLink>;
 };
 
 export default HeaderLink;

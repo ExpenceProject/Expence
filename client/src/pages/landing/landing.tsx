@@ -1,18 +1,11 @@
+import ButtonLink from '@/components/custom/button-link/button-link';
 import Money from '@/components/icons/money/money';
 import {
   coreMobilePaddingX,
   corePaddingX,
   maxWebsiteWidth,
 } from '@/style/variables';
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Text,
-  useBreakpointValue,
-} from '@chakra-ui/react';
-import { HiMiniArrowRight } from 'react-icons/hi2';
+import { Box, Flex, Heading, Text, useBreakpointValue } from '@chakra-ui/react';
 
 export const LandingPage = () => {
   const currentBreakpoint = useBreakpointValue({
@@ -66,19 +59,7 @@ export const LandingPage = () => {
             makes it easy to keep track of who paid what. No more messy
             calculations or awkward reminders.
           </Text>
-          <Button
-            bg="primary"
-            color="textBg"
-            px={8}
-            mt={8}
-            w="min-content"
-            size={{ base: 'xs', sm: 'sm', md: 'xl' }}
-            display="flex"
-            gap={1}
-            _hover={{ bg: 'hover' }}
-          >
-            Get started <HiMiniArrowRight />
-          </Button>
+          <ButtonLink text="Get started" href="/" />
         </Flex>
         {(currentBreakpoint === 'xl' || currentBreakpoint === 'lg') && (
           <Flex align="center" justify="center" width="35%">

@@ -9,17 +9,18 @@ import {
 } from '@/style/variables';
 import { openLoginModalAtom } from '@/utils/atoms/modal-atoms';
 import { useUser } from '@/utils/providers/user-provider/use-user';
-import {
-  Box,
-  Button,
-  Flex,
-  Link,
-  Span,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Span, useBreakpointValue } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 import HeaderNav from './header-nav';
+
+const StyledLogoLink = styled(Link)`
+  color: var(--ck-colors-text-raw);
+  text-decoration: none;
+  outline: none;
+`;
 
 const Header = () => {
   const currentBreakpoint = useBreakpointValue({
@@ -51,19 +52,14 @@ const Header = () => {
         justify="space-between"
         align="center"
       >
-        <Link
-          color="textRaw"
-          textDecor="none"
-          href="/"
-          _focus={{ outline: 'none' }}
-        >
+        <StyledLogoLink to="/">
           <Flex align="center" justify="center" gap="1">
             <Logo fill="primary" width={35} />
             <Span fontSize="2xl" color="textRaw" fontWeight="bold">
               Expence
             </Span>
           </Flex>
-        </Link>
+        </StyledLogoLink>
         <Flex align="center" justify="center" gap={{ base: 2, md: 6 }}>
           {currentBreakpoint === 'sm' || !currentBreakpoint ? (
             <Drawer />

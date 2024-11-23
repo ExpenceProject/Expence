@@ -1,5 +1,8 @@
-import { Button, Link } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { FC } from 'react';
+import { HiMiniArrowRight } from 'react-icons/hi2';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 type ButtonLinkProps = {
   text: string;
@@ -10,37 +13,51 @@ type ButtonLinkProps = {
   fontSize?: string;
   px?: number;
   py?: number;
+  mt?: number;
+  mb?: number;
 };
+
+const StyledButtonLink = styled(Link)`
+  color: var(--ck-colors-text-bg);
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+`;
 
 const ButtonLink: FC<ButtonLinkProps> = ({
   text,
   href,
-  backgroundColor = 'primary',
-  color = 'textBg',
   hoverColor = 'hover',
-  fontSize = 'lg',
-  px = 4,
-  py = 0,
+  px = 20,
+  py = 20,
+  mt = 4,
+  mb = 4,
 }) => {
   return (
     <Button
-      fontSize={fontSize}
-      bg={backgroundColor}
+      size={{ base: 'xs', sm: 'sm', md: 'xl' }}
+      fontSize={{ base: 'sm', sm: 'md', md: 'lg' }}
+      bg="primary"
+      mt={mt}
+      w="min-content"
+      mb={mb}
       _hover={{ bg: hoverColor }}
       p={0}
     >
-      <Link
-        color={color}
-        href={href}
-        textDecor="none"
-        w="100%"
-        h="100%"
-        _focus={{ outline: 'none' }}
-        px={px}
-        py={py}
+      <StyledButtonLink
+        to={href}
+        style={{
+          padding: `${py}px ${px}px`,
+        }}
       >
-        {text}
-      </Link>
+        {text} <HiMiniArrowRight />
+      </StyledButtonLink>
     </Button>
   );
 };
