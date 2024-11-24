@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
-import ug.edu.pl.server.infrastructure.validation.image.ValidImage;
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,7 +24,7 @@ class UserController {
 
     @PreAuthorize("@currentUserContext.getSignedInUser().id() == #id")
     @PostMapping("/image/{id}")
-    ResponseEntity<UserDto> uploadImage(@PathVariable Long id, @RequestParam("image") @ValidImage MultipartFile file) {
+    ResponseEntity<UserDto> uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile file) {
         return ResponseEntity.ok(userFacade.uploadImage(id, file));
     }
 
