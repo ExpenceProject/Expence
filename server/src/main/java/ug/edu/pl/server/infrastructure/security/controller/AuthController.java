@@ -1,15 +1,14 @@
 package ug.edu.pl.server.infrastructure.security.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ug.edu.pl.server.domain.user.dto.CreateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 import ug.edu.pl.server.infrastructure.security.auth.AuthFacade;
 import ug.edu.pl.server.infrastructure.security.auth.CurrentUserContext;
 import ug.edu.pl.server.infrastructure.security.auth.dto.AuthDto;
 import ug.edu.pl.server.infrastructure.security.auth.dto.LoginDto;
+import ug.edu.pl.server.infrastructure.security.auth.dto.RegisterUserDto;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,12 +23,12 @@ class AuthController {
     }
 
     @PostMapping("/register")
-    ResponseEntity<UserDto> register(@RequestBody @Valid CreateUserDto dto) {
+    ResponseEntity<UserDto> register(@RequestBody RegisterUserDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authFacade.register(dto));
     }
 
     @PostMapping("/login")
-    ResponseEntity<AuthDto> login(@RequestBody @Valid LoginDto loginDto) {
+    ResponseEntity<AuthDto> login(@RequestBody LoginDto loginDto) {
         return ResponseEntity.ok(authFacade.authenticateAndGenerateToken(loginDto));
     }
 

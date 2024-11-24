@@ -6,6 +6,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,12 +14,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import ug.edu.pl.server.Log;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.CreateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 import ug.edu.pl.server.infrastructure.security.auth.dto.AuthDto;
 import ug.edu.pl.server.infrastructure.security.auth.dto.LoginDto;
+import ug.edu.pl.server.infrastructure.security.auth.dto.RegisterUserDto;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
@@ -27,6 +30,7 @@ import java.util.Date;
 
 @Log
 @Slf4j
+@Validated
 @EnableConfigurationProperties(TokenProperties.class)
 public class AuthFacade {
 
@@ -44,7 +48,7 @@ public class AuthFacade {
         secretKey = Keys.hmacShaKeyFor((Decoders.BASE64.decode(tokenProperties.secret())));
     }
 
-    public AuthDto authenticateAndGenerateToken(LoginDto dto) {
+    public AuthDto authenticateAndGenerateToken(@Valid LoginDto dto) {
         var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
         );
@@ -57,7 +61,7 @@ public class AuthFacade {
     }
 
     @Transactional
-    public UserDto register(CreateUserDto dto) {
+    public UserDto register(@Valid RegisterUserDto dto) {
         var encodedPassword = passwordEncoder.encode(dto.password());
         var createUserDto = CreateUserDto.builder()
                 .firstName(dto.firstName())

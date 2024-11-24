@@ -1,4 +1,4 @@
-package ug.edu.pl.server.infrastructure.validation.image;
+package ug.edu.pl.server.domain.common.validation.image;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
