@@ -8,16 +8,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import ug.edu.pl.server.base.IntegrationTest;
-import ug.edu.pl.server.domain.user.SampleUsers;
-import ug.edu.pl.server.domain.user.dto.CreateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 import ug.edu.pl.server.infrastructure.security.auth.AuthFacade;
+import ug.edu.pl.server.infrastructure.security.auth.SampleRegisterUsers;
 import ug.edu.pl.server.infrastructure.security.auth.dto.AuthDto;
 import ug.edu.pl.server.infrastructure.security.auth.dto.LoginDto;
+import ug.edu.pl.server.infrastructure.security.auth.dto.RegisterUserDto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,18 +35,18 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldRegisterAndLogin() throws Exception {
         // when
-        var result = register(SampleUsers.VALID_USER);
+        var result = register(SampleRegisterUsers.VALID_USER);
 
         // then
         result.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value(SampleUsers.VALID_USER.email()))
-                .andExpect(jsonPath("$.firstName").value(SampleUsers.VALID_USER.firstName()))
-                .andExpect(jsonPath("$.lastName").value(SampleUsers.VALID_USER.lastName()))
-                .andExpect(jsonPath("$.phoneNumber").value(SampleUsers.VALID_USER.phoneNumber()));
+                .andExpect(jsonPath("$.email").value(SampleRegisterUsers.VALID_USER.email()))
+                .andExpect(jsonPath("$.firstName").value(SampleRegisterUsers.VALID_USER.firstName()))
+                .andExpect(jsonPath("$.lastName").value(SampleRegisterUsers.VALID_USER.lastName()))
+                .andExpect(jsonPath("$.phoneNumber").value(SampleRegisterUsers.VALID_USER.phoneNumber()));
 
         // when
         var createdUser = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(), UserDto.class);
-        var loginResult = login(new LoginDto(createdUser.email(), SampleUsers.VALID_USER.password()));
+        var loginResult = login(new LoginDto(createdUser.email(), SampleRegisterUsers.VALID_USER.password()));
 
         // then
         loginResult.andExpect(status().isOk())
@@ -66,10 +66,10 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnConflictWhenCreatingUserWithTheSameEmail() throws Exception {
         // given
-        authFacade.register(SampleUsers.VALID_USER);
+        authFacade.register(SampleRegisterUsers.VALID_USER);
 
         // when
-        var result = register(SampleUsers.VALID_USER);
+        var result = register(SampleRegisterUsers.VALID_USER);
 
         // then
         result.andExpect(status().isConflict());
@@ -79,7 +79,7 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnBadRequestWhenCreatingUserWithInvalidPassword() throws Exception {
         // when
-        var result = register(SampleUsers.USER_WITH_INVALID_PASSWORD);
+        var result = register(SampleRegisterUsers.USER_WITH_INVALID_PASSWORD);
 
         // then
         result.andExpect(status().isBadRequest());
@@ -89,7 +89,7 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnBadRequestWhenCreatingUserWithBlankPassword() throws Exception {
         // when
-        var result = register(SampleUsers.USER_WITH_BLANK_PASSWORD);
+        var result = register(SampleRegisterUsers.USER_WITH_BLANK_PASSWORD);
 
         // then
         result.andExpect(status().isBadRequest());
@@ -99,7 +99,7 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnBadRequestWhenCreatingUserWithInvalidEmail() throws Exception {
         // when
-        var result = register(SampleUsers.USER_WITH_INVALID_EMAIL);
+        var result = register(SampleRegisterUsers.USER_WITH_INVALID_EMAIL);
 
         // then
         result.andExpect(status().isBadRequest());
@@ -109,7 +109,7 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnBadRequestWhenCreatingUserWithBlankEmail() throws Exception {
         // when
-        var result = register(SampleUsers.USER_WITH_BLANK_EMAIL);
+        var result = register(SampleRegisterUsers.USER_WITH_BLANK_EMAIL);
 
         // then
         result.andExpect(status().isBadRequest());
@@ -119,7 +119,7 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnBadRequestWhenCreatingUserWithBlankFirstName() throws Exception {
         // when
-        var result = register(SampleUsers.USER_WITH_BLANK_FIRST_NAME);
+        var result = register(SampleRegisterUsers.USER_WITH_BLANK_FIRST_NAME);
 
         // then
         result.andExpect(status().isBadRequest());
@@ -129,7 +129,7 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnBadRequestWhenCreatingUserWithBlankLastName() throws Exception {
         // when
-        var result = register(SampleUsers.USER_WITH_BLANK_LAST_NAME);
+        var result = register(SampleRegisterUsers.USER_WITH_BLANK_LAST_NAME);
 
         // then
         result.andExpect(status().isBadRequest());
@@ -139,7 +139,7 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnUnauthorizedWhenLoginWithWrongCredentials() throws Exception {
         // when
-        var result = login(new LoginDto(SampleUsers.VALID_USER.email(), SampleUsers.VALID_USER.password()));
+        var result = login(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
 
         // then
         result.andExpect(status().isUnauthorized());
@@ -149,10 +149,10 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnUnauthorizedWhenLoginWithWrongEmail() throws Exception {
         // given
-        authFacade.register(SampleUsers.VALID_USER);
+        authFacade.register(SampleRegisterUsers.VALID_USER);
 
         // when
-        var result = login(new LoginDto(SampleUsers.EMAIL_THAT_DOES_NOT_EXIST, SampleUsers.VALID_USER.password()));
+        var result = login(new LoginDto(SampleRegisterUsers.EMAIL_THAT_DOES_NOT_EXIST, SampleRegisterUsers.VALID_USER.password()));
 
         // then
         result.andExpect(status().isUnauthorized());
@@ -162,10 +162,10 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnUnauthorizedWhenLoginWithWrongPassword() throws Exception {
         // given
-        authFacade.register(SampleUsers.VALID_USER);
+        authFacade.register(SampleRegisterUsers.VALID_USER);
 
         // when
-        var result = login(new LoginDto(SampleUsers.VALID_USER.email(), SampleUsers.PASSWORD_THAT_DOES_NOT_EXIST));
+        var result = login(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.PASSWORD_THAT_DOES_NOT_EXIST));
 
         // then
         result.andExpect(status().isUnauthorized());
@@ -175,8 +175,8 @@ class AuthControllerTest extends IntegrationTest {
     @Transactional
     void shouldReturnCurrentUser() throws Exception {
         // given
-        var createdUser = authFacade.register(SampleUsers.VALID_USER);
-        var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleUsers.VALID_USER.email(), SampleUsers.VALID_USER.password()));
+        var createdUser = authFacade.register(SampleRegisterUsers.VALID_USER);
+        var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
 
         // when
         var result = me(authenticatedUser);
@@ -202,10 +202,10 @@ class AuthControllerTest extends IntegrationTest {
         result.andExpect(status().isUnauthorized());
     }
 
-    private ResultActions register(CreateUserDto createUserDto) throws Exception {
+    private ResultActions register(RegisterUserDto dto) throws Exception {
         return mockMvc.perform(post(URL + "/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createUserDto)));
+                .content(objectMapper.writeValueAsString(dto)));
     }
 
     private ResultActions login(LoginDto loginDto) throws Exception {

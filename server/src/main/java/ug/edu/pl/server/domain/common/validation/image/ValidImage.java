@@ -1,4 +1,4 @@
-package ug.edu.pl.server.infrastructure.validation.image;
+package ug.edu.pl.server.domain.common.validation.image;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
