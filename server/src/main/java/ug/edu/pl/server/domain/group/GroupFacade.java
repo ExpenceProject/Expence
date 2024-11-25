@@ -1,32 +1,32 @@
 package ug.edu.pl.server.domain.group;
 
+import jakarta.validation.Valid;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import ug.edu.pl.server.Log;
 import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
 import ug.edu.pl.server.domain.group.dto.GroupDto;
+import ug.edu.pl.server.domain.user.dto.UserDto;
 
 @Log
+@Validated
 public class GroupFacade {
-    public static final String CACHE_NAME = "groups";
-    private final GroupRepository groupRepository;
-    private final CreatingGroupHelper creatingGroupHelper;
+  public static final String CACHE_NAME = "groups";
+  private final GroupService groupService;
 
+  GroupFacade(GroupService groupService) {
+    this.groupService = groupService;
+  }
 
-    GroupFacade(GroupRepository groupRepository, CreatingGroupHelper creatingGroupHelper) {
-        this.groupRepository = groupRepository;
-        this.creatingGroupHelper = creatingGroupHelper;
-    }
+  @Transactional(readOnly = true)
+  @Cacheable(value = CACHE_NAME, key = "#id")
+  public GroupDto getById(Long id) {
+    return groupService.getById(id);
+  }
 
-    @Transactional(readOnly = true)
-    @Cacheable(value = CACHE_NAME, key = "#id")
-    public GroupDto getById(Long id){
-        return groupRepository.findByIdOrThrow(id).dto();
-    }
-
-    @Transactional
-    public GroupDto create(CreateGroupDto dto){
-        var group = creatingGroupHelper.createGroup(dto);
-        return groupRepository.saveOrThrow(group).dto();
-    }
+  @Transactional
+  public GroupDto create(@Valid CreateGroupDto dto, UserDto currentUser) {
+    return groupService.createGroup(dto, currentUser);
+  }
 }

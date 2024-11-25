@@ -23,39 +23,39 @@ import java.util.Set;
 @Table(name = "groups")
 class Group extends BaseEntity {
 
-    @Embedded
-    @AttributeOverride(name = "key", column = @Column(name = "image_key"))
-    private Image image;
+  @Embedded
+  @AttributeOverride(name = "key", column = @Column(name = "image_key"))
+  private Image image;
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @Column(nullable = false)
-    private Boolean settledDown;
+  @Column(nullable = false)
+  private Boolean settledDown;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private Set<Member> members = new HashSet<>();
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+  private Set<Member> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private Set<Invitation> invitations = new HashSet<>();
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+  private Set<Invitation> invitations = new HashSet<>();
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private Set<Bill> bills = new HashSet<>();
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+  private Set<Bill> bills = new HashSet<>();
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private Set<Payment> payments = new HashSet<>();
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+  private Set<Payment> payments = new HashSet<>();
 
-    GroupDto dto() {
-        var imageDto = new ImageDto(image == null ? null : image.key());
+  GroupDto dto() {
+    var imageDto = new ImageDto(image == null ? null : image.key());
 
-        return GroupDto.builder()
-                .id(getId())
-                .image(imageDto)
-                .name(name)
-                .settledDown(settledDown)
-                .version(getVersion())
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
-                .build();
-    }
+    return GroupDto.builder()
+        .id(getId())
+        .image(imageDto)
+        .name(name)
+        .settledDown(settledDown)
+        .version(getVersion())
+        .createdAt(getCreatedAt())
+        .updatedAt(getUpdatedAt())
+        .build();
+  }
 }

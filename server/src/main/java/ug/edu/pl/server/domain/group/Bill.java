@@ -20,20 +20,20 @@ import java.util.Set;
 @Entity
 @Table(name = "bills")
 class Bill extends BaseEntity {
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Expense> expenses = new HashSet<>();
+  @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Expense> expenses = new HashSet<>();
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalAmount;
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal totalAmount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lender_id", nullable = false)
-    private Member lender;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "lender_id", nullable = false)
+  private Member lender;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group group;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "group_id", nullable = false)
+  private Group group;
 }
