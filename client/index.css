@@ -3,6 +3,7 @@
 .Toastify__toast-body {
   font-family: 'Neue Montreal';
 }
+
 @font-face {
   font-family: 'Neue Montreal';
   src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-Thin.otf')
