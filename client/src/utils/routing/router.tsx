@@ -1,6 +1,7 @@
 import App from '@/App';
 import { LandingPage } from '@/pages/landing/landing';
 import ProfilePage from '@/pages/landing/profile/profile';
+import { PageNotFound } from '@/pages/page-not-found/page-not-found';
 import { createBrowserRouter } from 'react-router-dom';
 
 export const router = createBrowserRouter([
@@ -18,5 +19,9 @@ export const router = createBrowserRouter([
         element: <ProfilePage />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <PageNotFound />,
   },
 ]);

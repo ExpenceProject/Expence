@@ -98,7 +98,7 @@ const globalCss = {
     margin: 0,
     padding: 0,
     minHeight: '100vh',
-    fontFamily: 'Roboto Condensed',
+    fontFamily: 'Neue Montreal',
     width: '100vw',
     color: 'var(--ck-colors-text)',
     backgroundColor: 'var(--ck-colors-background)',
