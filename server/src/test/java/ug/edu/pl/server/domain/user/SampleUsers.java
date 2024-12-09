@@ -14,4 +14,12 @@ public final class SampleUsers {
             .lastName("Doe")
             .phoneNumber("123-456-7890")
             .build();
+
+    public static final CreateUserDto ANOTHER_VALID_USER = CreateUserDto.builder()
+            .email("anna@example.com")
+            .password("StrongPassword123!")
+            .firstName("Anna")
+            .lastName("Doe")
+            .phoneNumber("123-456-7890")
+            .build();
 }
