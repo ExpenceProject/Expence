@@ -12,6 +12,7 @@ const StyledLink = styled(Link)`
   text-decoration: none;
   font-size: var(--ck-font-sizes-lg);
   outline: none;
+  transition: all 0.15s ease;
 
   &:hover {
     color: var(--ck-colors-text-hover);

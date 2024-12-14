@@ -29,7 +29,7 @@ const semanticTokens = {
     textError: {
       value: {
         _light: '#cc0000',
-        _dark: '#ff8080',
+        _dark: '#ffb9b9',
       },
     },
     textHover: {
@@ -42,6 +42,18 @@ const semanticTokens = {
       value: {
         _light: '#faf9f7',
         _dark: '#1a1a1a',
+      },
+    },
+    backgroundError: {
+      value: {
+        _light: '#ffdada',
+        _dark: '#872c2c',
+      },
+    },
+    backgroundErrorHover: {
+      value: {
+        _light: '#ffc4c4',
+        _dark: '#964b4b',
       },
     },
     surface: {
@@ -58,14 +70,14 @@ const semanticTokens = {
     },
     hover: {
       value: {
-        _light: '#4fa488',
-        _dark: '#60b497',
+        _light: '#e1e1e1',
+        _dark: '#393939',
       },
     },
-    hoverError: {
+    hoverPrimary: {
       value: {
-        _light: '#ffdada',
-        _dark: '#872c2c',
+        _light: '#45b992',
+        _dark: '#45b992',
       },
     },
     disabled: {

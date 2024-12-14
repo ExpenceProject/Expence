@@ -1,6 +1,6 @@
 import Drawer from '@/components/custom/drawer/drawer';
 import UserMenu from '@/components/custom/user-menu/user-menu';
-import Logo from '@/components/icons/logo/logo';
+import { LogoIcon } from '@/components/icons/logo';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import {
   coreMobilePaddingX,
@@ -54,7 +54,7 @@ const Header = () => {
       >
         <StyledLogoLink to="/">
           <Flex align="center" justify="center" gap="1">
-            <Logo fill="primary" width={35} />
+            <LogoIcon fill="primary" width={35} />
             <Span fontSize="2xl" color="textRaw" fontWeight="bold">
               Expence
             </Span>

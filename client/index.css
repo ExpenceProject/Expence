@@ -4,6 +4,17 @@
   font-family: 'Neue Montreal';
 }
 
+.chakra-dialog__positioner {
+  padding: 0 32px;
+}
+
+@media (max-height: 650px) {
+  .modalAvatar {
+    max-height: 150px !important;
+    max-width: 150px !important;
+  }
+}
+
 @font-face {
   font-family: 'Neue Montreal';
   src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-Thin.otf')

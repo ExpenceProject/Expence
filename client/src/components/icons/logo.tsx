@@ -1,13 +1,13 @@
 import { chakra } from '@chakra-ui/react';
 import { FC } from 'react';
 
-type LogoProps = {
+type LogoIconProps = {
   width?: number;
   height?: number;
   fill?: string;
 };
 
-const Logo: FC<LogoProps> = ({ width, height, fill }) => {
+export const LogoIcon: FC<LogoIconProps> = ({ width, height, fill }) => {
   return (
     <chakra.svg
       fill={fill ?? 'currentColor'}
@@ -38,5 +38,3 @@ const Logo: FC<LogoProps> = ({ width, height, fill }) => {
     </chakra.svg>
   );
 };
-
-export default Logo;

@@ -20,3 +20,15 @@ export const openRegisterModalAtom = atom(null, (_, set) => {
 export const closeRegisterModalAtom = atom(null, (_, set) => {
   set(isRegisterModalOpenAtom, false);
 });
+
+// Avatar modal
+
+export const isAvatarModalOpenAtom = atom(false);
+
+export const openAvatarModalAtom = atom(null, (_, set) => {
+  set(isAvatarModalOpenAtom, true);
+});
+
+export const closeAvatarModalAtom = atom(null, (_, set) => {
+  set(isAvatarModalOpenAtom, false);
+});

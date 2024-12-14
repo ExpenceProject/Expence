@@ -28,12 +28,13 @@ const StyledButtonLink = styled(Link)`
   align-items: center;
   justify-content: center;
   outline: none;
+  transition: all 0.15s ease;
 `;
 
 const ButtonLink: FC<ButtonLinkProps> = ({
   text,
   href,
-  hoverColor = 'hover',
+  hoverColor = 'hoverPrimary',
   px = 20,
   py = 20,
   mt = 4,

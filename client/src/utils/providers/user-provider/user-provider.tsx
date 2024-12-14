@@ -1,18 +1,22 @@
-import { User, UserCredentials, UserRegisterData } from '@/types';
+import {
+  User,
+  UserCredentials,
+  UserRegisterData,
+  UserUpdatedData,
+} from '@/types';
 import { apiClient } from '@/utils/http-clients/api-http-client';
-import { ReactNode, useState } from 'react';
+import { AxiosResponse } from 'axios';
+import { FC, ReactNode, useState } from 'react';
 
 import { UserContext } from './user-context';
 
-export const UserProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const storageUser = localStorage.getItem('user');
   const [user, setUser] = useState<User | null>(
     storageUser ? JSON.parse(storageUser) : null,
   );
 
-  const login = (userCredentials: UserCredentials): Promise<void> => {
+  const login = (userCredentials: UserCredentials): Promise<User> => {
     return new Promise((resolve, reject) => {
       apiClient
         .post('/auth/login', userCredentials)
@@ -43,6 +47,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const refreshUser = (): Promise<User> => {
+    return new Promise((resolve, reject) => {
+      apiClient
+        .get(`/users/${user?.id}`)
+        .then((response) => {
+          const user = response.data;
+          localStorage.setItem('user', JSON.stringify(user));
+          setUser(user);
+          resolve(user);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  };
+
   const logout = (): Promise<void> => {
     return new Promise(() => {
       localStorage.removeItem('authToken');
@@ -52,13 +72,57 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
-  const updateUser = () => {
-    // TODO: Send a request to update the user's data
+  const updateUser = (updatedUser: UserUpdatedData): Promise<AxiosResponse> => {
+    return new Promise((resolve, reject) => {
+      apiClient
+        .put(`/users/${user?.id}`, updatedUser)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  };
+
+  const updateUserAvatar = (image: FormData): Promise<AxiosResponse> => {
+    return new Promise((resolve, reject) => {
+      apiClient
+        .post(`/users/image/${user?.id}`, image)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  };
+
+  const deleteUserAvatar = (): Promise<AxiosResponse> => {
+    return new Promise((resolve, reject) => {
+      apiClient
+        .delete(`/users/image/${user?.id}`)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   };
 
   return (
     <UserContext.Provider
-      value={{ user, login, registerUser, logout, updateUser }}
+      value={{
+        user,
+        login,
+        registerUser,
+        refreshUser,
+        logout,
+        updateUser,
+        updateUserAvatar,
+        deleteUserAvatar,
+      }}
     >
       {children}
     </UserContext.Provider>

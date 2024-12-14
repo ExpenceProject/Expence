@@ -31,3 +31,9 @@ export type UserRegisterData = DeepReadonly<{
   lastName: string;
   phoneNumber?: string;
 }>;
+
+export type UserUpdatedData = DeepReadonly<{
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+}>;

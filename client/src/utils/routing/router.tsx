@@ -1,7 +1,9 @@
 import App from '@/App';
+import { UserGroups } from '@/components/custom/user-groups/user-groups';
+import { UserInformation } from '@/components/custom/user-information/user-information';
 import { LandingPage } from '@/pages/landing/landing';
-import ProfilePage from '@/pages/landing/profile/profile';
 import { PageNotFound } from '@/pages/page-not-found/page-not-found';
+import { ProfilePage } from '@/pages/profile/profile';
 import { createBrowserRouter } from 'react-router-dom';
 
 export const router = createBrowserRouter([
@@ -17,6 +19,16 @@ export const router = createBrowserRouter([
       {
         path: '/profile',
         element: <ProfilePage />,
+        children: [
+          {
+            path: '',
+            element: <UserInformation />,
+          },
+          {
+            path: 'groups',
+            element: <UserGroups />,
+          },
+        ],
       },
     ],
   },

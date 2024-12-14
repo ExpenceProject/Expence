@@ -40,9 +40,8 @@ const UserMenu = () => {
   };
 
   const handleLogout = () => {
-    logout().then(() => {
-      navigate('/');
-    });
+    navigate('/');
+    logout();
   };
 
   return (
@@ -58,10 +57,24 @@ const UserMenu = () => {
         />
       </MenuTrigger>
       <MenuContent p={2}>
-        <MenuItem value="profile" cursor="pointer" p={0}>
+        <MenuItem
+          value="profile"
+          cursor="pointer"
+          p={0}
+          _hover={{ bgColor: 'hover' }}
+          transition="all 0.15s ease"
+          borderRadius={5}
+        >
           <StyledUserMenuLink to="/profile">Profile</StyledUserMenuLink>
         </MenuItem>
-        <MenuItem value="my-groups" cursor="pointer" p={0}>
+        <MenuItem
+          value="my-groups"
+          cursor="pointer"
+          p={0}
+          _hover={{ bgColor: 'hover' }}
+          borderRadius={5}
+          transition="all 0.15s ease"
+        >
           <StyledUserMenuLink to="/">My groups</StyledUserMenuLink>
         </MenuItem>
         <MenuItem
@@ -71,8 +84,12 @@ const UserMenu = () => {
           gap={1}
           cursor="pointer"
           onClick={handleLogout}
-          _hover={{ bgColor: 'hoverError' }}
+          _hover={{
+            bgColor: 'backgroundErrorHover',
+          }}
           p={2}
+          transition="all 0.15s ease"
+          borderRadius={5}
         >
           Logout
           <HiMiniArrowRight />
