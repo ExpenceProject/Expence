@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
+import ug.edu.pl.server.domain.group.dto.BillDto;
+import ug.edu.pl.server.domain.group.dto.MemberDto;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -36,4 +39,24 @@ class Bill extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "group_id", nullable = false)
   private Group group;
+
+  BillDto dto() {
+    var expensesSet = expenses.stream()
+            .map(Expense::dto)
+            .collect(Collectors.toSet());
+
+    var lenderDto = lender.dto();
+
+    return BillDto.builder()
+            .id(getId())
+            .name(name)
+            .expenses(expensesSet)
+            .totalAmount(totalAmount)
+            .lender(lenderDto)
+            .groupId(getGroup().getId())
+            .version(getVersion())
+            .createdAt(getCreatedAt())
+            .updatedAt(getUpdatedAt())
+            .build();
+  }
 }
