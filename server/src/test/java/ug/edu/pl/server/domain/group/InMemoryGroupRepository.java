@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 class InMemoryGroupRepository implements GroupRepository, InMemoryRepository<Group>  {
-  private final InMemoryInvitationRepository invitationRepository; // Assuming you have access to this repository
+  private final InMemoryInvitationRepository invitationRepository;
 
   public InMemoryGroupRepository(InMemoryInvitationRepository invitationRepository) {
     this.invitationRepository = invitationRepository;
