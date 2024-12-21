@@ -85,4 +85,29 @@ class GroupFacadeTest {
     assertThat(groupDto.image()).isNotNull();
     assertThat(groupDto.image().key()).isNotNull();
   }
+
+  @Test
+  void shouldCreateInvitation() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    // when
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id());
+    // then
+    assertThat(invitations).hasSize(1);
+  }
+
+  @Test
+  void shouldCreateInvitations() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    UserDto anotherInvitee = userFacade.create(SampleUsers.VALID_USER_3);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id(), anotherInvitee.id()));
+    // when
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id());
+    // then
+    assertThat(invitations).hasSize(2);
+  }
 }

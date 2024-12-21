@@ -1,6 +1,6 @@
 package ug.edu.pl.server.domain.group;
 
-enum InvitationStatus {
+public enum InvitationStatus {
   SENT,
   ACCEPTED,
   DECLINED,

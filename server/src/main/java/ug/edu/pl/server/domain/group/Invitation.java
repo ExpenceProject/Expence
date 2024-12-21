@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
+import ug.edu.pl.server.domain.group.dto.InvitationDto;
 
 @Getter
 @Setter
@@ -30,4 +31,17 @@ class Invitation extends BaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private InvitationStatus status;
+
+  InvitationDto dto() {
+    return InvitationDto.builder()
+            .id(getId())
+            .inviteeId(inviteeId)
+            .inviterId(inviter.getId())
+            .groupId(group.getId())
+            .status(status.name())
+            .version(getVersion())
+            .createdAt(getCreatedAt())
+            .updatedAt(getUpdatedAt())
+            .build();
+  }
 }
