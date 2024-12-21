@@ -22,4 +22,12 @@ public final class SampleUsers {
             .lastName("Doe")
             .phoneNumber("123-456-7890")
             .build();
+
+    public static final CreateUserDto VALID_USER_3 = CreateUserDto.builder()
+            .email("timothee@example.com")
+            .password("StrongPassword123!")
+            .firstName("Timothee")
+            .lastName("Chalamet")
+            .phoneNumber("123-456-0000")
+            .build();
 }

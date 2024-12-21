@@ -11,11 +11,13 @@ class GroupConfiguration {
   GroupFacade groupFacade(
       GroupRepository groupRepository,
       GroupRoleRepository groupRoleRepository,
+      InvitationRepository invitationRepository,
       StorageFacade storageFacade,
       UserFacade userFacade) {
     GroupService groupService =
         new GroupService(
             groupRepository, groupRoleRepository, storageFacade, new GroupCreator(), userFacade);
-    return new GroupFacade(groupService);
+    InvitationService invitationService = new InvitationService(invitationRepository);
+    return new GroupFacade(groupService, invitationService);
   }
 }
