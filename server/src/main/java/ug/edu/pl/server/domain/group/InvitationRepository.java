@@ -12,12 +12,11 @@ import java.util.Optional;
 
 interface InvitationRepository extends Repository<Invitation, Long> {
     Optional<Invitation> findById(Long id);
-    @Query("SELECT i FROM Invitation i WHERE i.group.id = :groupId AND i.inviteeId = :inviteeId")
+
     Optional<Invitation> findByGroupIdAndInviteeId(@Param("groupId") Long groupId, @Param("inviteeId") Long inviteeId);
 
-    @Query("SELECT i FROM Invitation i WHERE i.inviteeId = :inviteeId")
     Collection<Invitation> findInvitationsByInviteeId(@Param("inviteeId") Long inviteeId);
-    @Query("SELECT i FROM Invitation i WHERE i.group.id = :groupId")
+
     Collection<Invitation> findInvitationsByGroupId(@Param("groupId") Long groupId);
 
     @Modifying
