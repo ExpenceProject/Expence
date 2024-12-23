@@ -7,12 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 import ug.edu.pl.server.Log;
+import ug.edu.pl.server.domain.common.exception.DuplicateException;
 import ug.edu.pl.server.domain.common.persistance.Image;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.common.validation.image.ValidImage;
 import ug.edu.pl.server.domain.user.dto.CreateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
-import ug.edu.pl.server.domain.user.exception.UserAlreadyExistsException;
 
 import java.util.Set;
 
@@ -51,7 +51,7 @@ public class UserFacade {
     public UserDto create(@Valid CreateUserDto dto) {
         // Check for existing user by email; unique constraint in DB mitigates race condition risk
         if (userRepository.existsByEmail(dto.email())) {
-            throw new UserAlreadyExistsException("User with email '%s' already exists".formatted(dto.email()));
+            throw new DuplicateException("User with email '%s' already exists".formatted(dto.email()));
         }
 
         var user = userCreator.from(dto);

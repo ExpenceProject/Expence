@@ -100,10 +100,10 @@ class InMemoryInvitationRepository implements InvitationRepository, InMemoryRepo
 class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill> {
   Map<Long, Bill> billIdMap = new ConcurrentHashMap<>();
 
+
   @Override
   public Bill save(Bill bill) {
-    //implement
-    return billIdMap.get(0);
+    return null;
   }
 
   @Override
@@ -120,5 +120,10 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   @Override
   public Optional<Member> findByIdAndGroupId(Long memberId, Long groupId) {
     return memberSet.stream().filter(m -> m.getId().equals(memberId) && m.getGroup().getId().equals(groupId)).findFirst();
+  }
+
+  @Override
+  public Set<Member> findAllByIdAndGroupId(Set<Long> ids, Long groupId) {
+    return Set.of();
   }
 }

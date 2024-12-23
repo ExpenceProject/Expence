@@ -1,6 +1,7 @@
 package ug.edu.pl.server.domain.group.dto;
 
 import jakarta.validation.constraints.*;
+import ug.edu.pl.server.domain.common.exception.SavingException;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -24,4 +25,14 @@ public record CreateBillDto(
         @NotNull(message = "Lender ID must not be null")
         @Positive(message = "Lender ID must be a positive number")
         Long groupId
-    ) {}
+    ) {
+        public CreateBillDto {
+                BigDecimal expensesSum = expenses.stream()
+                        .map(CreateExpenseDto::amount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                if (expensesSum.compareTo(totalAmount) != 0){
+                     throw new SavingException("Amount and total amount are not equal");
+                }
+        }
+}

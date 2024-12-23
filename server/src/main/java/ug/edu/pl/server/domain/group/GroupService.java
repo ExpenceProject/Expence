@@ -1,12 +1,12 @@
 package ug.edu.pl.server.domain.group;
 
+import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.persistance.Image;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
 import ug.edu.pl.server.domain.group.dto.GroupDto;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
-import ug.edu.pl.server.domain.user.exception.UserNotFoundException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -67,7 +67,7 @@ class GroupService {
         group.getMembers().stream()
             .filter(m -> m.getUserId().equals(currentUser.id()))
             .findFirst()
-            .orElseThrow(() -> new UserNotFoundException(currentUser.id()));
+            .orElseThrow(() -> new NotFoundException(Group.class.getName(), currentUser.id()));
 
     Set<Invitation> invitations = new HashSet<>();
     for (Long id : dto.inviteesId()) {

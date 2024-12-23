@@ -1,7 +1,6 @@
 package ug.edu.pl.server.domain.group;
 
 import org.junit.jupiter.api.Test;
-import ug.edu.pl.server.domain.group.exception.GroupNotFoundException;
 import ug.edu.pl.server.domain.user.SampleUsers;
 import ug.edu.pl.server.domain.user.TestUserConfiguration;
 import ug.edu.pl.server.domain.user.UserFacade;

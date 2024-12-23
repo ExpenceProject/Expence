@@ -1,4 +1,4 @@
-package ug.edu.pl.server.domain.group.exception;
+package ug.edu.pl.server.domain.common.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String object, Long id) {
