@@ -2,9 +2,11 @@ package ug.edu.pl.server.domain.group;
 
 import ug.edu.pl.server.base.InMemoryRepository;
 
+import java.util.HashSet;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 class InMemoryGroupRepository implements GroupRepository, InMemoryRepository<Group>  {
@@ -93,5 +95,30 @@ class InMemoryInvitationRepository implements InvitationRepository, InMemoryRepo
             .filter(invitation -> groupId.equals(invitation.getGroup().getId()) &&
                     inviteeId.equals(invitation.getInviteeId()))
             .findFirst();
+  }
+}
+class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill> {
+  Map<Long, Bill> billIdMap = new ConcurrentHashMap<>();
+
+  @Override
+  public Bill save(Bill bill) {
+    //implement
+    return billIdMap.get(0);
+  }
+
+  @Override
+  public Optional<Bill> findById(Long id) {
+    return Optional.ofNullable(billIdMap.get(id));
+  }
+}
+
+
+class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<Member> {
+  Set<Member> memberSet = new HashSet<>();
+
+
+  @Override
+  public Optional<Member> findByIdAndGroupId(Long memberId, Long groupId) {
+    return memberSet.stream().filter(m -> m.getId().equals(memberId) && m.getGroup().getId().equals(groupId)).findFirst();
   }
 }

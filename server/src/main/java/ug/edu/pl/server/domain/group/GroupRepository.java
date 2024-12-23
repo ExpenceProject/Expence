@@ -3,6 +3,7 @@ package ug.edu.pl.server.domain.group;
 import org.springframework.data.repository.Repository;
 import ug.edu.pl.server.domain.group.exception.GroupNotFoundException;
 import ug.edu.pl.server.domain.group.exception.GroupRoleNotFoundException;
+import ug.edu.pl.server.domain.group.exception.MemberNotFoundException;
 import ug.edu.pl.server.domain.group.exception.SavingGroupException;
 
 import java.util.Optional;
@@ -30,5 +31,14 @@ interface GroupRoleRepository extends Repository<GroupRole, Long> {
 
   default GroupRole findByNameOrThrow(GroupRoleName name) {
     return findByName(name).orElseThrow(() -> new GroupRoleNotFoundException(name.toString()));
+  }
+}
+
+interface MemberRepository extends Repository<Member, Long> {
+  Optional<Member> findByIdAndGroupId(Long memberId, Long groupId);
+
+
+  default Member findByIdAndGroupIdOrThrow(Long memberId, Long groupId) {
+    return findByIdAndGroupId(memberId, groupId).orElseThrow(() -> new MemberNotFoundException(memberId));
   }
 }
