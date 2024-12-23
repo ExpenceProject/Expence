@@ -5,10 +5,10 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import ug.edu.pl.server.domain.common.exception.DuplicateException;
+import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.storage.SampleImages;
 import ug.edu.pl.server.domain.user.dto.UserDto;
-import ug.edu.pl.server.domain.user.exception.UserAlreadyExistsException;
-import ug.edu.pl.server.domain.user.exception.UserNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -52,7 +52,7 @@ class UserFacadeTest {
     @Test
     void shouldThrowExceptionWhenAskedForUserWithIdThaDoesNotExist() {
         // when & then
-        assertThatThrownBy(() -> userFacade.getById(SampleUsers.ID_THAT_DOES_NOT_EXIST)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userFacade.getById(SampleUsers.ID_THAT_DOES_NOT_EXIST)).isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -61,7 +61,7 @@ class UserFacadeTest {
         userFacade.create(SampleUsers.VALID_USER);
 
         // when & then
-        assertThatThrownBy(() -> userFacade.create(SampleUsers.VALID_USER)).isInstanceOf(UserAlreadyExistsException.class);
+        assertThatThrownBy(() -> userFacade.create(SampleUsers.VALID_USER)).isInstanceOf(DuplicateException.class);
     }
 
     @Test

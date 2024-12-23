@@ -1,6 +1,7 @@
 package ug.edu.pl.server.domain.group;
 
 import org.junit.jupiter.api.Test;
+import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.user.SampleUsers;
 import ug.edu.pl.server.domain.user.TestUserConfiguration;
 import ug.edu.pl.server.domain.user.UserFacade;
@@ -32,7 +33,7 @@ class GroupFacadeTest {
   void shouldThrowExceptionWhenAskedForGroupWithIdThatDoesNotExist() {
     // when & then
     assertThatThrownBy(() -> groupFacade.getById(SampleGroups.ID_THAT_DOES_NOT_EXIST))
-        .isInstanceOf(GroupNotFoundException.class);
+        .isInstanceOf(NotFoundException.class);
   }
 
   @Test
