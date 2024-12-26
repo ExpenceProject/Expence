@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
-import ug.edu.pl.server.domain.group.exception.NotFoundException;
-import ug.edu.pl.server.domain.group.exception.SavingException;
+import ug.edu.pl.server.domain.common.exception.NotFoundException;
+import ug.edu.pl.server.domain.common.exception.SavingException;
 
 import java.util.Collection;
 import java.util.Optional;

@@ -3,8 +3,8 @@ package ug.edu.pl.server.domain.user;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.Repository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import ug.edu.pl.server.domain.user.exception.SavingUserException;
-import ug.edu.pl.server.domain.user.exception.UserNotFoundException;
+import ug.edu.pl.server.domain.common.exception.NotFoundException;
+import ug.edu.pl.server.domain.common.exception.SavingException;
 
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ interface UserRepository extends Repository<User, Long> {
     Optional<User> findByEmail(String email);
 
     default User findByIdOrThrow(Long id) {
-        return findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    return findById(id).orElseThrow(() -> new NotFoundException(User.class.getName(), id));
     }
 
     default User findByEmailOrThrow(String email) {
@@ -32,7 +32,7 @@ interface UserRepository extends Repository<User, Long> {
         try {
             return save(user);
         } catch (Exception ex) {
-            throw new SavingUserException(ex.getMessage());
+            throw new SavingException(ex.getMessage());
         }
     }
 }

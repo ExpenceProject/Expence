@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
+import ug.edu.pl.server.domain.group.dto.ExpenseDto;
+import ug.edu.pl.server.domain.group.dto.GroupRoleDto;
+import ug.edu.pl.server.domain.group.dto.MemberDto;
 
 import java.math.BigDecimal;
 
@@ -28,4 +31,9 @@ class Expense extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "bill_id", nullable = false)
   private Bill bill;
+
+  ExpenseDto dto() {
+    var borrowerMember = borrower.dto();
+    return new ExpenseDto(borrowerMember, amount);
+  }
 }

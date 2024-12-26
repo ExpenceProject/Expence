@@ -14,6 +14,8 @@ class TestGroupConfiguration {
             new InMemoryGroupRoleRepository(),
             invitationRepository,
             new InMemoryStorageFacade(),
-            userFacade);
+            userFacade,
+            new InMemoryBillRepository(),
+            new InMemoryMemberRepository());
   }
 }

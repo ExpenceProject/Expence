@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/invitations")
-public class InvitationController {
+class InvitationController {
     private final GroupFacade groupFacade;
 
     InvitationController(GroupFacade groupFacade) {

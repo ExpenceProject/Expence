@@ -5,9 +5,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import ug.edu.pl.server.Log;
-import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
-import ug.edu.pl.server.domain.group.dto.GroupDto;
-import ug.edu.pl.server.domain.group.dto.InvitationDto;
+import ug.edu.pl.server.domain.group.dto.*;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
 import java.util.Collection;
@@ -17,11 +15,13 @@ import java.util.Collection;
 public class GroupFacade {
   public static final String CACHE_NAME = "groups";
   private final GroupService groupService;
+  private final BillService billService;
   private final InvitationService invitationService;
 
-  GroupFacade(GroupService groupService, InvitationService invitationService) {
+  GroupFacade(GroupService groupService, InvitationService invitationService, BillService billService) {
     this.groupService = groupService;
     this.invitationService = invitationService;
+    this.billService = billService;
   }
 
   @Transactional(readOnly = true)
@@ -33,6 +33,17 @@ public class GroupFacade {
   @Transactional
   public GroupDto create(@Valid CreateGroupDto dto, UserDto currentUser) {
     return groupService.createGroup(dto, currentUser);
+  }
+
+  @Transactional(readOnly = true)
+  @Cacheable(value = CACHE_NAME, key = "#id")
+  public BillDto getBillById(Long id) {
+    return billService.getById(id);
+  }
+
+  @Transactional
+  public BillDto createBill(@Valid CreateBillDto dto) {
+    return billService.create(dto);
   }
 
   @Transactional
