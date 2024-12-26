@@ -18,7 +18,8 @@ class GroupConfiguration {
     GroupService groupService =
         new GroupService(
             groupRepository, groupRoleRepository, storageFacade, new GroupCreator(), userFacade);
-    InvitationService invitationService = new InvitationService(invitationRepository);
+    InvitationService invitationService = new InvitationService(invitationRepository, groupRepository,
+        groupRoleRepository, memberRepository);
     BillService billService = new BillService(billRepository, groupRepository, memberRepository);
     return new GroupFacade(groupService, invitationService, billService);
   }

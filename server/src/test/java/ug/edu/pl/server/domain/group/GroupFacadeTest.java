@@ -2,6 +2,7 @@ package ug.edu.pl.server.domain.group;
 
 import org.junit.jupiter.api.Test;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
+import ug.edu.pl.server.domain.group.dto.CreateInvitationsDto;
 import ug.edu.pl.server.domain.user.SampleUsers;
 import ug.edu.pl.server.domain.user.TestUserConfiguration;
 import ug.edu.pl.server.domain.user.UserFacade;
@@ -87,27 +88,72 @@ class GroupFacadeTest {
   }
 
   @Test
-  void shouldCreateInvitation() {
+  void shouldCreateInvitationWhenGroupIsCreated() {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
     var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
-    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id());
     // then
+    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
     assertThat(invitations).hasSize(1);
   }
 
   @Test
-  void shouldCreateInvitations() {
+  void shouldCreateInvitationsWhenGroupIsCreated() {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
     UserDto anotherInvitee = userFacade.create(SampleUsers.VALID_USER_3);
     var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id(), anotherInvitee.id()));
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
-    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id());
     // then
+    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
     assertThat(invitations).hasSize(2);
+  }
+
+  @Test
+  void shouldCreateInvitationsToExistingGroup() {
+    // given
+    Set<Long> inviteeIds = Set.of(userFacade.create(
+            SampleUsers.ANOTHER_VALID_USER).id(),
+            userFacade.create(SampleUsers.VALID_USER_3).id()
+    );
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of());
+    // when
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    // then
+    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
+    assertThat(invitations).hasSize(0);
+    // when
+    groupFacade.createInvitations(new CreateInvitationsDto(inviteeIds, currentUser.id(), groupDto.id()));
+    // then
+    invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
+    assertThat(invitations).hasSize(2);
+  }
+
+  @Test
+  void shouldAddUserWhenAcceptingInvitation() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    // when
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    // then
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+    assertThat(invitation).isPresent();
+    assertThat(invitation.get().status()).isEqualTo(InvitationStatus.SENT.name());
+
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id());
+    assertThat(members).hasSize(1);
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+    // then
+    invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.ACCEPTED).stream().findFirst();
+    assertThat(invitation).isPresent();
+    assertThat(invitation.get().status()).isEqualTo(InvitationStatus.ACCEPTED.name());
+    // and
+    members = groupFacade.findAllMembersByGroupId(groupDto.id());
+    assertThat(members).hasSize(2);
   }
 }
