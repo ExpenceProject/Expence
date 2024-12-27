@@ -5,11 +5,14 @@ import ug.edu.pl.server.domain.common.persistance.Image;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
 import ug.edu.pl.server.domain.group.dto.GroupDto;
+import ug.edu.pl.server.domain.group.dto.MemberDto;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class GroupService {
   private final GroupRoleRepository groupRoleRepository;
@@ -40,6 +43,14 @@ class GroupService {
     assignOwnerToGroup(group, currentUser);
     addInvitationsToGroup(dto, group, currentUser);
     return groupRepository.saveOrThrow(group).dto();
+  }
+
+  public Collection<GroupDto> findAllGroupsByUserId(Long userId) {
+    return groupRepository.findAllGroupsByUserId(userId).stream().map(Group::dto).collect(Collectors.toList());
+  }
+
+  public Collection<MemberDto> findAllMembersByGroupId(Long groupId) {
+    return groupRepository.findByIdOrThrow(groupId).getMembers().stream().map(Member::dto).collect(Collectors.toList());
   }
 
   private Group createGroupEntity(CreateGroupDto dto) {

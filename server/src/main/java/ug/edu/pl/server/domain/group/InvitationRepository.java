@@ -11,17 +11,30 @@ import java.util.Collection;
 import java.util.Optional;
 
 interface InvitationRepository extends Repository<Invitation, Long> {
+    Invitation save(Invitation invitation);
+
     Optional<Invitation> findById(Long id);
 
     Optional<Invitation> findByGroupIdAndInviteeId(@Param("groupId") Long groupId, @Param("inviteeId") Long inviteeId);
 
-    Collection<Invitation> findInvitationsByInviteeId(@Param("inviteeId") Long inviteeId);
+    @Query("SELECT i FROM Invitation i WHERE i.inviteeId = :inviteeId AND (:status IS NULL OR i.status = :status)")
+    Collection<Invitation> findInvitationsByInviteeIdFilterByStatus(@Param("inviteeId") Long inviteeId, @Param("status") InvitationStatus status);
 
-    Collection<Invitation> findInvitationsByGroupId(@Param("groupId") Long groupId);
+
+    @Query("SELECT i FROM Invitation i WHERE i.group.id = :groupId AND (:status IS NULL OR i.status = :status)")
+    Collection<Invitation> findInvitationsByGroupIdFilterByStatus(@Param("groupId") Long groupId, @Param("status") InvitationStatus status);
 
     @Modifying
     @Query("UPDATE Invitation i SET i.status = :status WHERE i.id = :id")
     int updateStatusById(@Param("id") Long id, @Param("status") InvitationStatus status);
+
+    default Invitation saveOrThrow(Invitation invitation) {
+        try {
+            return save(invitation);
+        } catch (Exception ex) {
+            throw new SavingException(ex.getMessage());
+        }
+    }
 
     default Invitation findByIdOrThrow(Long id) {
         return findById(id).orElseThrow(() -> new NotFoundException(Invitation.class.getName(), id));

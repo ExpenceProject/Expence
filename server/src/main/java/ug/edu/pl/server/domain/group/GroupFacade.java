@@ -9,6 +9,7 @@ import ug.edu.pl.server.domain.group.dto.*;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
 import java.util.Collection;
+import java.util.List;
 
 @Log
 @Validated
@@ -35,6 +36,16 @@ public class GroupFacade {
     return groupService.createGroup(dto, currentUser);
   }
 
+  @Transactional
+  public Collection<GroupDto> findAllGroupsByUserId(Long userId) {
+    return groupService.findAllGroupsByUserId(userId);
+  }
+
+  @Transactional
+  public Collection<MemberDto> findAllMembersByGroupId(Long groupId) {
+    return groupService.findAllMembersByGroupId(groupId);
+  }
+
   @Transactional(readOnly = true)
   @Cacheable(value = CACHE_NAME, key = "#id")
   public BillDto getBillById(Long id) {
@@ -44,6 +55,11 @@ public class GroupFacade {
   @Transactional
   public BillDto createBill(@Valid CreateBillDto dto) {
     return billService.create(dto);
+  }
+
+  @Transactional
+  public List<InvitationDto> createInvitations(@Valid CreateInvitationsDto dto) {
+    return invitationService.create(dto);
   }
 
   @Transactional
@@ -57,17 +73,17 @@ public class GroupFacade {
   }
 
   @Transactional
-  public Collection<InvitationDto> getInvitationsByGroupId(Long groupId) {
-    return invitationService.getByGroupId(groupId);
+  public Collection<InvitationDto> getInvitationsByGroupId(Long groupId, InvitationStatus status) {
+    return invitationService.getByGroupId(groupId, status);
   }
 
   @Transactional
-  public Collection<InvitationDto> getInvitationsByInviteeId(Long inviteeId) {
-    return invitationService.getByInviteeId(inviteeId);
+  public Collection<InvitationDto> getInvitationsByInviteeId(Long inviteeId, InvitationStatus status) {
+    return invitationService.getByInviteeId(inviteeId, status);
   }
 
   @Transactional
-  public void updateInvitationStatus(Long id, InvitationStatus invitationStatus) {
-    invitationService.updateInvitationStatus(id, invitationStatus);
+  public void updateInvitationStatus(Long id, InvitationStatus invitationStatus, UserDto currentUser) {
+    invitationService.updateInvitationStatus(id, invitationStatus, currentUser);
   }
 }
