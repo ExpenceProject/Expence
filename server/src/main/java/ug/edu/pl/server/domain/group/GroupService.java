@@ -6,6 +6,7 @@ import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
 import ug.edu.pl.server.domain.group.dto.GroupDto;
 import ug.edu.pl.server.domain.group.dto.MemberDto;
+import ug.edu.pl.server.domain.group.dto.UpdateGroupDto;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 class GroupService {
   private final GroupRoleRepository groupRoleRepository;
   private final GroupRepository groupRepository;
+  private final MemberRepository memberRepository;
   private final StorageFacade storageFacade;
   private final GroupCreator groupCreator;
   private final UserFacade userFacade;
@@ -24,11 +26,13 @@ class GroupService {
   GroupService(
       GroupRepository groupRepository,
       GroupRoleRepository groupRoleRepository,
+      MemberRepository memberRepository,
       StorageFacade storageFacade,
       GroupCreator groupCreator,
       UserFacade userFacade) {
     this.groupRepository = groupRepository;
     this.groupRoleRepository = groupRoleRepository;
+    this.memberRepository = memberRepository;
     this.storageFacade = storageFacade;
     this.groupCreator = groupCreator;
     this.userFacade = userFacade;
@@ -43,6 +47,44 @@ class GroupService {
     assignOwnerToGroup(group, currentUser);
     addInvitationsToGroup(dto, group, currentUser);
     return groupRepository.saveOrThrow(group).dto();
+  }
+
+  GroupDto updateGroup(Long id, UpdateGroupDto dto) {
+    var group = groupRepository.findByIdOrThrow(id);
+    group.setName(dto.name());
+    if (dto.file() != null && !dto.file().isEmpty()) {
+      var imageKey = storageFacade.upload(dto.file());
+      group.setImage(new Image(imageKey));
+    }
+    return groupRepository.saveOrThrow(group).dto();
+  }
+
+  void deleteGroup(Long id) {
+    groupRepository.deleteById(id);
+  }
+
+  void deleteMember(Long groupId, Long memberId) {
+    var group = groupRepository.findByIdOrThrow(groupId);
+    var member = group.getMembers().stream()
+        .filter(m -> m.getId().equals(memberId))
+        .findFirst()
+        .orElseThrow(() -> new NotFoundException(Member.class.getName(), memberId));
+    group.getMembers().remove(member);
+    groupRepository.saveOrThrow(group);
+  }
+
+  MemberDto updateMemberRole(Long groupId, Long memberId, String roleName) {
+    var member = memberRepository.findByIdAndGroupIdOrThrow(memberId, groupId);
+    var role = groupRoleRepository.findByNameOrThrow(GroupRoleName.valueOf(roleName));
+
+    member.setGroupRole(role);
+    return memberRepository.saveOrThrow(member).dto();
+  }
+
+  MemberDto updateMemberNickname(Long groupId, Long memberId, String nickname) {
+    var member = memberRepository.findByIdAndGroupIdOrThrow(memberId, groupId);
+    member.setNickname(nickname);
+    return memberRepository.saveOrThrow(member).dto();
   }
 
   public Collection<GroupDto> findAllGroupsByUserId(Long userId) {

@@ -36,6 +36,11 @@ class InMemoryGroupRepository implements GroupRepository, InMemoryRepository<Gro
               .filter(group -> group.getMembers().stream().anyMatch(member -> member.getUserId().equals(userId)))
               .toList();
   }
+
+  @Override
+  public void deleteById(Long id) {
+    groupIdMap.remove(id);
+  }
 }
 
 class InMemoryGroupRoleRepository implements GroupRoleRepository, InMemoryRepository<GroupRole> {
