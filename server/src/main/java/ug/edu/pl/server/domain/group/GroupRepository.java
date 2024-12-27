@@ -19,6 +19,8 @@ interface GroupRepository extends Repository<Group, Long> {
   @Query("SELECT g FROM Group g JOIN g.members m WHERE m.userId = :userId")
   Collection<Group> findAllGroupsByUserId(Long userId);
 
+  void deleteById(Long id);
+
   default Group findByIdOrThrow(Long id) {
     return findById(id).orElseThrow(() -> new NotFoundException(Group.class.getName(), id));
   }

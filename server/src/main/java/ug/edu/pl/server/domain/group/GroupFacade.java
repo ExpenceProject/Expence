@@ -37,6 +37,31 @@ public class GroupFacade {
   }
 
   @Transactional
+  public GroupDto updateGroup(Long id, UpdateGroupDto dto) {
+    return groupService.updateGroup(id, dto);
+  }
+
+  @Transactional
+  public void deleteGroup(Long id) {
+    groupService.deleteGroup(id);
+  }
+
+  @Transactional
+  public void deleteMember(Long groupId, Long memberId) {
+    groupService.deleteMember(groupId, memberId);
+  }
+
+  @Transactional
+  public MemberDto updateMemberRole(Long groupId, Long memberId, String role) {
+    return groupService.updateMemberRole(groupId, memberId, role);
+  }
+
+  @Transactional
+  public MemberDto updateMemberNickname(Long groupId, Long memberId, String nickname) {
+    return groupService.updateMemberNickname(groupId, memberId, nickname);
+  }
+
+  @Transactional
   public Collection<GroupDto> findAllGroupsByUserId(Long userId) {
     return groupService.findAllGroupsByUserId(userId);
   }
@@ -84,6 +109,6 @@ public class GroupFacade {
 
   @Transactional
   public void updateInvitationStatus(Long id, InvitationStatus invitationStatus, UserDto currentUser) {
-    invitationService.updateInvitationStatus(id, invitationStatus, currentUser);
+      invitationService.updateInvitationStatus(id, invitationStatus, currentUser);
   }
 }
