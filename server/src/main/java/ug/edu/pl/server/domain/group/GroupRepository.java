@@ -70,7 +70,7 @@ interface MemberRepository extends Repository<Member, Long> {
     Set<Member> members = new HashSet<>(findAllByIdAndGroupId(memberIds, groupId));
 
     if (members.size() != memberIds.size()) {
-      throw new NotFoundException(Member.class.getName(), groupId);
+      throw new NotFoundException(Member.class.getName());
     }
 
     return members;

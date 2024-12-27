@@ -2,12 +2,17 @@ package ug.edu.pl.server.domain.group;
 
 import org.junit.jupiter.api.Test;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
+import ug.edu.pl.server.domain.group.dto.CreateBillDto;
+import ug.edu.pl.server.domain.group.dto.CreateExpenseDto;
 import ug.edu.pl.server.domain.group.dto.CreateInvitationsDto;
+import ug.edu.pl.server.domain.group.dto.MemberDto;
 import ug.edu.pl.server.domain.user.SampleUsers;
 import ug.edu.pl.server.domain.user.TestUserConfiguration;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,6 +22,7 @@ class GroupFacadeTest {
   UserFacade userFacade = new TestUserConfiguration().userFacadeForGroup();
   GroupFacade groupFacade = new TestGroupConfiguration().groupFacade(userFacade);
   UserDto currentUser = userFacade.create(SampleUsers.VALID_USER);
+
 
   @Test
   void shouldReturnGroupById() {
@@ -156,4 +162,80 @@ class GroupFacadeTest {
     members = groupFacade.findAllMembersByGroupId(groupDto.id());
     assertThat(members).hasSize(2);
   }
+
+  @Test
+  void shouldReturnBillById() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    //when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    //then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    //given
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    var bill = groupFacade.createBill(createBillDto);
+
+    //when
+    var billDto = groupFacade.getBillById(bill.id());
+
+    //then
+    assertThat(billDto).isEqualTo(bill);
+  }
+
+  @Test
+  void shouldCreateBill() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    //when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    //then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    //when
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    var bill = groupFacade.createBill(createBillDto);
+
+    //then
+    assertThat(bill.id()).isNotNull();
+    assertThat(bill.name()).isEqualTo(createBillDto.name());
+    assertThat(bill.totalAmount()).isEqualTo(createBillDto.totalAmount());
+    assertThat(bill.groupId()).isEqualTo(createBillDto.groupId());
+    assertThat(bill.expenses()).hasSize(2);
+  }
+
 }

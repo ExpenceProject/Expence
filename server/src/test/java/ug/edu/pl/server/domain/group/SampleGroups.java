@@ -1,8 +1,10 @@
 package ug.edu.pl.server.domain.group;
 
 import ug.edu.pl.server.domain.common.storage.SampleImages;
+import ug.edu.pl.server.domain.group.dto.CreateBillDto;
 import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 public final class SampleGroups {

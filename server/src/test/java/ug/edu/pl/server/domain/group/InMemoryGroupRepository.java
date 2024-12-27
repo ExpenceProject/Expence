@@ -2,12 +2,12 @@ package ug.edu.pl.server.domain.group;
 
 import ug.edu.pl.server.base.InMemoryRepository;
 
-import java.util.HashSet;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 class InMemoryGroupRepository implements GroupRepository, InMemoryRepository<Group> {
   static final Map<Long, Group> groupIdMap = new ConcurrentHashMap<>();
@@ -16,8 +16,10 @@ class InMemoryGroupRepository implements GroupRepository, InMemoryRepository<Gro
   public Group save(Group group) {
     updateTimestampsAndVersion(group);
     groupIdMap.put(group.getId(), group);
-    Optional<Member> owner = group.getMembers().stream().findFirst();
-    owner.ifPresent(InMemoryMemberRepository.memberSet::add);
+
+    for (Member member : group.getMembers()) {
+      InMemoryMemberRepository.memberMap.put(member.getId(), member);
+    }
 
     for (Invitation invitation : group.getInvitations()) {
       InMemoryInvitationRepository.invitationMap.put(invitation.getId(), invitation);
@@ -72,10 +74,6 @@ class InMemoryInvitationRepository implements InvitationRepository, InMemoryRepo
     var invitation = invitationMap.get(id);
     if (invitation == null) return 0;
     invitation.setStatus(status);
-    if (status == InvitationStatus.ACCEPTED) {
-      InMemoryMemberRepository.memberSet.add(new Member(invitation.getInviteeId(), "Nickname",
-              new GroupRole(), invitation.getGroup()));
-    }
     return 1;
   }
 
@@ -114,7 +112,13 @@ class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill>
 
   @Override
   public Bill save(Bill bill) {
-    return null;
+    updateTimestampsAndVersion(bill);
+    billIdMap.put(bill.getId(), bill);
+
+    for (Expense expense : bill.getExpenses()) {
+      InMemoryExpenseRepository.expenseMap.put(expense.getId(), expense);
+    }
+    return bill;
   }
 
   @Override
@@ -123,28 +127,45 @@ class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill>
   }
 }
 
+class InMemoryExpenseRepository implements ExpenseRepository, InMemoryRepository<Expense> {
+  static final Map<Long, Expense> expenseMap = new ConcurrentHashMap<>();
+
+  @Override
+  public Expense save(Expense expense) {
+    updateTimestampsAndVersion(expense);
+    expenseMap.put(expense.getId(), expense);
+    return expense;
+  }
+}
+
 
 class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<Member> {
-  static final Set<Member> memberSet = new HashSet<>();
+  static final Map<Long, Member> memberMap = new ConcurrentHashMap<>();
 
   @Override
   public Member save(Member member) {
-    memberSet.add(member);
+    memberMap.put(member.getId(), member);
     return member;
   }
 
   @Override
   public Optional<Member> findByIdAndGroupId(Long memberId, Long groupId) {
-    return memberSet.stream().filter(m -> m.getId().equals(memberId) && m.getGroup().getId().equals(groupId)).findFirst();
+    Member member = memberMap.get(memberId);
+    if (member != null && member.getGroup().getId().equals(groupId)) {
+      return Optional.of(member);
+    }
+    return Optional.empty();
   }
 
   @Override
   public Set<Member> findAllByIdAndGroupId(Set<Long> ids, Long groupId) {
-    return Set.of();
+    return memberMap.values().stream()
+            .filter(m -> ids.contains(m.getId()) && m.getGroup().getId().equals(groupId))  // Filtrujemy po ID i grupie
+            .collect(Collectors.toSet());
   }
 
   @Override
   public Optional<Member> findByUserIdAndGroupId(Long userId, Long groupId) {
-    return memberSet.stream().filter(m -> m.getUserId().equals(userId) && m.getGroup().getId().equals(groupId)).findFirst();
+    return memberMap.values().stream().filter(m -> m.getUserId().equals(userId) && m.getGroup().getId().equals(groupId)).findFirst();
   }
 }
