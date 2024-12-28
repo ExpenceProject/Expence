@@ -2,10 +2,8 @@ package ug.edu.pl.server.domain.group;
 
 import org.junit.jupiter.api.Test;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
-import ug.edu.pl.server.domain.group.dto.CreateBillDto;
-import ug.edu.pl.server.domain.group.dto.CreateExpenseDto;
-import ug.edu.pl.server.domain.group.dto.CreateInvitationsDto;
-import ug.edu.pl.server.domain.group.dto.MemberDto;
+import ug.edu.pl.server.domain.common.exception.SavingException;
+import ug.edu.pl.server.domain.group.dto.*;
 import ug.edu.pl.server.domain.user.SampleUsers;
 import ug.edu.pl.server.domain.user.TestUserConfiguration;
 import ug.edu.pl.server.domain.user.UserFacade;
@@ -201,6 +199,13 @@ class GroupFacadeTest {
   }
 
   @Test
+  void shouldThrowExceptionWhenAskedForBillWithIdThatDoesNotExist() {
+    // when & then
+    assertThatThrownBy(() -> groupFacade.getBillById(1L))
+            .isInstanceOf(NotFoundException.class);
+  }
+
+  @Test
   void shouldCreateBill() {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
@@ -236,6 +241,37 @@ class GroupFacadeTest {
     assertThat(bill.totalAmount()).isEqualTo(createBillDto.totalAmount());
     assertThat(bill.groupId()).isEqualTo(createBillDto.groupId());
     assertThat(bill.expenses()).hasSize(2);
+  }
+
+  @Test
+  void shouldThrowExceptionWhenCreatingBillWithDifferentTotalAmountAndSumOfAmounts() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    //when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    //then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    //when
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+
+    //then
+    assertThatThrownBy(() -> groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(170), members.get(0).id(), groupDto.id())))
+            .isInstanceOf(SavingException.class);
+
   }
 
 }
