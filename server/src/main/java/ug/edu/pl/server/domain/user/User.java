@@ -54,7 +54,7 @@ class User extends BaseEntity {
         var imageDto = new ImageDto(image == null ? null : image.key());
 
         return UserDto.builder()
-                .id(getId())
+                .id(getId().toString())
                 .email(email)
                 .password(password)
                 .firstName(firstName)

@@ -1,6 +1,7 @@
 package ug.edu.pl.server.domain.user;
 
 import ug.edu.pl.server.domain.user.dto.CreateUserDto;
+import ug.edu.pl.server.domain.user.dto.UpdateUserDto;
 
 public final class SampleUsers {
 
@@ -29,5 +30,11 @@ public final class SampleUsers {
             .firstName("Timothee")
             .lastName("Chalamet")
             .phoneNumber("123-456-0000")
+            .build();
+
+    public static final UpdateUserDto VALID_UPDATE_USER = UpdateUserDto.builder()
+            .firstName("Piotr")
+            .lastName("Doe")
+            .phoneNumber("123-321-132")
             .build();
 }

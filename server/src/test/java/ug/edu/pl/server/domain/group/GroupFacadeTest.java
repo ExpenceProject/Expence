@@ -74,7 +74,7 @@ class GroupFacadeTest {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
 
-    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
 
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
@@ -91,7 +91,7 @@ class GroupFacadeTest {
   void shouldCreateInvitationWhenGroupIsCreated() {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
-    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
     // then
@@ -104,7 +104,7 @@ class GroupFacadeTest {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
     UserDto anotherInvitee = userFacade.create(SampleUsers.VALID_USER_3);
-    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id(), anotherInvitee.id()));
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id()), Long.valueOf(anotherInvitee.id())));
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
     // then
@@ -115,9 +115,9 @@ class GroupFacadeTest {
   @Test
   void shouldCreateInvitationsToExistingGroup() {
     // given
-    Set<Long> inviteeIds = Set.of(userFacade.create(
-            SampleUsers.ANOTHER_VALID_USER).id(),
-            userFacade.create(SampleUsers.VALID_USER_3).id()
+    Set<Long> inviteeIds = Set.of(
+            Long.valueOf(userFacade.create(SampleUsers.ANOTHER_VALID_USER).id()),
+            Long.valueOf(userFacade.create(SampleUsers.VALID_USER_3).id())
     );
     var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of());
     // when
@@ -126,7 +126,7 @@ class GroupFacadeTest {
     var invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
     assertThat(invitations).hasSize(0);
     // when
-    groupFacade.createInvitations(new CreateInvitationsDto(inviteeIds, currentUser.id(), groupDto.id()));
+    groupFacade.createInvitations(new CreateInvitationsDto(inviteeIds, Long.valueOf(currentUser.id()), groupDto.id()));
     // then
     invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
     assertThat(invitations).hasSize(2);
@@ -136,7 +136,7 @@ class GroupFacadeTest {
   void shouldAddUserWhenAcceptingInvitation() {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
-    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
     // then
