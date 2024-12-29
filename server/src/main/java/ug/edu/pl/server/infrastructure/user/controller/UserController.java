@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ug.edu.pl.server.domain.user.UserFacade;
+import ug.edu.pl.server.domain.user.dto.UpdateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
 @RestController
@@ -22,15 +23,24 @@ class UserController {
         return ResponseEntity.ok(userFacade.getById(id));
     }
 
-    @PreAuthorize("@currentUserContext.getSignedInUser().id() == #id")
+    @PreAuthorize("@currentUserContext.getSignedInUser().id() == #id.toString()")
     @PostMapping("/image/{id}")
-    ResponseEntity<UserDto> uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile file) {
-        return ResponseEntity.ok(userFacade.uploadImage(id, file));
+    ResponseEntity<Void> uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile file) {
+        userFacade.uploadImage(id, file);
+        return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("@currentUserContext.getSignedInUser().id() == #id")
+    @PreAuthorize("@currentUserContext.getSignedInUser().id() == #id.toString()")
     @DeleteMapping("/image/{id}")
-    ResponseEntity<UserDto> deleteImage(@PathVariable Long id) {
-        return ResponseEntity.ok(userFacade.deleteImage(id));
+    ResponseEntity<Void> deleteImage(@PathVariable Long id) {
+        userFacade.deleteImage(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("@currentUserContext.getSignedInUser().id() == #id.toString()")
+    @PutMapping("/{id}")
+    ResponseEntity<Void> updateEmail(@PathVariable Long id, @RequestBody UpdateUserDto dto) {
+        userFacade.update(id, dto);
+        return ResponseEntity.ok().build();
     }
 }
