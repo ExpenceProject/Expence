@@ -12,6 +12,7 @@ import ug.edu.pl.server.domain.common.persistance.Image;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.common.validation.image.ValidImage;
 import ug.edu.pl.server.domain.user.dto.CreateUserDto;
+import ug.edu.pl.server.domain.user.dto.UpdateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
 import java.util.Set;
@@ -62,7 +63,7 @@ public class UserFacade {
     }
 
     @Transactional
-    public UserDto uploadImage(Long id, @ValidImage MultipartFile file) {
+    public void uploadImage(Long id, @ValidImage MultipartFile file) {
         var user = userRepository.findByIdOrThrow(id);
 
         if (user.getImage() != null && user.getImage().key() != null) {
@@ -71,14 +72,11 @@ public class UserFacade {
 
         var imageKey = storageFacade.upload(file);
         user.setImage(new Image(imageKey));
-        var userDto = user.dto();
-        updateCache(userDto);
-
-        return userDto;
+        evictCache(user);
     }
 
     @Transactional
-    public UserDto deleteImage(Long id) {
+    public void deleteImage(Long id) {
         var user = userRepository.findByIdOrThrow(id);
 
         if (user.getImage() != null && user.getImage().key() != null) {
@@ -86,17 +84,23 @@ public class UserFacade {
         }
 
         user.setImage(new Image(null));
-        var userDto = user.dto();
-        updateCache(userDto);
-
-        return userDto;
+        evictCache(user);
     }
 
-    private void updateCache(UserDto dto) {
+    @Transactional
+    public void update(Long id, @Valid UpdateUserDto dto) {
+        var user = userRepository.findByIdOrThrow(id);
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
+        user.setPhoneNumber(dto.phoneNumber());
+        evictCache(user);
+    }
+
+    private void evictCache(User user) {
         var cache = cacheManager.getCache(CACHE_NAME);
         if (cache != null) {
-            cache.put(dto.id(), dto);
-            cache.put(dto.email(), dto);
+            cache.evict(user.getId());
+            cache.evict(user.getEmail());
         }
     }
 }

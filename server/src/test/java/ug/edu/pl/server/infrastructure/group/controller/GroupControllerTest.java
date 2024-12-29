@@ -150,7 +150,7 @@ class GroupControllerTest extends IntegrationTest {
                 SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
     var result =
         create(
-            SampleGroups.validGroupWithFileAndInvitees(Set.of(userCreated.id())),
+            SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(userCreated.id()))),
             authenticatedUser);
 
     // then

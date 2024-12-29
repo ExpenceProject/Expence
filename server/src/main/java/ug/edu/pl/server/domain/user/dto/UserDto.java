@@ -8,6 +8,6 @@ import java.time.Instant;
 import java.util.Set;
 
 @Builder
-public record UserDto(Long id, String email, @JsonIgnore String password, String firstName, String lastName, String phoneNumber,
+public record UserDto(String id, String email, @JsonIgnore String password, String firstName, String lastName, String phoneNumber,
                       ImageDto image, Set<RoleDto> roles, Long version, Instant createdAt, Instant updatedAt) {
 }

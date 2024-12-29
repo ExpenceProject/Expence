@@ -10,6 +10,8 @@ import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.storage.SampleImages;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -43,7 +45,7 @@ class UserFacadeTest {
         var user = userFacade.create(SampleUsers.VALID_USER);
 
         // when
-        var userDto = userFacade.getById(user.id());
+        var userDto = userFacade.getById(Long.valueOf(user.id()));
 
         // then
         assertThat(userDto).isEqualTo(user);
@@ -70,39 +72,56 @@ class UserFacadeTest {
         var user = userFacade.create(SampleUsers.VALID_USER);
 
         // when
-        var updatedUser = userFacade.uploadImage(user.id(), SampleImages.IMAGE_JPG);
+        userFacade.uploadImage(Long.valueOf(user.id()), SampleImages.IMAGE_JPG);
 
         // then
+        var updatedUser = userFacade.getById(Long.valueOf(user.id()));
         assertThat(updatedUser.image()).isNotNull();
         assertThat(updatedUser.image().key()).isNotNull();
-        assertThat(getUserDtoFromCache(updatedUser.id())).isEqualTo(updatedUser);
-        assertThat(getUserDtoFromCache(updatedUser.email())).isEqualTo(updatedUser);
+        assertThat(getUserDtoFromCache(Long.valueOf(updatedUser.id()))).isEmpty();
+        assertThat(getUserDtoFromCache(updatedUser.email())).isEmpty();
     }
 
     @Test
-    void shouldDeleteImageAndUpdateCache() {
+    void shouldDeleteImageAndEvictCache() {
         // given
         var user = userFacade.create(SampleUsers.VALID_USER);
-        userFacade.uploadImage(user.id(), SampleImages.IMAGE_JPG);
+        userFacade.uploadImage(Long.valueOf(user.id()), SampleImages.IMAGE_JPG);
 
         // when
-        var updatedUser = userFacade.deleteImage(user.id());
+        userFacade.deleteImage(Long.valueOf(user.id()));
 
         // then
+        var updatedUser = userFacade.getById(Long.valueOf(user.id()));
         assertThat(updatedUser.image().key()).isNull();
-        assertThat(getUserDtoFromCache(updatedUser.id())).isEqualTo(updatedUser);
-        assertThat(getUserDtoFromCache(updatedUser.email())).isEqualTo(updatedUser);
+        assertThat(getUserDtoFromCache(Long.valueOf(updatedUser.id()))).isEmpty();
+        assertThat(getUserDtoFromCache(updatedUser.email())).isEmpty();
     }
 
-    private UserDto getUserDtoFromCache(Long id) {
-        var cachedUser = cache.get(id);
-        assert cachedUser != null;
-        return (UserDto) cachedUser.get();
+    @Test
+    void shouldUpdateUserAndEvictCache() {
+        // given
+        var user = userFacade.create(SampleUsers.VALID_USER);
+
+        // when
+        userFacade.update(Long.valueOf(user.id()), SampleUsers.VALID_UPDATE_USER);
+
+        // then
+        var updatedUser = userFacade.getById(Long.valueOf(user.id()));
+        assertThat(updatedUser.firstName()).isEqualTo(SampleUsers.VALID_UPDATE_USER.firstName());
+        assertThat(updatedUser.lastName()).isEqualTo(SampleUsers.VALID_UPDATE_USER.lastName());
+        assertThat(updatedUser.phoneNumber()).isEqualTo(SampleUsers.VALID_UPDATE_USER.phoneNumber());
+        assertThat(getUserDtoFromCache(Long.valueOf(updatedUser.id()))).isEmpty();
+        assertThat(getUserDtoFromCache(updatedUser.email())).isEmpty();
     }
 
-    private UserDto getUserDtoFromCache(String email) {
-        var cachedUser = cache.get(email);
-        assert cachedUser != null;
-        return (UserDto) cachedUser.get();
+    private Optional<UserDto> getUserDtoFromCache(Long id) {
+        return Optional.ofNullable(cache.get(id))
+                .map(cachedUser -> (UserDto) cachedUser.get());
+    }
+
+    private Optional<UserDto> getUserDtoFromCache(String email) {
+        return Optional.ofNullable(cache.get(email))
+                .map(cachedUser -> (UserDto) cachedUser.get());
     }
 }

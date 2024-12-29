@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import ug.edu.pl.server.base.IntegrationTest;
 import ug.edu.pl.server.domain.common.storage.SampleImages;
+import ug.edu.pl.server.domain.user.SampleUsers;
+import ug.edu.pl.server.domain.user.dto.UpdateUserDto;
 import ug.edu.pl.server.infrastructure.security.auth.AuthFacade;
 import ug.edu.pl.server.infrastructure.security.auth.SampleRegisterUsers;
 import ug.edu.pl.server.infrastructure.security.auth.dto.AuthDto;
@@ -34,7 +36,7 @@ class UserControllerTest extends IntegrationTest {
         var registeredUser = authFacade.register(SampleRegisterUsers.VALID_USER);
 
         // when
-        var result = getById(registeredUser.id());
+        var result = getById(Long.valueOf(registeredUser.id()));
 
         // then
         result.andExpect(status().isOk())
@@ -52,7 +54,7 @@ class UserControllerTest extends IntegrationTest {
         var registeredUser = authFacade.register(SampleRegisterUsers.VALID_USER);
 
         // when
-        var result = getById(registeredUser.id());
+        var result = getById(Long.valueOf(registeredUser.id()));
 
         // then
         result.andExpect(status().isUnauthorized());
@@ -77,13 +79,13 @@ class UserControllerTest extends IntegrationTest {
         var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
 
         // when
-        var result = uploadImageWithToken(registeredUser.id(), authenticatedUser, (MockMultipartFile) SampleImages.IMAGE_JPG);
+        var result = uploadImageWithToken(Long.valueOf(registeredUser.id()), authenticatedUser, (MockMultipartFile) SampleImages.IMAGE_JPG);
 
         // then
         result.andExpect(status().isOk());
 
         // when
-        var deleteResult = deleteImageWithToken(registeredUser.id(), authenticatedUser);
+        var deleteResult = deleteImageWithToken(Long.valueOf(registeredUser.id()), authenticatedUser);
 
         // then
         deleteResult.andExpect(status().isOk());
@@ -98,7 +100,7 @@ class UserControllerTest extends IntegrationTest {
         var registeredUser2 = authFacade.register(SampleRegisterUsers.VALID_USER_2);
 
         // when
-        var result = uploadImageWithToken(registeredUser2.id(), authenticatedUser, (MockMultipartFile) SampleImages.IMAGE_JPG);
+        var result = uploadImageWithToken(Long.valueOf(registeredUser2.id()), authenticatedUser, (MockMultipartFile) SampleImages.IMAGE_JPG);
 
         // then
         result.andExpect(status().isForbidden());
@@ -125,7 +127,7 @@ class UserControllerTest extends IntegrationTest {
         var registeredUser2 = authFacade.register(SampleRegisterUsers.VALID_USER_2);
 
         // when
-        var result = deleteImageWithToken(registeredUser2.id(), authenticatedUser);
+        var result = deleteImageWithToken(Long.valueOf(registeredUser2.id()), authenticatedUser);
 
         // then
         result.andExpect(status().isForbidden());
@@ -149,10 +151,63 @@ class UserControllerTest extends IntegrationTest {
         var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
 
         // when
-        var result = uploadImageWithToken(registeredUser.id(), authenticatedUser, (MockMultipartFile) SampleImages.IMAGE_GIF);
+        var result = uploadImageWithToken(Long.valueOf(registeredUser.id()), authenticatedUser, (MockMultipartFile) SampleImages.IMAGE_GIF);
 
         // then
         result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    void shouldUpdate() throws Exception {
+        // given
+        var registeredUser = authFacade.register(SampleRegisterUsers.VALID_USER);
+        var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
+
+        // when
+        var result = updateWithToken(Long.valueOf(registeredUser.id()), authenticatedUser, SampleUsers.VALID_UPDATE_USER);
+
+        // then
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnBadRequestWhenUpdatingWithInvalidData() throws Exception {
+        // given
+        var registeredUser = authFacade.register(SampleRegisterUsers.VALID_USER);
+        var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
+
+        // when
+        var result = updateWithToken(Long.valueOf(registeredUser.id()), authenticatedUser, UpdateUserDto.builder().build());
+
+        // then
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnUnauthorizedWhenTryToUpdateWithoutAuthentication() throws Exception {
+        // when
+        var result = mockMvc.perform(put(URL + "/" + SampleRegisterUsers.ID_THAT_DOES_NOT_EXIST).contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnForbiddenWhenAuthenticatedUserTryToUpdateNotHisProfile() throws Exception {
+        // given
+        authFacade.register(SampleRegisterUsers.VALID_USER);
+        var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
+        var registeredUser2 = authFacade.register(SampleRegisterUsers.VALID_USER_2);
+
+        // when
+        var result = updateWithToken(Long.valueOf(registeredUser2.id()), authenticatedUser, SampleUsers.VALID_UPDATE_USER);
+
+        // then
+        result.andExpect(status().isForbidden());
     }
 
     private ResultActions getById(Long id) throws Exception {
@@ -170,5 +225,12 @@ class UserControllerTest extends IntegrationTest {
         return mockMvc.perform(delete(URL + "/image/" + id)
                 .header(HttpHeaders.AUTHORIZATION, authDto.tokenType() + " " + authDto.token())
                 .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private ResultActions updateWithToken(Long id, AuthDto authDto, UpdateUserDto dto) throws Exception {
+        return mockMvc.perform(put(URL + "/" + id)
+                .header(HttpHeaders.AUTHORIZATION, authDto.tokenType() + " " + authDto.token())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)));
     }
 }

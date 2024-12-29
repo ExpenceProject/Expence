@@ -64,7 +64,7 @@ class GroupService {
 
   private void assignOwnerToGroup(Group group, UserDto currentUser) {
     var member = new Member();
-    member.setUserId(currentUser.id());
+    member.setUserId(Long.valueOf(currentUser.id()));
     member.setNickname(currentUser.firstName());
     member.setGroupRole(groupRoleRepository.findByNameOrThrow(GroupRoleName.ROLE_OWNER));
     member.setGroup(group);
@@ -76,9 +76,9 @@ class GroupService {
 
     var inviter =
         group.getMembers().stream()
-            .filter(m -> m.getUserId().equals(currentUser.id()))
+            .filter(m -> m.getUserId().equals(Long.valueOf(currentUser.id())))
             .findFirst()
-            .orElseThrow(() -> new NotFoundException(Group.class.getName(), currentUser.id()));
+            .orElseThrow(() -> new NotFoundException(Group.class.getName(), Long.valueOf(currentUser.id())));
 
     Set<Invitation> invitations = new HashSet<>();
     for (Long id : dto.inviteesId()) {
