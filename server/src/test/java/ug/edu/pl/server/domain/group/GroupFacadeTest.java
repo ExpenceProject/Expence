@@ -131,6 +131,7 @@ class GroupFacadeTest {
     assertThat(invitations).hasSize(0);
     // when
     groupFacade.createInvitations(new CreateInvitationsDto(inviteeIds, Long.valueOf(currentUser.id()), Long.valueOf(groupDto.id())));
+
     // then
     invitations = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT);
     assertThat(invitations).hasSize(2);
