@@ -63,17 +63,17 @@ class BillControllerTest extends IntegrationTest {
     void setUp() {
         registeredUser = authFacade.register(SampleRegisterUsers.VALID_USER);
         anotherUser = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
-        group = groupFacade.create(SampleGroups.validGroupWithFileAndInvitees(Set.of(anotherUser.id())),
+        group = groupFacade.create(SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(anotherUser.id()))),
                 registeredUser);
-        invitation = groupFacade.getInvitationByGroupAndInviteeId(group.id(), anotherUser.id());
+        invitation = groupFacade.getInvitationByGroupAndInviteeId(Long.valueOf(group.id()), Long.valueOf(anotherUser.id()));
         groupFacade.updateInvitationStatus(invitation.id(), InvitationStatus.ACCEPTED, anotherUser);
-        members = groupFacade.findAllMembersByGroupId(group.id()).stream()
+        members = groupFacade.findAllMembersByGroupId(Long.valueOf(group.id())).stream()
                 .sorted(Comparator.comparing(MemberDto::id))
                 .toList();
         createExpenseDtos =
                 Set.of(
-                        new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
-                        new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+                        new CreateExpenseDto(Long.valueOf(members.get(1).id()), new BigDecimal(100)),
+                        new CreateExpenseDto(Long.valueOf(members.get(0).id()), new BigDecimal(50)));
 
     }
 
@@ -83,10 +83,10 @@ class BillControllerTest extends IntegrationTest {
     void shouldGetById() throws Exception {
         // given
         var createdBill =
-                groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()));
+                groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), Long.valueOf(members.get(0).id()), Long.valueOf(group.id())));
 
         //when
-        var result = getById(createdBill.id());
+        var result = getById(Long.valueOf(createdBill.id()));
 
         //then
         result
@@ -104,10 +104,10 @@ class BillControllerTest extends IntegrationTest {
     void shouldReturnUnauthorizedWhenGetByIdWithoutLogin() throws Exception {
         // given
         var createdBill =
-                groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()));
+                groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), Long.valueOf(members.get(0).id()), Long.valueOf(group.id())));
 
         // when
-        var result = getById(createdBill.id());
+        var result = getById(Long.valueOf(createdBill.id()));
 
         // then
         result.andExpect(status().isUnauthorized());
@@ -131,7 +131,7 @@ class BillControllerTest extends IntegrationTest {
         // when
         var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
         var result =
-                create(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()), authenticatedUser);
+                create(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), Long.valueOf(members.get(0).id()), Long.valueOf(group.id())), authenticatedUser);
 
         // then
         result
@@ -150,7 +150,7 @@ class BillControllerTest extends IntegrationTest {
         // when
         var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
         var result =
-                create(new CreateBillDto("", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()), authenticatedUser);
+                create(new CreateBillDto("", createExpenseDtos, new BigDecimal(150), Long.valueOf(members.get(0).id()), Long.valueOf(group.id())), authenticatedUser);
 
         // then
         result.andExpect(status().isBadRequest());
@@ -161,7 +161,7 @@ class BillControllerTest extends IntegrationTest {
     void shouldReturnUnauthorizedWhenCreatingBillWithoutLogin() throws Exception {
         // when
         var result =
-                create(new CreateBillDto("", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()), null);
+                create(new CreateBillDto("", createExpenseDtos, new BigDecimal(150), Long.valueOf(members.get(0).id()), Long.valueOf(group.id())), null);
 
         // then
         result.andExpect(status().isUnauthorized());

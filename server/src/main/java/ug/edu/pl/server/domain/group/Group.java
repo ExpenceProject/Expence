@@ -49,7 +49,7 @@ class Group extends BaseEntity {
     var imageDto = new ImageDto(image == null ? null : image.key());
 
     return GroupDto.builder()
-        .id(getId())
+        .id(getId().toString())
         .image(imageDto)
         .name(name)
         .settledDown(settledDown)

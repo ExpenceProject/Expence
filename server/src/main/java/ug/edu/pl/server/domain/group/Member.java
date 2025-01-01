@@ -35,7 +35,7 @@ class Member extends BaseEntity {
     var groupRoleDto = groupRole.dto();
 
     return MemberDto.builder()
-        .id(getId())
+        .id(getId().toString())
         .user(userId)
         .nickname(nickname)
         .groupRole(groupRoleDto)

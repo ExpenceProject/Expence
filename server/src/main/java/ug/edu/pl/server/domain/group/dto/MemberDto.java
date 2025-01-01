@@ -5,7 +5,7 @@ import java.time.Instant;
 
 @Builder
 public record MemberDto(
-    Long id,
+    String id,
     Long user,
     String nickname,
     GroupRoleDto groupRole,
