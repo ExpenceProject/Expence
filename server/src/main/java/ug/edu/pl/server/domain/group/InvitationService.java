@@ -28,7 +28,11 @@ class InvitationService {
 
     List<InvitationDto> create(CreateInvitationsDto invitationsDto) {
         Group group = groupRepository.findByIdOrThrow(invitationsDto.groupId());
+
         Member inviter = memberRepository.findByUserIdAndGroupIdOrThrow(invitationsDto.inviterId(), group.getId());
+        if (inviter.getGroupRole().getName() != GroupRoleName.ROLE_OWNER) {
+            throw new ForbiddenException("You are not allowed to invite to this group.");
+        }
 
         return invitationsDto.inviteeIds().stream().map(inviteeId -> {
             Invitation invitation = new Invitation();
@@ -58,14 +62,15 @@ class InvitationService {
     }
 
     void updateInvitationStatus(Long id, InvitationStatus invitationStatus, UserDto currentUser) {
+        var invitation = invitationRepository.findByIdOrThrow(id);
+        var group = invitation.getGroup();
+
+        if (invitationStatus != InvitationStatus.CANCELLED
+                && !Objects.equals(invitation.getInviteeId(), Long.valueOf(currentUser.id()))) {
+            throw new ForbiddenException("You are not allowed to update this invitation.");
+        }
+
         if (invitationStatus == InvitationStatus.ACCEPTED) {
-            var invitation = invitationRepository.findByIdOrThrow(id);
-            var group = invitation.getGroup();
-
-            if (!Objects.equals(invitation.getInviteeId(), Long.valueOf(currentUser.id()))) {
-                throw new ForbiddenException("You are not allowed to accept this invitation.");
-            }
-
             var member = new Member();
             member.setUserId(Long.valueOf(currentUser.id()));
             member.setNickname(currentUser.firstName());
