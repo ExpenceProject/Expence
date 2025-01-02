@@ -83,6 +83,41 @@ public class GroupFacade {
   }
 
   @Transactional
+  public PaymentDto createPayment(@Valid CreatePaymentDto dto) {
+    return billService.createPayment(dto);
+  }
+
+  @Transactional
+  public PaymentDto getPaymentById(Long id) {
+    return billService.getPaymentById(id);
+  }
+
+  @Transactional
+  public Collection<PaymentDto> getPaymentsBySenderIdAndGroupId(Long senderId, Long groupId) {
+    return billService.getPaymentsBySenderIdAndGroupId(senderId, groupId);
+  }
+
+  @Transactional
+  public Collection<PaymentDto> getPaymentsByReceiverIdAndGroupId(Long receiverId, Long groupId) {
+    return billService.getPaymentsByReceiverIdAndGroupId(receiverId, groupId);
+  }
+
+  @Transactional
+  public Collection<PaymentDto> getPaymentsByGroupId(Long groupId) {
+    return billService.getPaymentsByGroupId(groupId);
+  }
+
+  @Transactional
+  public Collection<PaymentDto> getPaymentsByGroupIdAndSenderIdAndReceiverId(Long groupId, Long senderId, Long receiverId) {
+    return billService.getPaymentsByGroupIdAndSenderIdAndReceiverId(groupId, senderId, receiverId);
+  }
+
+  @Transactional
+  public Void deletePayment(Long id) {
+    return billService.deletePayment(id);
+  }
+
+  @Transactional
   public List<InvitationDto> createInvitations(@Valid CreateInvitationsDto dto) {
     return invitationService.create(dto);
   }

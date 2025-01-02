@@ -143,6 +143,58 @@ class InMemoryExpenseRepository implements ExpenseRepository, InMemoryRepository
   }
 }
 
+class InMemoryPaymentRepository implements PaymentRepository, InMemoryRepository<Payment> {
+  static final Map<Long, Payment> paymentMap = new ConcurrentHashMap<>();
+
+  @Override
+  public Payment save(Payment payment) {
+    updateTimestampsAndVersion(payment);
+    paymentMap.put(payment.getId(), payment);
+    return payment;
+  }
+
+  @Override
+  public Optional<Payment> findById(Long id) {
+    return Optional.ofNullable(paymentMap.get(id));
+  }
+
+  @Override
+  public Collection<Payment> findAllBySenderIdAndGroupId(Long senderId, Long groupId) {
+    return paymentMap.values().stream()
+            .filter(payment -> payment.getSender().getId().equals(senderId) && payment.getGroup().getId().equals(groupId))
+            .collect(Collectors.toList());
+  }
+
+  @Override
+  public Collection<Payment> findAllByReceiverIdAndGroupId(Long receiverId, Long groupId) {
+    return paymentMap.values().stream()
+            .filter(payment -> payment.getReceiver().getId().equals(receiverId) && payment.getGroup().getId().equals(groupId))
+            .collect(Collectors.toList());
+  }
+
+  @Override
+  public Collection<Payment> findAllByGroupId(Long groupId) {
+    return paymentMap.values().stream()
+            .filter(payment -> payment.getGroup().getId().equals(groupId))
+            .collect(Collectors.toList());
+  }
+
+  @Override
+  public Collection<Payment> findAllByGroupIdAndSenderIdAndReceiverId(Long groupId, Long senderId, Long receiverId) {
+    return paymentMap.values().stream()
+            .filter(payment -> payment.getGroup().getId().equals(groupId) &&
+                    payment.getSender().getId().equals(senderId) &&
+                    payment.getReceiver().getId().equals(receiverId))
+            .collect(Collectors.toList());
+  }
+
+  @Override
+  public Void deleteById(Long id) {
+    paymentMap.remove(id);
+    return null;
+  }
+}
+
 
 class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<Member> {
   static final Map<Long, Member> memberMap = new ConcurrentHashMap<>();

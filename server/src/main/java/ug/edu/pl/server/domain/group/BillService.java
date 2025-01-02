@@ -1,9 +1,8 @@
 package ug.edu.pl.server.domain.group;
 
-import ug.edu.pl.server.domain.group.dto.BillDto;
-import ug.edu.pl.server.domain.group.dto.CreateBillDto;
-import ug.edu.pl.server.domain.group.dto.CreateExpenseDto;
+import ug.edu.pl.server.domain.group.dto.*;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -12,11 +11,14 @@ import java.util.stream.Collectors;
 
 class BillService {
     private final BillRepository billRepository;
+    private final PaymentRepository paymentRepository;
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
 
-    BillService(BillRepository billRepository, GroupRepository groupRepository, MemberRepository memberRepository) {
+    BillService(BillRepository billRepository, PaymentRepository paymentRepository,
+                GroupRepository groupRepository, MemberRepository memberRepository) {
         this.billRepository = billRepository;
+        this.paymentRepository = paymentRepository;
         this.groupRepository = groupRepository;
         this.memberRepository = memberRepository;
     }
@@ -64,5 +66,41 @@ class BillService {
             expenses.add(expense);
         }
         return expenses;
+    }
+    PaymentDto createPayment(CreatePaymentDto paymentDto) {
+        var receiver = memberRepository.findByIdAndGroupIdOrThrow(paymentDto.receiverId(), paymentDto.groupId());
+        var sender = memberRepository.findByIdAndGroupIdOrThrow(paymentDto.senderId(), paymentDto.groupId());
+        var group = groupRepository.findByIdOrThrow(paymentDto.groupId());
+        var payment = new Payment(receiver, sender, paymentDto.amount(), group);
+
+        return paymentRepository.saveOrThrow(payment).dto();
+    }
+
+    PaymentDto getPaymentById(Long id) {
+        return paymentRepository.findByIdOrThrow(id).dto();
+    }
+
+    Collection<PaymentDto> getPaymentsBySenderIdAndGroupId(Long senderId, Long groupId) {
+        return paymentRepository.findAllBySenderIdAndGroupId(senderId, groupId).stream().map(Payment::dto)
+                .collect(Collectors.toList());
+    }
+
+    Collection<PaymentDto> getPaymentsByReceiverIdAndGroupId(Long receiverId, Long groupId) {
+        return paymentRepository.findAllByReceiverIdAndGroupId(receiverId, groupId).stream().map(Payment::dto)
+                .collect(Collectors.toList());
+    }
+
+    Collection<PaymentDto> getPaymentsByGroupId(Long groupId) {
+        return paymentRepository.findAllByGroupId(groupId).stream().map(Payment::dto)
+                .collect(Collectors.toList());
+    }
+
+    Collection<PaymentDto> getPaymentsByGroupIdAndSenderIdAndReceiverId(Long groupId, Long senderId, Long receiverId) {
+        return paymentRepository.findAllByGroupIdAndSenderIdAndReceiverId(groupId, senderId, receiverId).stream().map(Payment::dto)
+                .collect(Collectors.toList());
+    }
+
+    Void deletePayment(Long id) {
+        return paymentRepository.deleteById(id);
     }
 }
