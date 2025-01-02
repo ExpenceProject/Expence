@@ -65,9 +65,10 @@ class InvitationService {
         var invitation = invitationRepository.findByIdOrThrow(id);
         var group = invitation.getGroup();
 
-            if (!Objects.equals(invitation.getInviteeId(), Long.valueOf(currentUser.id()))) {
-                throw new ForbiddenException("You are not allowed to update this invitation.");
-            }
+        if (invitationStatus != InvitationStatus.CANCELLED
+                && !Objects.equals(invitation.getInviteeId(), Long.valueOf(currentUser.id()))) {
+            throw new ForbiddenException("You are not allowed to update this invitation.");
+        }
 
         if (invitationStatus == InvitationStatus.ACCEPTED) {
             var member = new Member();
