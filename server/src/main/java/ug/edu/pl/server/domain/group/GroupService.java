@@ -45,11 +45,11 @@ class GroupService {
     return groupRepository.saveOrThrow(group).dto();
   }
 
-  public Collection<GroupDto> findAllGroupsByUserId(Long userId) {
+  Collection<GroupDto> findAllGroupsByUserId(Long userId) {
     return groupRepository.findAllGroupsByUserId(userId).stream().map(Group::dto).collect(Collectors.toList());
   }
 
-  public Collection<MemberDto> findAllMembersByGroupId(Long groupId) {
+  Collection<MemberDto> findAllMembersByGroupId(Long groupId) {
     return groupRepository.findByIdOrThrow(groupId).getMembers().stream().map(Member::dto).collect(Collectors.toList());
   }
 

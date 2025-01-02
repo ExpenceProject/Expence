@@ -2,12 +2,15 @@ package ug.edu.pl.server.domain.group;
 
 import org.junit.jupiter.api.Test;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
-import ug.edu.pl.server.domain.group.dto.CreateInvitationsDto;
+import ug.edu.pl.server.domain.common.exception.SavingException;
+import ug.edu.pl.server.domain.group.dto.*;
 import ug.edu.pl.server.domain.user.SampleUsers;
 import ug.edu.pl.server.domain.user.TestUserConfiguration;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,13 +21,14 @@ class GroupFacadeTest {
   GroupFacade groupFacade = new TestGroupConfiguration().groupFacade(userFacade);
   UserDto currentUser = userFacade.create(SampleUsers.VALID_USER);
 
+
   @Test
   void shouldReturnGroupById() {
     // given
     var group = groupFacade.create(SampleGroups.VALID_GROUP_NO_FILE_AND_INVITEES, currentUser);
 
     // when
-    var groupDto = groupFacade.getById(group.id());
+    var groupDto = groupFacade.getById(Long.valueOf(group.id()));
 
     // then
     assertThat(groupDto).isEqualTo(group);
@@ -95,7 +99,7 @@ class GroupFacadeTest {
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
     // then
-    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
+    var invitations = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT);
     assertThat(invitations).hasSize(1);
   }
 
@@ -108,7 +112,7 @@ class GroupFacadeTest {
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
     // then
-    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
+    var invitations = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT);
     assertThat(invitations).hasSize(2);
   }
 
@@ -123,12 +127,13 @@ class GroupFacadeTest {
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
     // then
-    var invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
+    var invitations = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT);
     assertThat(invitations).hasSize(0);
     // when
-    groupFacade.createInvitations(new CreateInvitationsDto(inviteeIds, Long.valueOf(currentUser.id()), groupDto.id()));
+    groupFacade.createInvitations(new CreateInvitationsDto(inviteeIds, Long.valueOf(currentUser.id()), Long.valueOf(groupDto.id())));
+
     // then
-    invitations = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT);
+    invitations = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT);
     assertThat(invitations).hasSize(2);
   }
 
@@ -140,20 +145,134 @@ class GroupFacadeTest {
     // when
     var groupDto = groupFacade.create(groupToCreate, currentUser);
     // then
-    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
     assertThat(invitation).isPresent();
     assertThat(invitation.get().status()).isEqualTo(InvitationStatus.SENT.name());
 
-    var members = groupFacade.findAllMembersByGroupId(groupDto.id());
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()));
     assertThat(members).hasSize(1);
     // when
     groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
     // then
-    invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.ACCEPTED).stream().findFirst();
+    invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.ACCEPTED).stream().findFirst();
     assertThat(invitation).isPresent();
     assertThat(invitation.get().status()).isEqualTo(InvitationStatus.ACCEPTED.name());
     // and
-    members = groupFacade.findAllMembersByGroupId(groupDto.id());
+    members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()));
     assertThat(members).hasSize(2);
   }
+
+  @Test
+  void shouldReturnBillById() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    //when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    //then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    //given
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(Long.valueOf(members.get(1).id()), new BigDecimal(100)),
+            new CreateExpenseDto(Long.valueOf(members.get(0).id()), new BigDecimal(50)));
+
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), Long.valueOf(members.get(0).id()), Long.valueOf(groupDto.id()));
+
+    var bill = groupFacade.createBill(createBillDto);
+
+    //when
+    var billDto = groupFacade.getBillById(Long.valueOf(bill.id()));
+
+    //then
+    assertThat(billDto).isEqualTo(bill);
+  }
+
+  @Test
+  void shouldThrowExceptionWhenAskedForBillWithIdThatDoesNotExist() {
+    // when & then
+    assertThatThrownBy(() -> groupFacade.getBillById(1L))
+            .isInstanceOf(NotFoundException.class);
+  }
+
+  @Test
+  void shouldCreateBill() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    //when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    //then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    //when
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(Long.valueOf(members.get(1).id()), new BigDecimal(100)),
+            new CreateExpenseDto(Long.valueOf(members.get(0).id()), new BigDecimal(50)));
+
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), Long.valueOf(members.get(0).id()), Long.valueOf(groupDto.id()));
+
+    var bill = groupFacade.createBill(createBillDto);
+
+    //then
+    assertThat(bill.id()).isNotNull();
+    assertThat(bill.name()).isEqualTo(createBillDto.name());
+    assertThat(bill.totalAmount()).isEqualTo(createBillDto.totalAmount());
+    assertThat(bill.groupId()).isEqualTo(createBillDto.groupId());
+    assertThat(bill.expenses()).hasSize(2);
+  }
+
+  @Test
+  void shouldThrowExceptionWhenCreatingBillWithDifferentTotalAmountAndSumOfAmounts() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    //when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    //then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    //when
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(Long.valueOf(members.get(1).id()), new BigDecimal(100)),
+            new CreateExpenseDto(Long.valueOf(members.get(0).id()), new BigDecimal(50)));
+
+
+    //then
+    assertThatThrownBy(() -> groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(170), Long.valueOf(members.get(0).id()), Long.valueOf(groupDto.id()))))
+            .isInstanceOf(SavingException.class);
+
+  }
+
 }

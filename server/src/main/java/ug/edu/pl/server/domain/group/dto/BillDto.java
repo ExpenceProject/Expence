@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.Set;
 
 @Builder
-public record BillDto(Long id,
+public record BillDto(String id,
                       String name,
                       Set<ExpenseDto> expenses,
                       BigDecimal totalAmount,
