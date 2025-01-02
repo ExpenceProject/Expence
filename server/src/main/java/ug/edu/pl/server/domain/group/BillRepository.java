@@ -24,3 +24,15 @@ interface BillRepository extends Repository<Bill, Long> {
         }
     }
 }
+
+interface ExpenseRepository extends Repository<Expense, Long> {
+    Expense save(Expense expense);
+
+    default Expense saveOrThrow(Expense expense) {
+        try {
+            return save(expense);
+        } catch (Exception ex) {
+            throw new SavingException(ex.getMessage());
+        }
+    }
+}

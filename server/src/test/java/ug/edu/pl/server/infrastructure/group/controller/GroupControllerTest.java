@@ -55,7 +55,7 @@ class GroupControllerTest extends IntegrationTest {
         groupFacade.create(SampleGroups.VALID_GROUP_WITH_FILE_AND_NO_INVITEES, registeredUser);
 
     // when
-    var result = getById(createdGroup.id());
+    var result = getById(Long.valueOf(createdGroup.id()));
 
     // then
     result
@@ -74,7 +74,7 @@ class GroupControllerTest extends IntegrationTest {
         groupFacade.create(SampleGroups.VALID_GROUP_WITH_FILE_AND_NO_INVITEES, registeredUser);
 
     // when
-    var result = getById(createdGroup.id());
+    var result = getById(Long.valueOf(createdGroup.id()));
 
     // then
     result.andExpect(status().isUnauthorized());
@@ -150,7 +150,7 @@ class GroupControllerTest extends IntegrationTest {
                 SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
     var result =
         create(
-            SampleGroups.validGroupWithFileAndInvitees(Set.of(userCreated.id())),
+            SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(userCreated.id()))),
             authenticatedUser);
 
     // then

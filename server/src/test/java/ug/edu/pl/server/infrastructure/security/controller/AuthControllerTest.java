@@ -1,6 +1,5 @@
 package ug.edu.pl.server.infrastructure.security.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -27,9 +26,6 @@ class AuthControllerTest extends IntegrationTest {
 
     @Autowired
     AuthFacade authFacade;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Test
     @Transactional

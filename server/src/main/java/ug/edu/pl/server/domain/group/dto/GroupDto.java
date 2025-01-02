@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Builder
 public record GroupDto(
-    Long id,
+    String id,
     ImageDto image,
     String name,
     Boolean settledDown,

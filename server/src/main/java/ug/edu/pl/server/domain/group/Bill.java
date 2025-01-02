@@ -48,7 +48,7 @@ class Bill extends BaseEntity {
     var lenderDto = lender.dto();
 
     return BillDto.builder()
-            .id(getId())
+            .id(getId().toString())
             .name(name)
             .expenses(expensesSet)
             .totalAmount(totalAmount)

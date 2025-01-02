@@ -1,5 +1,6 @@
 package ug.edu.pl.server.base;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,6 +36,9 @@ public class IntegrationTest {
 
     @Autowired
     protected CacheManager cacheManager;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     static {
         postgres.start();
