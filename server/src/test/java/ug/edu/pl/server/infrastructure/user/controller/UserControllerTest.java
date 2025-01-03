@@ -17,6 +17,7 @@ import ug.edu.pl.server.infrastructure.security.auth.SampleRegisterUsers;
 import ug.edu.pl.server.infrastructure.security.auth.dto.AuthDto;
 import ug.edu.pl.server.infrastructure.security.auth.dto.LoginDto;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +28,36 @@ class UserControllerTest extends IntegrationTest {
 
     @Autowired
     AuthFacade authFacade;
+
+    @Test
+    @Transactional
+    @WithMockUser
+    void shouldGetAllUsers() throws Exception {
+        // given
+        var registeredUser1 = authFacade.register(SampleRegisterUsers.VALID_USER);
+        var registeredUser2 = authFacade.register(SampleRegisterUsers.VALID_USER_2);
+
+        // when
+        var result = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$[*].id").value(containsInAnyOrder(
+                        registeredUser1.id(),
+                        registeredUser2.id()
+                )));
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnUnauthorizedWhenGetAllWithoutLogin() throws Exception {
+        // when
+        var result = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isUnauthorized());
+    }
 
     @Test
     @Transactional

@@ -22,6 +22,20 @@ class UserFacadeTest {
     UserFacade userFacade = new TestUserConfiguration().userFacade(cacheManager);
 
     @Test
+    void shouldReturnAllUsers() {
+        // given
+        var user1 = userFacade.create(SampleUsers.VALID_USER);
+        var user2 = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+
+        // when
+        var users = userFacade.getAll();
+
+        // then
+        assertThat(users).hasSize(2);
+        assertThat(users).contains(user1, user2);
+    }
+
+    @Test
     void shouldReturnUserByEmail() {
         // given
         var user = userFacade.create(SampleUsers.VALID_USER);
