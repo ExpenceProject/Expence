@@ -1,6 +1,6 @@
 import HeaderNav from '@/components/core/header/header-nav';
-import Burger from '@/components/icons/burger/burger';
-import CloseTrigger from '@/components/icons/close-trigger/close-trigger';
+import { BurgerIcon } from '@/components/icons/burger';
+import { CloseTriggerIcon } from '@/components/icons/close-trigger';
 import { useColorModeValue } from '@/components/ui/color-mode';
 import {
   DrawerBackdrop,
@@ -41,14 +41,14 @@ const Drawer = () => {
         pointerEvents="auto"
       />
       <DrawerTrigger>
-        <Burger
+        <BurgerIcon
           onClick={onOpen}
           fill={currentTheme === 'light' ? 'black' : 'white'}
         />
       </DrawerTrigger>
       <DrawerContent h="100vh" position="fixed" top={0} right={0} bg="surface">
         <DrawerHeader py="7">
-          <CloseTrigger onClick={onClose} />
+          <CloseTriggerIcon onClick={onClose} />
         </DrawerHeader>
         <DrawerBody>
           <HeaderNav direction="column" />

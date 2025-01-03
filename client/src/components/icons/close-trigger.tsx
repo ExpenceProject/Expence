@@ -1,14 +1,14 @@
 import { chakra } from '@chakra-ui/react';
 import { FC } from 'react';
 
-type CloseTriggerProps = {
+type CloseTriggerIconProps = {
   width?: number;
   height?: number;
   fill?: string;
   onClick?: () => void;
 };
 
-const CloseTrigger: FC<CloseTriggerProps> = ({
+export const CloseTriggerIcon: FC<CloseTriggerIconProps> = ({
   width,
   height,
   fill,
@@ -34,5 +34,3 @@ const CloseTrigger: FC<CloseTriggerProps> = ({
     </chakra.svg>
   );
 };
-
-export default CloseTrigger;

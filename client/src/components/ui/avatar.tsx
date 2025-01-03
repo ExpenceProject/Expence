@@ -8,6 +8,7 @@ type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
 export interface AvatarProps extends ChakraAvatar.RootProps {
   name?: string;
+  nameSize?: number;
   src?: string;
   srcSet?: string;
   loading?: ImageProps['loading'];
@@ -17,11 +18,20 @@ export interface AvatarProps extends ChakraAvatar.RootProps {
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
   function Avatar(props, ref) {
-    const { name, src, srcSet, loading, icon, fallback, children, ...rest } =
-      props;
+    const {
+      name,
+      nameSize,
+      src,
+      srcSet,
+      loading,
+      icon,
+      fallback,
+      children,
+      ...rest
+    } = props;
     return (
       <ChakraAvatar.Root ref={ref} {...rest}>
-        <AvatarFallback name={name} icon={icon}>
+        <AvatarFallback name={name} icon={icon} nameSize={nameSize}>
           {fallback}
         </AvatarFallback>
         <ChakraAvatar.Image src={src} srcSet={srcSet} loading={loading} />
@@ -34,13 +44,14 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 interface AvatarFallbackProps extends ChakraAvatar.FallbackProps {
   name?: string;
   icon?: React.ReactElement;
+  nameSize?: number;
 }
 
 const AvatarFallback = forwardRef<HTMLDivElement, AvatarFallbackProps>(
   function AvatarFallback(props, ref) {
-    const { name, icon, children, ...rest } = props;
+    const { name, icon, children, nameSize, ...rest } = props;
     return (
-      <ChakraAvatar.Fallback ref={ref} {...rest}>
+      <ChakraAvatar.Fallback ref={ref} {...rest} fontSize={nameSize}>
         {children}
         {name != null && children == null && <>{getInitials(name)}</>}
         {name == null && children == null && (

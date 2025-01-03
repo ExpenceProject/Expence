@@ -6,7 +6,6 @@ const authTokenType = localStorage.getItem('authTokenType');
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_REACT_API_URL,
   headers: {
-    Authorization:
-      authToken && authTokenType ? `${authTokenType} ${authToken}` : '',
+    Authorization: `${authTokenType} ${authToken}`,
   },
 });

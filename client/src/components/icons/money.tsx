@@ -1,13 +1,13 @@
 import { chakra } from '@chakra-ui/react';
 import { FC } from 'react';
 
-type MoneyProps = {
+type MoneyIconProps = {
   width?: number;
   height?: number;
   fill?: string;
 };
 
-const Money: FC<MoneyProps> = ({
+export const MoneyIcon: FC<MoneyIconProps> = ({
   width = 800,
   height = 800,
   fill = '#FFFFFF',
@@ -105,5 +105,3 @@ const Money: FC<MoneyProps> = ({
     </chakra.svg>
   );
 };
-
-export default Money;

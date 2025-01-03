@@ -1,14 +1,19 @@
 import { chakra } from '@chakra-ui/react';
 import { FC } from 'react';
 
-type BurgerProps = {
+type BurgerIconProps = {
   width?: number;
   height?: number;
   fill?: string;
   onClick?: () => void;
 };
 
-const Burger: FC<BurgerProps> = ({ width, height, fill, onClick }) => {
+export const BurgerIcon: FC<BurgerIconProps> = ({
+  width,
+  height,
+  fill,
+  onClick,
+}) => {
   return (
     <chakra.svg
       width={width ? `${width}px` : '30px'}
@@ -43,5 +48,3 @@ const Burger: FC<BurgerProps> = ({ width, height, fill, onClick }) => {
     </chakra.svg>
   );
 };
-
-export default Burger;
