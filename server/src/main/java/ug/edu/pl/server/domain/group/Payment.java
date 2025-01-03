@@ -1,12 +1,10 @@
 package ug.edu.pl.server.domain.group;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import ug.edu.pl.server.domain.common.persistance.BaseEntity;
+import ug.edu.pl.server.domain.group.dto.PaymentDto;
 
 import java.math.BigDecimal;
 
@@ -32,4 +30,17 @@ class Payment extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "group_id", nullable = false)
   private Group group;
+
+  PaymentDto dto() {
+    return PaymentDto.builder()
+            .id(getId())
+            .receiver(receiver.dto())
+            .sender(sender.dto())
+            .amount(amount)
+            .group(group.dto())
+            .version(getVersion())
+            .createdAt(getCreatedAt())
+            .updatedAt(getUpdatedAt())
+            .build();
+  }
 }

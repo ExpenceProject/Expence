@@ -22,8 +22,8 @@ public record CreateBillDto(
         @Positive(message = "Lender ID must be a positive number")
         Long lenderId,
 
-        @NotNull(message = "Lender ID must not be null")
-        @Positive(message = "Lender ID must be a positive number")
+        @NotNull(message = "Group ID must not be null")
+        @Positive(message = "Group ID must be a positive number")
         Long groupId
     ) {
         public CreateBillDto {

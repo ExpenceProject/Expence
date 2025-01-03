@@ -275,4 +275,220 @@ class GroupFacadeTest {
 
   }
 
+  @Test
+  void shouldCreatePayment() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()), new BigDecimal("100.00"), Long.valueOf(groupDto.id()));
+
+    // when
+    var paymentDto = groupFacade.createPayment(createPaymentDto);
+
+    // then
+    assertThat(paymentDto.id()).isNotNull();
+    assertThat(paymentDto.sender().id()).isEqualTo(members.get(0).id());
+    assertThat(paymentDto.receiver().id()).isEqualTo(members.get(1).id());
+    assertThat(paymentDto.amount()).isEqualTo(new BigDecimal("100.00"));
+    assertThat(paymentDto.group().id()).isEqualTo(groupDto.id());
+    assertThat(paymentDto.version()).isNotNull();
+    assertThat(paymentDto.createdAt()).isNotNull();
+    assertThat(paymentDto.updatedAt()).isNotNull();
+  }
+
+  @Test
+  void shouldDeletePayment() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()), new BigDecimal("100.00"), Long.valueOf(groupDto.id()));
+    var paymentDto = groupFacade.createPayment(createPaymentDto);
+
+    // when
+    groupFacade.deletePayment(paymentDto.id());
+
+    // then
+    assertThatThrownBy(() -> groupFacade.getPaymentById(Long.valueOf(paymentDto.id())))
+            .isInstanceOf(NotFoundException.class);
+  }
+
+  @Test
+  void shouldGetPaymentById() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()), new BigDecimal("100.00"), Long.valueOf(groupDto.id()));
+    var paymentDto = groupFacade.createPayment(createPaymentDto);
+
+    // when
+    var retrievedPayment = groupFacade.getPaymentById(paymentDto.id());
+
+    // then
+    assertThat(retrievedPayment).isEqualTo(paymentDto);
+  }
+
+  @Test
+  void shouldGetPaymentsBySenderIdAndGroupId() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()), new BigDecimal("100.00"), Long.valueOf(groupDto.id()));
+    var paymentDto = groupFacade.createPayment(createPaymentDto);
+
+    // when
+    var payments = groupFacade.getPaymentsBySenderIdAndGroupId(Long.valueOf(members.get(0).id()), Long.valueOf(groupDto.id()));
+
+    // then
+    assertThat(payments).containsExactly(paymentDto);
+  }
+
+  @Test
+  void shouldGetPaymentsByReceiverIdAndGroupId() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()), new BigDecimal("100.00"), Long.valueOf(groupDto.id()));
+    var paymentDto = groupFacade.createPayment(createPaymentDto);
+
+    // when
+    var payments = groupFacade.getPaymentsByReceiverIdAndGroupId(Long.valueOf(members.get(1).id()), Long.valueOf(groupDto.id()));
+
+    // then
+    assertThat(payments).containsExactly(paymentDto);
+  }
+
+  @Test
+  void shouldGetPaymentsByGroupId() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()), new BigDecimal("100.00"), Long.valueOf(groupDto.id()));
+    var paymentDto = groupFacade.createPayment(createPaymentDto);
+
+    // when
+    var payments = groupFacade.getPaymentsByGroupId(Long.valueOf(groupDto.id()));
+
+    // then
+    assertThat(payments).containsExactly(paymentDto);
+  }
+
+  @Test
+  void shouldGetPaymentsByGroupIdAndSenderIdAndReceiverId() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(invitee.id())));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(Long.valueOf(groupDto.id()), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(Long.valueOf(groupDto.id()))
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()), new BigDecimal("100.00"), Long.valueOf(groupDto.id()));
+    var paymentDto = groupFacade.createPayment(createPaymentDto);
+
+    // when
+    var payments = groupFacade.getPaymentsByGroupIdAndSenderIdAndReceiverId(Long.valueOf(groupDto.id()), Long.valueOf(members.get(0).id()), Long.valueOf(members.get(1).id()));
+
+    // then
+    assertThat(payments).containsExactly(paymentDto);
+  }
 }

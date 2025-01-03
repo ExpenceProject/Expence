@@ -13,6 +13,7 @@ class TestGroupConfiguration {
                 new InMemoryStorageFacade(),
                 userFacade,
                 new InMemoryBillRepository(),
+                new InMemoryPaymentRepository(),
                 new InMemoryMemberRepository());
   }
 }

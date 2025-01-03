@@ -13,14 +13,16 @@ class GroupConfiguration {
       GroupRoleRepository groupRoleRepository,
       InvitationRepository invitationRepository,
       StorageFacade storageFacade,
-      UserFacade userFacade, BillRepository billRepository,
+      UserFacade userFacade,
+      BillRepository billRepository,
+      PaymentRepository paymentRepository,
       MemberRepository memberRepository) {
     GroupService groupService =
         new GroupService(
             groupRepository, groupRoleRepository, memberRepository, storageFacade, new GroupCreator(), userFacade);
     InvitationService invitationService = new InvitationService(invitationRepository, groupRepository,
         groupRoleRepository, memberRepository);
-    BillService billService = new BillService(billRepository, groupRepository, memberRepository);
+    BillService billService = new BillService(billRepository, paymentRepository, groupRepository, memberRepository);
     return new GroupFacade(groupService, invitationService, billService);
   }
 }
