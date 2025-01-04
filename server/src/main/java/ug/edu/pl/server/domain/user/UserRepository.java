@@ -7,10 +7,14 @@ import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.exception.SavingException;
 
 import java.util.Optional;
+import java.util.List;
 
 interface UserRepository extends Repository<User, Long> {
 
     User save(User user);
+
+    @EntityGraph(attributePaths = "roles")
+    List<User> findAll();
 
     Boolean existsByEmail(String email);
 
@@ -21,7 +25,7 @@ interface UserRepository extends Repository<User, Long> {
     Optional<User> findByEmail(String email);
 
     default User findByIdOrThrow(Long id) {
-    return findById(id).orElseThrow(() -> new NotFoundException(User.class.getName(), id));
+        return findById(id).orElseThrow(() -> new NotFoundException(User.class.getName(), id));
     }
 
     default User findByEmailOrThrow(String email) {

@@ -15,6 +15,7 @@ import ug.edu.pl.server.domain.user.dto.CreateUserDto;
 import ug.edu.pl.server.domain.user.dto.UpdateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
+import java.util.List;
 import java.util.Set;
 
 @Log
@@ -34,6 +35,14 @@ public class UserFacade {
         this.userCreator = userCreator;
         this.storageFacade = storageFacade;
         this.cacheManager = cacheManager;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDto> getAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(User::dto)
+                .toList();
     }
 
     @Transactional(readOnly = true)

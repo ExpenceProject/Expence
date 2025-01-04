@@ -8,6 +8,8 @@ import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UpdateUserDto;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 class UserController {
@@ -16,6 +18,11 @@ class UserController {
 
     UserController(UserFacade userFacade) {
         this.userFacade = userFacade;
+    }
+
+    @GetMapping
+    ResponseEntity<List<UserDto>> getAll() {
+        return ResponseEntity.ok(userFacade.getAll());
     }
 
     @GetMapping("/{id}")

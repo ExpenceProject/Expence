@@ -2,6 +2,7 @@ package ug.edu.pl.server.domain.user;
 
 import ug.edu.pl.server.base.InMemoryRepository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +18,11 @@ class InMemoryUserRepository implements UserRepository, InMemoryRepository<User>
         userIdMap.put(user.getId(), user);
         userEmailMap.put(user.getEmail(), user);
         return user;
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userIdMap.values().stream().toList();
     }
 
     @Override
