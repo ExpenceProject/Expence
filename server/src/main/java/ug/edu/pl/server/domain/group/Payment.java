@@ -33,7 +33,7 @@ class Payment extends BaseEntity {
 
   PaymentDto dto() {
     return PaymentDto.builder()
-            .id(getId())
+            .id(getId().toString())
             .receiver(receiver.dto())
             .sender(sender.dto())
             .amount(amount)

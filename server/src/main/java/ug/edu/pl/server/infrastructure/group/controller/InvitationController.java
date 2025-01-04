@@ -22,17 +22,17 @@ class InvitationController {
     }
 
     @GetMapping("/{invitationId}")
-    ResponseEntity<InvitationDto> getInvitationById(@PathVariable("invitationId") Long invitationId) {
+    ResponseEntity<InvitationDto> getInvitationById(@PathVariable("invitationId") String invitationId) {
         return ResponseEntity.ok(groupFacade.getInvitationById(invitationId));
     }
 
     @GetMapping("/group/{groupId}/invitees/{inviteeId}")
-    ResponseEntity<InvitationDto> getGroupInvitationForUser(@PathVariable("groupId") Long groupId, @PathVariable("inviteeId") Long inviteeId) {
+    ResponseEntity<InvitationDto> getGroupInvitationForUser(@PathVariable("groupId") String groupId, @PathVariable("inviteeId") String inviteeId) {
         return ResponseEntity.ok(groupFacade.getInvitationByGroupAndInviteeId(groupId, inviteeId));
     }
 
     @GetMapping("/group/{groupId}")
-    ResponseEntity<Collection<InvitationDto>> getGroupInvitations(@PathVariable("groupId") Long groupId, @RequestParam(value = "status", required = false) InvitationStatus status) {
+    ResponseEntity<Collection<InvitationDto>> getGroupInvitations(@PathVariable("groupId") String groupId, @RequestParam(value = "status", required = false) InvitationStatus status) {
         if (status == null) {
             return ResponseEntity.ok(groupFacade.getInvitationsByGroupId(groupId, null));
         } else {
@@ -41,7 +41,7 @@ class InvitationController {
     }
 
     @GetMapping("/invitees/{inviteeId}")
-    ResponseEntity<Collection<InvitationDto>> getUserInvitations(@PathVariable("inviteeId") Long inviteeId, @RequestParam(value = "status", required = false) InvitationStatus status) {
+    ResponseEntity<Collection<InvitationDto>> getUserInvitations(@PathVariable("inviteeId") String inviteeId, @RequestParam(value = "status", required = false) InvitationStatus status) {
         if (status == null) {
             return ResponseEntity.ok(groupFacade.getInvitationsByInviteeId(inviteeId, null));
         } else {
@@ -55,7 +55,7 @@ class InvitationController {
     }
 
     @PatchMapping("/{invitationId}")
-    ResponseEntity<Void> updateInvitationStatus(@PathVariable("invitationId") Long invitationId, @RequestBody InvitationStatus invitationStatus) {
+    ResponseEntity<Void> updateInvitationStatus(@PathVariable("invitationId") String invitationId, @RequestBody InvitationStatus invitationStatus) {
         var user = currentUserContext.getSignedInUser();
         groupFacade.updateInvitationStatus(invitationId, invitationStatus, user);
         return ResponseEntity.noContent().build();

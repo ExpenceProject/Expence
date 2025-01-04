@@ -34,10 +34,10 @@ class Invitation extends BaseEntity {
 
   InvitationDto dto() {
     return InvitationDto.builder()
-            .id(getId())
-            .inviteeId(inviteeId)
-            .inviterId(inviter.getId())
-            .groupId(group.getId())
+            .id(getId().toString())
+            .inviteeId(inviteeId.toString())
+            .inviterId(inviter.getId().toString())
+            .groupId(group.getId().toString())
             .status(status.name())
             .version(getVersion())
             .createdAt(getCreatedAt())

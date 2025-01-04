@@ -36,7 +36,7 @@ class Member extends BaseEntity {
 
     return MemberDto.builder()
         .id(getId().toString())
-        .user(userId)
+        .user(userId.toString())
         .nickname(nickname)
         .groupRole(groupRoleDto)
         .version(getVersion())

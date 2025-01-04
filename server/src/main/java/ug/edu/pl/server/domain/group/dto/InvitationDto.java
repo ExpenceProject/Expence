@@ -5,10 +5,10 @@ import lombok.Builder;
 import java.time.Instant;
 
 @Builder
-public record InvitationDto(Long id,
-                            Long inviteeId,
-                            Long inviterId,
-                            Long groupId,
+public record InvitationDto(String id,
+                            String inviteeId,
+                            String inviterId,
+                            String groupId,
                             String status,
                             Long version,
                             Instant createdAt,

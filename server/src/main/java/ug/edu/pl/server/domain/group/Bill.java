@@ -58,7 +58,7 @@ class Bill extends BaseEntity {
             .expenses(expensesSet)
             .totalAmount(totalAmount)
             .lender(lenderDto)
-            .groupId(getGroup().getId())
+            .groupId(getGroup().getId().toString())
             .version(getVersion())
             .createdAt(getCreatedAt())
             .updatedAt(getUpdatedAt())

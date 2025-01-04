@@ -9,4 +9,4 @@ import java.util.Set;
 public record CreateGroupDto(
     @NotBlank(message = "Name must not be blank") String name,
     @OptionalValidImage MultipartFile file,
-    Set<Long> inviteesId) {}
+    Set<String> inviteesId) {}

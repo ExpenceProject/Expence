@@ -20,13 +20,13 @@ class BillService {
         this.memberRepository = memberRepository;
     }
 
-    BillDto getById(Long id) {
-        return billRepository.findByIdOrThrow(id).dto();
+    BillDto getById(String id) {
+        return billRepository.findByIdOrThrow(Long.valueOf(id)).dto();
     }
 
     BillDto create(CreateBillDto billDto) {
-        var lender = memberRepository.findByIdAndGroupIdOrThrow(billDto.lenderId(), billDto.groupId());
-        var group = groupRepository.findByIdOrThrow(billDto.groupId());
+        var lender = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(billDto.lenderId()), Long.valueOf(billDto.groupId()));
+        var group = groupRepository.findByIdOrThrow(Long.valueOf(billDto.groupId()));
         var bill = prepareBill(billDto, lender, group);
         var borrowers = findBorrowers(billDto);
 
@@ -43,16 +43,16 @@ class BillService {
         return bill;
     }
 
-    private Map<Long, Member> findBorrowers(CreateBillDto billDto) {
+    private Map<String, Member> findBorrowers(CreateBillDto billDto) {
         Set<Long> borrowerIds = billDto.expenses().stream()
-                .map(CreateExpenseDto::borrowerId)
+                .map(expense -> Long.valueOf(expense.borrowerId()))
                 .collect(Collectors.toSet());
 
-        return memberRepository.findAllByIdAndGroupIdOrThrow(borrowerIds, billDto.groupId()).stream()
-                .collect(Collectors.toMap(Member::getId, Function.identity()));
+        return memberRepository.findAllByIdAndGroupIdOrThrow(borrowerIds, Long.valueOf(billDto.groupId())).stream()
+                .collect(Collectors.toMap(member -> String.valueOf(member.getId()), Function.identity()));
     }
 
-    private void prepareExpenses(Set<CreateExpenseDto> newExpenses, Bill bill, Map<Long, Member> borrowers) {
+    private void prepareExpenses(Set<CreateExpenseDto> newExpenses, Bill bill, Map<String, Member> borrowers) {
         for (CreateExpenseDto dto : newExpenses) {
             var doesExist = bill.getExpenses().stream().anyMatch(expense -> expense.getBorrower().getId().equals(dto.borrowerId()));
             if(!doesExist) {
@@ -75,12 +75,12 @@ class BillService {
         }
     }
 
-    BillDto update(Long billId, CreateBillDto billDto) {
-        Bill billToUpdate = billRepository.findByIdOrThrow(billId);
+    BillDto update(String billId, CreateBillDto billDto) {
+        Bill billToUpdate = billRepository.findByIdOrThrow(Long.valueOf(billId));
         billToUpdate.setName(billDto.name());
         billToUpdate.setTotalAmount(billDto.totalAmount());
-        if(billToUpdate.getLender().getId() != billDto.lenderId()) {
-            var lender = memberRepository.findByIdAndGroupIdOrThrow(billDto.lenderId(), billDto.groupId());
+        if(billToUpdate.getLender().getId().toString() != billDto.lenderId()) {
+            var lender = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(billDto.lenderId()), Long.valueOf(billDto.groupId()));
             billToUpdate.setLender(lender);
         }
         var newExpenses = billDto.expenses();
@@ -98,54 +98,54 @@ class BillService {
         return billRepository.saveOrThrow(billToUpdate).dto();
     }
 
-    Collection<BillDto> getBillsByGroupId(Long groupId) {
-        return billRepository.findAllByGroup_Id(groupId).stream().map(Bill::dto)
+    Collection<BillDto> getBillsByGroupId(String groupId) {
+        return billRepository.findAllByGroup_Id(Long.valueOf(groupId)).stream().map(Bill::dto)
                 .collect(Collectors.toList());
     }
 
-    Collection<BillDto> getBillsByUserIdAndGroupId(Long userId, Long groupId) {
-        return billRepository.findAllByUserIdAndGroupId(userId, groupId).stream().map(Bill::dto)
+    Collection<BillDto> getBillsByUserIdAndGroupId(String userId, String groupId) {
+        return billRepository.findAllByUserIdAndGroupId(Long.valueOf(userId), Long.valueOf(groupId)).stream().map(Bill::dto)
                 .collect(Collectors.toList());
     }
 
-    Void deleteBill(Long id) {
-        return billRepository.deleteByIdOrThrow(id);
+    Void deleteBill(String id) {
+        return billRepository.deleteByIdOrThrow(Long.valueOf(id));
     }
 
     PaymentDto createPayment(CreatePaymentDto paymentDto) {
-        var receiver = memberRepository.findByIdAndGroupIdOrThrow(paymentDto.receiverId(), paymentDto.groupId());
-        var sender = memberRepository.findByIdAndGroupIdOrThrow(paymentDto.senderId(), paymentDto.groupId());
-        var group = groupRepository.findByIdOrThrow(paymentDto.groupId());
+        var receiver = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(paymentDto.receiverId()), Long.valueOf(paymentDto.groupId()));
+        var sender = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(paymentDto.senderId()), Long.valueOf(paymentDto.groupId()));
+        var group = groupRepository.findByIdOrThrow(Long.valueOf(paymentDto.groupId()));
         var payment = new Payment(receiver, sender, paymentDto.amount(), group);
 
         return paymentRepository.saveOrThrow(payment).dto();
     }
 
-    PaymentDto getPaymentById(Long id) {
-        return paymentRepository.findByIdOrThrow(id).dto();
+    PaymentDto getPaymentById(String id) {
+        return paymentRepository.findByIdOrThrow(Long.valueOf(id)).dto();
     }
 
-    Collection<PaymentDto> getPaymentsBySenderIdAndGroupId(Long senderId, Long groupId) {
-        return paymentRepository.findAllBySenderIdAndGroupId(senderId, groupId).stream().map(Payment::dto)
+    Collection<PaymentDto> getPaymentsBySenderIdAndGroupId(String senderId, String groupId) {
+        return paymentRepository.findAllBySenderIdAndGroupId(Long.valueOf(senderId), Long.valueOf(groupId)).stream().map(Payment::dto)
                 .collect(Collectors.toList());
     }
 
-    Collection<PaymentDto> getPaymentsByReceiverIdAndGroupId(Long receiverId, Long groupId) {
-        return paymentRepository.findAllByReceiverIdAndGroupId(receiverId, groupId).stream().map(Payment::dto)
+    Collection<PaymentDto> getPaymentsByReceiverIdAndGroupId(String receiverId, String groupId) {
+        return paymentRepository.findAllByReceiverIdAndGroupId(Long.valueOf(receiverId), Long.valueOf(groupId)).stream().map(Payment::dto)
                 .collect(Collectors.toList());
     }
 
-    Collection<PaymentDto> getPaymentsByGroupId(Long groupId) {
-        return paymentRepository.findAllByGroupId(groupId).stream().map(Payment::dto)
+    Collection<PaymentDto> getPaymentsByGroupId(String groupId) {
+        return paymentRepository.findAllByGroupId(Long.valueOf(groupId)).stream().map(Payment::dto)
                 .collect(Collectors.toList());
     }
 
-    Collection<PaymentDto> getPaymentsByGroupIdAndSenderIdAndReceiverId(Long groupId, Long senderId, Long receiverId) {
-        return paymentRepository.findAllByGroupIdAndSenderIdAndReceiverId(groupId, senderId, receiverId).stream().map(Payment::dto)
+    Collection<PaymentDto> getPaymentsByGroupIdAndSenderIdAndReceiverId(String groupId, String senderId, String receiverId) {
+        return paymentRepository.findAllByGroupIdAndSenderIdAndReceiverId(Long.valueOf(groupId), Long.valueOf(senderId), Long.valueOf(receiverId)).stream().map(Payment::dto)
                 .collect(Collectors.toList());
     }
 
-    Void deletePayment(Long id) {
-        return paymentRepository.deleteById(id);
+    Void deletePayment(String id) {
+        return paymentRepository.deleteById(Long.valueOf(id));
     }
 }

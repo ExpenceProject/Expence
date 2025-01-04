@@ -20,11 +20,11 @@ public record CreateBillDto(
 
         @NotNull(message = "Lender ID must not be null")
         @Positive(message = "Lender ID must be a positive number")
-        Long lenderId,
+        String lenderId,
 
         @NotNull(message = "Group ID must not be null")
         @Positive(message = "Group ID must be a positive number")
-        Long groupId
+        String groupId
     ) {
         public CreateBillDto {
                 BigDecimal expensesSum = expenses.stream()
