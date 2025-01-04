@@ -26,7 +26,7 @@ public class GroupFacade {
   }
 
   @Transactional(readOnly = true)
-  @Cacheable(value = CACHE_NAME, key = "#id")
+  @Cacheable(value = CACHE_NAME, key = "#id+ '-group'")
   public GroupDto getById(Long id) {
     return groupService.getById(id);
   }
@@ -62,17 +62,19 @@ public class GroupFacade {
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#userId+ '-groups'")
   public Collection<GroupDto> findAllGroupsByUserId(Long userId) {
     return groupService.findAllGroupsByUserId(userId);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-members'")
   public Collection<MemberDto> findAllMembersByGroupId(Long groupId) {
     return groupService.findAllMembersByGroupId(groupId);
   }
 
   @Transactional(readOnly = true)
-  @Cacheable(value = CACHE_NAME, key = "#id")
+  @Cacheable(value = CACHE_NAME, key = "#id+ '-bill'")
   public BillDto getBillById(Long id) {
     return billService.getById(id);
   }
@@ -83,31 +85,59 @@ public class GroupFacade {
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-bills'")
+  public Collection<BillDto> getBillsByGroupId(Long groupId) {
+    return billService.getBillsByGroupId(groupId);
+  }
+
+
+  @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#userId + ':' + #groupId+ '-bills'")
+  public Collection<BillDto> getBillsByUserIdAndGroupId(Long userId, Long groupId) {
+    return billService.getBillsByUserIdAndGroupId(userId, groupId);
+  }
+
+  @Transactional
+  public BillDto updateBill(@Valid CreateBillDto dto, Long billId) {
+    return billService.update(billId, dto);
+  }
+
+  @Transactional
+  public Void deleteBill(Long id) {
+    return billService.deleteBill(id);
+  }
+
+  @Transactional
   public PaymentDto createPayment(@Valid CreatePaymentDto dto) {
     return billService.createPayment(dto);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-payment'")
   public PaymentDto getPaymentById(Long id) {
     return billService.getPaymentById(id);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#senderId + ':' + #groupId+ '-payments'")
   public Collection<PaymentDto> getPaymentsBySenderIdAndGroupId(Long senderId, Long groupId) {
     return billService.getPaymentsBySenderIdAndGroupId(senderId, groupId);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#receiverId + ':' + #groupId+ '-payments-receiver'")
   public Collection<PaymentDto> getPaymentsByReceiverIdAndGroupId(Long receiverId, Long groupId) {
     return billService.getPaymentsByReceiverIdAndGroupId(receiverId, groupId);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-payments'")
   public Collection<PaymentDto> getPaymentsByGroupId(Long groupId) {
     return billService.getPaymentsByGroupId(groupId);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#receiverId + ':' + #groupId+ ':' + #senderId+ '-payments'")
   public Collection<PaymentDto> getPaymentsByGroupIdAndSenderIdAndReceiverId(Long groupId, Long senderId, Long receiverId) {
     return billService.getPaymentsByGroupIdAndSenderIdAndReceiverId(groupId, senderId, receiverId);
   }
@@ -123,21 +153,25 @@ public class GroupFacade {
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#id+ '-invitation'")
   public InvitationDto getInvitationById(Long id) {
     return invitationService.getById(id);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#inviteeId + ':' + #groupId+ '-invitation'")
   public InvitationDto getInvitationByGroupAndInviteeId(Long groupId, Long inviteeId) {
     return invitationService.getByGroupAndInviteeId(groupId, inviteeId);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#status + ':' + #groupId+ '-invitations'")
   public Collection<InvitationDto> getInvitationsByGroupId(Long groupId, InvitationStatus status) {
     return invitationService.getByGroupId(groupId, status);
   }
 
   @Transactional
+  @Cacheable(value = CACHE_NAME, key = "#inviteeId + ':' + #status+ '-invitations-invitee'")
   public Collection<InvitationDto> getInvitationsByInviteeId(Long inviteeId, InvitationStatus status) {
     return invitationService.getByInviteeId(inviteeId, status);
   }

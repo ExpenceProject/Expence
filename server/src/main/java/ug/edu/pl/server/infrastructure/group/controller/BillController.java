@@ -6,6 +6,8 @@ import ug.edu.pl.server.domain.group.GroupFacade;
 import ug.edu.pl.server.domain.group.dto.BillDto;
 import ug.edu.pl.server.domain.group.dto.CreateBillDto;
 
+import java.util.Collection;
+
 @RestController
 @RequestMapping("/api/bills")
 class BillController {
@@ -23,5 +25,26 @@ class BillController {
     @PostMapping
     ResponseEntity<BillDto> create(@RequestBody CreateBillDto billDto) {
         return ResponseEntity.ok(groupFacade.createBill(billDto));
+    }
+
+    @PutMapping("/{billId}")
+    ResponseEntity<BillDto> update(@PathVariable Long billId, @RequestBody CreateBillDto billDto) {
+        return ResponseEntity.ok(groupFacade.updateBill(billDto, billId));
+    }
+
+    @GetMapping("/group/{groupId}")
+    ResponseEntity<Collection<BillDto>> getBillsByGroupId(@PathVariable Long groupId) {
+        return ResponseEntity.ok(groupFacade.getBillsByGroupId(groupId));
+    }
+
+    @GetMapping("/user/{userId}/group/{groupId}")
+    ResponseEntity<Collection<BillDto>> getBillsByUserIdAndGroupId(@PathVariable Long userId, @PathVariable Long groupId) {
+        return ResponseEntity.ok(groupFacade.getBillsByUserIdAndGroupId(userId, groupId));
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> deleteBill(@PathVariable Long id) {
+        groupFacade.deleteBill(id);
+        return ResponseEntity.noContent().build();
     }
 }

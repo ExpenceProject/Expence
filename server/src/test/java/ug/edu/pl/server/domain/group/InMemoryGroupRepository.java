@@ -2,10 +2,7 @@ package ug.edu.pl.server.domain.group;
 
 import ug.edu.pl.server.base.InMemoryRepository;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -129,6 +126,21 @@ class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill>
   @Override
   public Optional<Bill> findById(Long id) {
     return Optional.ofNullable(billIdMap.get(id));
+  }
+
+  @Override
+  public Collection<Bill> findAllByGroup_Id(Long groupId) {
+    return List.of();
+  }
+
+  @Override
+  public Collection<Bill> findAllByUserIdAndGroupId(Long userId, Long groupId) {
+    return List.of();
+  }
+
+  @Override
+  public Void deleteById(Long id) {
+    return null;
   }
 }
 

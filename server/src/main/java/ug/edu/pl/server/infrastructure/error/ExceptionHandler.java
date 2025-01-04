@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import ug.edu.pl.server.domain.common.exception.DeleteException;
 import ug.edu.pl.server.domain.common.exception.DuplicateException;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.exception.SavingException;
@@ -50,5 +51,18 @@ class ExceptionHandler extends BaseExceptionHandler {
                     .path(getPath(request))
                     .timestamp(Instant.now())
                     .build());
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(DeleteException.class)
+  ResponseEntity<ErrorDto> handleDeleteException(DeleteException ex, WebRequest request) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(
+                    ErrorDto.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .message(ex.getMessage())
+                            .path(getPath(request))
+                            .timestamp(Instant.now())
+                            .build());
   }
 }

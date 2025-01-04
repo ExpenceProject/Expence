@@ -2,10 +2,7 @@ package ug.edu.pl.server.domain.group;
 
 import ug.edu.pl.server.domain.group.dto.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -59,14 +56,69 @@ class BillService {
     private Set<Expense> prepareExpenses(CreateBillDto billDto, Bill bill, Map<Long, Member> borrowers) {
         Set<Expense> expenses = new HashSet<>();
         for (CreateExpenseDto dto : billDto.expenses()) {
-            var expense = new Expense();
-            expense.setAmount(dto.amount());
-            expense.setBorrower(borrowers.get(dto.borrowerId()));
-            expense.setBill(bill);
-            expenses.add(expense);
+            var doesExist = bill.getExpenses().stream().anyMatch(expense -> expense.getBorrower().getId().equals(dto.borrowerId()));
+            if(!doesExist) {
+                var expense = new Expense();
+                expense.setAmount(dto.amount());
+                expense.setBorrower(borrowers.get(dto.borrowerId()));
+                expense.setBill(bill);
+                expenses.add(expense);
+            } else {
+                var expenseToAdd = bill.getExpenses().stream()
+                        .filter(expense -> expense.getBorrower().getId().equals(dto.borrowerId()))
+                        .findFirst()
+                        .map(expense -> {
+                            expense.setAmount(dto.amount());
+                            expense.setBorrower(borrowers.get(dto.borrowerId()));
+                            if (expense.getBill() == null) {
+                                expense.setBill(bill);
+                            }
+                            return expense;
+                        }).orElse(null);
+                expenses.add(expenseToAdd);
+            }
         }
         return expenses;
     }
+
+    BillDto update(Long billId, CreateBillDto billDto) {
+        Bill billToUpdate = billRepository.findByIdOrThrow(billId);
+        billToUpdate.setName(billDto.name());
+        billToUpdate.setTotalAmount(billDto.totalAmount());
+        if(billToUpdate.getLender().getId() != billDto.lenderId()) {
+            var lender = memberRepository.findByIdAndGroupIdOrThrow(billDto.lenderId(), billDto.groupId());
+            billToUpdate.setLender(lender);
+        }
+        var newExpenses = billDto.expenses();
+        var oldExpenses = billToUpdate.getExpenses();
+
+        oldExpenses.removeIf(oldExpense ->
+            newExpenses.stream().noneMatch(newExpense ->
+                            Objects.equals(newExpense.borrowerId(), oldExpense.getBorrower().getId())
+                    )
+        );
+
+        var borrowers = findBorrowers(billDto);
+
+        var expenses = prepareExpenses(billDto, billToUpdate, borrowers);
+        billToUpdate.setExpenses(expenses);
+        return billRepository.saveOrThrow(billToUpdate).dto();
+    }
+
+    Collection<BillDto> getBillsByGroupId(Long groupId) {
+        return billRepository.findAllByGroup_Id(groupId).stream().map(Bill::dto)
+                .collect(Collectors.toList());
+    }
+
+    Collection<BillDto> getBillsByUserIdAndGroupId(Long userId, Long groupId) {
+        return billRepository.findAllByUserIdAndGroupId(userId, groupId).stream().map(Bill::dto)
+                .collect(Collectors.toList());
+    }
+
+    Void deleteBill(Long id) {
+        return billRepository.deleteByIdOrThrow(id);
+    }
+
     PaymentDto createPayment(CreatePaymentDto paymentDto) {
         var receiver = memberRepository.findByIdAndGroupIdOrThrow(paymentDto.receiverId(), paymentDto.groupId());
         var sender = memberRepository.findByIdAndGroupIdOrThrow(paymentDto.senderId(), paymentDto.groupId());
