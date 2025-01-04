@@ -30,8 +30,7 @@ class BillService {
         var bill = prepareBill(billDto, lender, group);
         var borrowers = findBorrowers(billDto);
 
-        var expenses = prepareExpenses(billDto, bill, borrowers);
-        bill.setExpenses(expenses);
+        prepareExpenses(billDto.expenses(), bill, borrowers);
         return billRepository.saveOrThrow(bill).dto();
     }
 
@@ -53,32 +52,27 @@ class BillService {
                 .collect(Collectors.toMap(Member::getId, Function.identity()));
     }
 
-    private Set<Expense> prepareExpenses(CreateBillDto billDto, Bill bill, Map<Long, Member> borrowers) {
-        Set<Expense> expenses = new HashSet<>();
-        for (CreateExpenseDto dto : billDto.expenses()) {
+    private void prepareExpenses(Set<CreateExpenseDto> newExpenses, Bill bill, Map<Long, Member> borrowers) {
+        for (CreateExpenseDto dto : newExpenses) {
             var doesExist = bill.getExpenses().stream().anyMatch(expense -> expense.getBorrower().getId().equals(dto.borrowerId()));
             if(!doesExist) {
                 var expense = new Expense();
                 expense.setAmount(dto.amount());
                 expense.setBorrower(borrowers.get(dto.borrowerId()));
                 expense.setBill(bill);
-                expenses.add(expense);
+                bill.addExpense(expense);
             } else {
-                var expenseToAdd = bill.getExpenses().stream()
+                bill.getExpenses().stream()
                         .filter(expense -> expense.getBorrower().getId().equals(dto.borrowerId()))
                         .findFirst()
-                        .map(expense -> {
+                        .ifPresent(expense -> {
                             expense.setAmount(dto.amount());
                             expense.setBorrower(borrowers.get(dto.borrowerId()));
-                            if (expense.getBill() == null) {
-                                expense.setBill(bill);
-                            }
-                            return expense;
-                        }).orElse(null);
-                expenses.add(expenseToAdd);
+                            expense.setBill(bill);
+
+                        });
             }
         }
-        return expenses;
     }
 
     BillDto update(Long billId, CreateBillDto billDto) {
@@ -100,8 +94,7 @@ class BillService {
 
         var borrowers = findBorrowers(billDto);
 
-        var expenses = prepareExpenses(billDto, billToUpdate, borrowers);
-        billToUpdate.setExpenses(expenses);
+        prepareExpenses(newExpenses, billToUpdate, borrowers);
         return billRepository.saveOrThrow(billToUpdate).dto();
     }
 
