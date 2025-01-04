@@ -3,7 +3,7 @@ type DeepReadonly<T> = {
 };
 
 export type User = DeepReadonly<{
-  id: number;
+  id: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -37,3 +37,67 @@ export type UserUpdatedData = DeepReadonly<{
   lastName?: string;
   phoneNumber?: string;
 }>;
+
+export type GroupMember = DeepReadonly<{
+  id: string;
+  user: string;
+  nickname: string;
+  groupRole: {
+    name: string;
+  };
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}>;
+
+export type GroupMemberWithUser = GroupMember &
+  DeepReadonly<{ userInfo?: User }>;
+
+export type Group = DeepReadonly<{
+  id: string;
+  image: {
+    key: string;
+  };
+  name: string;
+  settledDown: boolean;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}>;
+
+export type GroupWithMembers = DeepReadonly<{
+  id: string;
+  image: {
+    key: string;
+  };
+  name: string;
+  settledDown: boolean;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  members: GroupMember[];
+}>;
+
+export enum InvitationStatus {
+  SENT = 'SENT',
+  ACCEPTED = 'ACCEPTED',
+  DECLINED = 'DECLINED',
+  CANCELED = 'CANCELED',
+}
+
+export type Invitation = DeepReadonly<{
+  id: string;
+  inviteeId: string;
+  inviterId: string;
+  groupId: string;
+  status: InvitationStatus;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}>;
+
+export type InvitationWithInviter = Invitation &
+  DeepReadonly<{ inviter?: User }>;
+
+export type InvitationWithInviterAndGroup = InvitationWithInviter &
+  DeepReadonly<{ group?: Group }>;

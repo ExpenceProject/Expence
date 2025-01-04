@@ -120,7 +120,7 @@ export const UserInformation = () => {
             type="tel"
             color="textRaw"
             css={{
-              '-moz-appearance': 'textfield',
+              MozAppearance: 'textfield',
               '&::-webkit-inner-spin-button': { display: 'none' },
               '&::-webkit-outer-spin-button': { display: 'none' },
             }}
@@ -140,7 +140,7 @@ export const UserInformation = () => {
           fontSize="lg"
           bg="primary"
           color="textBg"
-          _hover={{ bg: 'hover' }}
+          _hover={{ bg: 'hoverPrimary' }}
           disabled={isLoading || !isChanged}
           type="submit"
           mt={8}

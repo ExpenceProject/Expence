@@ -9,11 +9,13 @@ import { FC, ReactNode } from 'react';
 type PageLayoutProps = {
   children: ReactNode;
   direction?: 'row' | 'column';
+  includeGap?: boolean;
 };
 
 export const PageLayout: FC<PageLayoutProps> = ({
   children,
   direction = 'column',
+  includeGap = true,
 }) => {
   return (
     <Flex
@@ -33,7 +35,7 @@ export const PageLayout: FC<PageLayoutProps> = ({
         }
         alignItems="center"
         justifyContent="center"
-        gap={{ base: 10, md: 20 }}
+        gap={{ base: includeGap ? 10 : 0, md: includeGap ? 20 : 0 }}
       >
         {children}
       </Flex>

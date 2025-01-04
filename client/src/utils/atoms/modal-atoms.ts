@@ -32,3 +32,27 @@ export const openAvatarModalAtom = atom(null, (_, set) => {
 export const closeAvatarModalAtom = atom(null, (_, set) => {
   set(isAvatarModalOpenAtom, false);
 });
+
+// Group creation modal
+
+export const isGroupCreationModalOpenAtom = atom(false);
+
+export const openGroupCreationModalAtom = atom(null, (_, set) => {
+  set(isGroupCreationModalOpenAtom, true);
+});
+
+export const closeGroupCreationModalAtom = atom(null, (_, set) => {
+  set(isGroupCreationModalOpenAtom, false);
+});
+
+// Group edit image modal
+
+export const isGroupEditImageModalOpenAtom = atom(false);
+
+export const openGroupEditImageModalAtom = atom(null, (_, set) => {
+  set(isGroupEditImageModalOpenAtom, true);
+});
+
+export const closeGroupEditImageModalAtom = atom(null, (_, set) => {
+  set(isGroupEditImageModalOpenAtom, false);
+});
