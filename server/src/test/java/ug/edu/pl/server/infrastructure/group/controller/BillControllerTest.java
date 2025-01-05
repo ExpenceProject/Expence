@@ -101,6 +101,50 @@ class BillControllerTest extends IntegrationTest {
 
     @Test
     @Transactional
+    @WithMockUser
+    void shouldGetAllByGroupId() throws Exception {
+        // given
+        var createdBill =
+                groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()));
+
+        //when
+        var result = getAllByGroupId(group.id());
+
+        //then
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(createdBill.id()))
+                .andExpect(jsonPath("$[0].name").value(createdBill.name()))
+                .andExpect(jsonPath("$[0].totalAmount").value(createdBill.totalAmount()))
+                .andExpect(jsonPath("$[0].lender").isNotEmpty())
+                .andExpect(jsonPath("$[0].expenses").isNotEmpty());
+
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser
+    void shouldGetAllByUserIdAndGroupId() throws Exception {
+        // given
+        var createdBill =
+                groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()));
+
+        //when
+        var result = getAllByUserIdAndGroupId(registeredUser.id(), group.id());
+
+        //then
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(createdBill.id()))
+                .andExpect(jsonPath("$[0].name").value(createdBill.name()))
+                .andExpect(jsonPath("$[0].totalAmount").value(createdBill.totalAmount()))
+                .andExpect(jsonPath("$[0].lender").isNotEmpty())
+                .andExpect(jsonPath("$[0].expenses").isNotEmpty());
+
+    }
+
+    @Test
+    @Transactional
     void shouldReturnUnauthorizedWhenGetByIdWithoutLogin() throws Exception {
         // given
         var createdBill =
@@ -146,6 +190,45 @@ class BillControllerTest extends IntegrationTest {
     @Test
     @Transactional
     @WithMockUser
+    void shouldUpdateBill() throws Exception {
+        // given
+        var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
+        var createResult =
+                create(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()), authenticatedUser);
+        var createdBill = parseResponse(createResult, BillDto.class);
+
+        Set<CreateExpenseDto> updatedExpenses = Set.of(
+                new CreateExpenseDto(members.get(1).id(), new BigDecimal(200)),
+                new CreateExpenseDto(members.get(0).id(), new BigDecimal(100))
+        );
+
+    var updateBillDto =
+        new CreateBillDto(
+            "updatedGroup",
+            updatedExpenses,
+            new BigDecimal(300),
+            members.get(1).id(),
+            group.id());
+
+        // when
+        var result =
+                update(createdBill.id(), updateBillDto, authenticatedUser);
+
+        // then
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("updatedGroup"))
+                .andExpect(jsonPath("$.totalAmount").value(300L))
+                .andExpect(jsonPath("$.lender.id").value(members.get(1).id()))
+                .andExpect(jsonPath("$.expenses").isNotEmpty())
+                .andExpect(jsonPath("$.expenses[0].amount").value(200L))
+                .andExpect(jsonPath("$.expenses[1].amount").value(100L));
+    }
+
+
+    @Test
+    @Transactional
+    @WithMockUser
     void shouldReturnBadRequestWhenCreatingBillWithBlankName() throws Exception {
         // when
         var authenticatedUser = authFacade.authenticateAndGenerateToken(new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
@@ -171,6 +254,14 @@ class BillControllerTest extends IntegrationTest {
         return mockMvc.perform(get(URL + "/" + id).contentType(MediaType.APPLICATION_JSON));
     }
 
+    private ResultActions getAllByGroupId(String id) throws Exception {
+        return mockMvc.perform(get(URL + "/group/" + id).contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private ResultActions getAllByUserIdAndGroupId(String userId, String groupId) throws Exception {
+        return mockMvc.perform(get(URL + "/user/" + userId + "/group/" + groupId).contentType(MediaType.APPLICATION_JSON));
+    }
+
     private ResultActions create(CreateBillDto billDto, AuthDto authDto) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -183,4 +274,17 @@ class BillControllerTest extends IntegrationTest {
         return mockMvc.perform(requestBuilder);
 
     }
+
+    private <T> T parseResponse(ResultActions resultActions, Class<T> responseType) throws Exception {
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(responseBody, responseType);
+    }
+
+    private ResultActions update(String billId, CreateBillDto updateBillDto, AuthDto authDto) throws Exception {
+        return mockMvc.perform(put("/api/bills/" + billId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, authDto.tokenType() + " " + authDto.token())
+                .content(objectMapper.writeValueAsString(updateBillDto)));
+    }
+
 }

@@ -276,6 +276,185 @@ class GroupFacadeTest {
   }
 
   @Test
+  void shouldGetBillsByGroupId() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    var bill = groupFacade.createBill(createBillDto);
+
+    // when
+    var billRetrieved = groupFacade.getBillsByGroupId(groupDto.id());
+
+    // then
+    assertThat(billRetrieved).containsExactly(bill);
+  }
+
+
+  @Test
+  void shouldGetBillsByGroupIdAndUserId() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    var bill = groupFacade.createBill(createBillDto);
+
+    // when
+    var billRetrieved = groupFacade.getBillsByUserIdAndGroupId(invitee.id(), groupDto.id());
+
+    // then
+    assertThat(billRetrieved).containsExactly(bill);
+  }
+
+  @Test
+  void shouldDeleteBill() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    var bill = groupFacade.createBill(createBillDto);
+
+
+    // when
+    groupFacade.deleteBill(bill.id());
+
+    // then
+    assertThatThrownBy(() -> groupFacade.getBillById(bill.id()))
+            .isInstanceOf(NotFoundException.class);
+  }
+
+
+  @Test
+  void shouldUpdateBill() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // when
+    Set<CreateExpenseDto> initialExpenses = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+    CreateBillDto initialBillDto =
+            new CreateBillDto("initial bill", initialExpenses, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    var initialBill = groupFacade.createBill(initialBillDto);
+
+    // then
+    assertThat(initialBill.id()).isNotNull();
+    assertThat(initialBill.name()).isEqualTo(initialBillDto.name());
+    assertThat(initialBill.totalAmount()).isEqualTo(initialBillDto.totalAmount());
+    assertThat(initialBill.expenses()).hasSize(2);
+
+    // when
+    Set<CreateExpenseDto> updatedExpenses = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(50)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(150))
+    );
+
+    CreateBillDto updatedBillDto =
+            new CreateBillDto("updated bill", updatedExpenses, new BigDecimal(300), members.get(0).id(), groupDto.id());
+
+    var updatedBill = groupFacade.updateBill(updatedBillDto, initialBill.id());
+
+    // then
+    assertThat(updatedBill.id()).isEqualTo(initialBill.id()); // ID remains the same
+    assertThat(updatedBill.name()).isEqualTo(updatedBillDto.name());
+    assertThat(updatedBill.totalAmount()).isEqualTo(updatedBillDto.totalAmount());
+    assertThat(updatedBill.expenses()).hasSize(3);
+
+    var updatedExpenseList = updatedBill.expenses().stream()
+            .map(ExpenseDto::amount)
+            .toList();
+
+
+    assertThat(updatedExpenseList).contains(new BigDecimal(50));
+    assertThat(updatedExpenseList).contains(new BigDecimal(100));
+    assertThat(updatedExpenseList).contains(new BigDecimal(150));
+  }
+
+
+
+  @Test
   void shouldCreatePayment() {
     // given
     UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);

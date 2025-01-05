@@ -115,11 +115,29 @@ class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill>
   @Override
   public Bill save(Bill bill) {
     updateTimestampsAndVersion(bill);
-    billIdMap.put(bill.getId(), bill);
+
+    if (billIdMap.containsKey(bill.getId())) {
+      Set<Expense> currentExpenses = new HashSet<>(bill.getExpenses());
+      Set<Expense> existingExpenses = new HashSet<>(billIdMap.get(bill.getId()).getExpenses());
+
+      existingExpenses.removeIf(expense -> !currentExpenses.contains(expense));
+      for (Expense expense : existingExpenses) {
+        InMemoryExpenseRepository.expenseMap.remove(expense.getId());  // Remove orphaned expenses
+      }
+    } else {
+      billIdMap.put(bill.getId(), bill);
+    }
 
     for (Expense expense : bill.getExpenses()) {
-      InMemoryExpenseRepository.expenseMap.put(expense.getId(), expense);
+      if (InMemoryExpenseRepository.expenseMap.containsKey(expense.getId())) {
+        InMemoryExpenseRepository.expenseMap.put(expense.getId(), expense);
+      } else {
+        InMemoryExpenseRepository.expenseMap.put(expense.getId(), expense);
+      }
     }
+
+    billIdMap.put(bill.getId(), bill);
+
     return bill;
   }
 
@@ -130,16 +148,21 @@ class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill>
 
   @Override
   public Collection<Bill> findAllByGroup_Id(Long groupId) {
-    return List.of();
+    return billIdMap.values().stream()
+            .filter(bill -> bill.getGroup().getId().equals(groupId))
+            .collect(Collectors.toList());
   }
 
   @Override
   public Collection<Bill> findAllByUserIdAndGroupId(Long userId, Long groupId) {
-    return List.of();
+    return billIdMap.values().stream()
+            .filter(bill -> bill.getGroup().getId().equals(groupId) && (bill.getLender().getUserId().equals(userId) || bill.getExpenses().stream().anyMatch(expense -> expense.getBorrower().getUserId().equals(userId))))
+            .collect(Collectors.toList());
   }
 
   @Override
   public Void deleteById(Long id) {
+    billIdMap.remove(id);
     return null;
   }
 }
