@@ -73,6 +73,10 @@ class GroupService {
     groupRepository.saveOrThrow(group);
   }
 
+  String getUserIdFromMember(String memberId, String groupId) {
+    return memberRepository.findUserIdByIdAndGroupId(memberId, groupId);
+  }
+
   MemberDto updateMemberRole(String groupId, String memberId, String roleName) {
     var member = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(memberId), Long.valueOf(groupId));
     var role = groupRoleRepository.findByNameOrThrow(GroupRoleName.valueOf(roleName));

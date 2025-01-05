@@ -1,7 +1,6 @@
 package ug.edu.pl.server.domain.group;
 
 import jakarta.validation.Valid;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import ug.edu.pl.server.Log;
@@ -26,7 +25,6 @@ public class GroupFacade {
   }
 
   @Transactional(readOnly = true)
-  @Cacheable(value = CACHE_NAME, key = "#id+ '-group'")
   public GroupDto getById(String id) {
     return groupService.getById(id);
   }
@@ -52,6 +50,11 @@ public class GroupFacade {
   }
 
   @Transactional
+  public String getUserIdByMemberIdAndGroupId(String memberId, String groupId) {
+    return groupService.getUserIdFromMember(memberId, groupId);
+  }
+
+  @Transactional
   public MemberDto updateMemberRole(String groupId, String memberId, String role) {
     return groupService.updateMemberRole(groupId, memberId, role);
   }
@@ -62,19 +65,16 @@ public class GroupFacade {
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#userId+ '-groups'")
   public Collection<GroupDto> findAllGroupsByUserId(String userId) {
     return groupService.findAllGroupsByUserId(userId);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-members'")
   public Collection<MemberDto> findAllMembersByGroupId(String groupId) {
     return groupService.findAllMembersByGroupId(groupId);
   }
 
   @Transactional(readOnly = true)
-  @Cacheable(value = CACHE_NAME, key = "#id+ '-bill'")
   public BillDto getBillById(String id) {
     return billService.getById(id);
   }
@@ -85,14 +85,12 @@ public class GroupFacade {
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-bills'")
   public Collection<BillDto> getBillsByGroupId(String groupId) {
     return billService.getBillsByGroupId(groupId);
   }
 
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#userId + ':' + #groupId+ '-bills'")
   public Collection<BillDto> getBillsByUserIdAndGroupId(String userId, String groupId) {
     return billService.getBillsByUserIdAndGroupId(userId, groupId);
   }
@@ -113,31 +111,26 @@ public class GroupFacade {
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-payment'")
   public PaymentDto getPaymentById(String id) {
     return billService.getPaymentById(id);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#senderId + ':' + #groupId+ '-payments'")
   public Collection<PaymentDto> getPaymentsBySenderIdAndGroupId(String senderId, String groupId) {
     return billService.getPaymentsBySenderIdAndGroupId(senderId, groupId);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#receiverId + ':' + #groupId+ '-payments-receiver'")
   public Collection<PaymentDto> getPaymentsByReceiverIdAndGroupId(String receiverId, String groupId) {
     return billService.getPaymentsByReceiverIdAndGroupId(receiverId, groupId);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#groupId+ '-payments'")
   public Collection<PaymentDto> getPaymentsByGroupId(String groupId) {
     return billService.getPaymentsByGroupId(groupId);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#receiverId + ':' + #groupId+ ':' + #senderId+ '-payments'")
   public Collection<PaymentDto> getPaymentsByGroupIdAndSenderIdAndReceiverId(String groupId, String senderId, String receiverId) {
     return billService.getPaymentsByGroupIdAndSenderIdAndReceiverId(groupId, senderId, receiverId);
   }
@@ -153,25 +146,21 @@ public class GroupFacade {
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#id+ '-invitation'")
   public InvitationDto getInvitationById(String id) {
     return invitationService.getById(id);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#inviteeId + ':' + #groupId+ '-invitation'")
   public InvitationDto getInvitationByGroupAndInviteeId(String groupId, String inviteeId) {
     return invitationService.getByGroupAndInviteeId(groupId, inviteeId);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#status + ':' + #groupId+ '-invitations'")
   public Collection<InvitationDto> getInvitationsByGroupId(String groupId, InvitationStatus status) {
     return invitationService.getByGroupId(groupId, status);
   }
 
   @Transactional
-  @Cacheable(value = CACHE_NAME, key = "#inviteeId + ':' + #status+ '-invitations-invitee'")
   public Collection<InvitationDto> getInvitationsByInviteeId(String inviteeId, InvitationStatus status) {
     return invitationService.getByInviteeId(inviteeId, status);
   }
