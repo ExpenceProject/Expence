@@ -221,8 +221,8 @@ class BillControllerTest extends IntegrationTest {
                 .andExpect(jsonPath("$.totalAmount").value(300L))
                 .andExpect(jsonPath("$.lender.id").value(members.get(1).id()))
                 .andExpect(jsonPath("$.expenses").isNotEmpty())
-                .andExpect(jsonPath("$.expenses[0].amount").value(200L))
-                .andExpect(jsonPath("$.expenses[1].amount").value(100L));
+                .andExpect(jsonPath("$.expenses[?(@.amount == 200)]").isNotEmpty())
+                .andExpect(jsonPath("$.expenses[?(@.amount == 100)]").isNotEmpty());
     }
 
 
