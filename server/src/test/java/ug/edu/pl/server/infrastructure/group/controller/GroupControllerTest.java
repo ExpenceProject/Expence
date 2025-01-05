@@ -72,10 +72,8 @@ class GroupControllerTest extends IntegrationTest {
     // given
     var createdGroup =
         groupFacade.create(SampleGroups.VALID_GROUP_WITH_FILE_AND_NO_INVITEES, registeredUser);
-
     // when
     var result = getById(createdGroup.id());
-
     // then
     result.andExpect(status().isUnauthorized());
   }

@@ -7,6 +7,8 @@ import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
 import ug.edu.pl.server.domain.group.dto.GroupDto;
 import ug.edu.pl.server.domain.group.dto.MemberDto;
 import ug.edu.pl.server.domain.group.dto.UpdateGroupDto;
+import ug.edu.pl.server.domain.user.UserFacade;
+import ug.edu.pl.server.domain.user.dto.UserDto;
 import ug.edu.pl.server.infrastructure.security.auth.CurrentUserContext;
 
 import java.util.Collection;
@@ -15,10 +17,14 @@ import java.util.Collection;
 @RequestMapping("/api/groups")
 class GroupController {
   private final GroupFacade groupFacade;
+  private final UserFacade userFacade;
   private final CurrentUserContext currentUserContext;
 
-  GroupController(GroupFacade groupFacade, CurrentUserContext currentUserContext) {
+  GroupController(GroupFacade groupFacade,
+                  UserFacade userFacade,
+                  CurrentUserContext currentUserContext) {
     this.groupFacade = groupFacade;
+    this.userFacade = userFacade;
     this.currentUserContext = currentUserContext;
   }
 
@@ -68,5 +74,11 @@ class GroupController {
   ResponseEntity<Void> deleteMember(@PathVariable String groupId, @PathVariable String memberId) {
     groupFacade.deleteMember(groupId, memberId);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/{groupId}/members/{memberId}/user")
+  ResponseEntity<UserDto> getUserByMemberIdAndGroupId(@PathVariable String memberId, @PathVariable String groupId) {
+    String userId = groupFacade.getUserIdByMemberIdAndGroupId(memberId, groupId);
+    return ResponseEntity.ok(userFacade.getById(Long.valueOf(userId)));
   }
 }

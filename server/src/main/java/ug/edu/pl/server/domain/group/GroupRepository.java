@@ -49,6 +49,9 @@ interface MemberRepository extends Repository<Member, Long> {
 
   Optional<Member> findByUserIdAndGroupId(Long userId, Long groupId);
 
+  @Query("SELECT m.userId FROM Member m WHERE m.id = :memberId AND m.group.id = :groupId")
+  String findUserIdByIdAndGroupId(String memberId, String groupId);
+
   @Query("SELECT m FROM Member m WHERE m.id IN :ids AND m.group.id = :groupId")
   Set<Member> findAllByIdAndGroupId(@Param("ids") Set<Long> ids, @Param("groupId") Long groupId);
 

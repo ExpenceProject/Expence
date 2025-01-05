@@ -257,6 +257,16 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   }
 
   @Override
+  public String findUserIdByIdAndGroupId(String memberId, String groupId) {
+    return memberMap.values().stream()
+            .filter(member -> member.getId().toString().equals(memberId) && member.getGroup().getId().toString().equals(groupId))
+            .map(Member::getUserId)
+            .map(Object::toString)
+            .findFirst()
+            .orElse(null);
+  }
+
+  @Override
   public Optional<Member> findByUserIdAndGroupId(Long userId, Long groupId) {
     return memberMap.values().stream().filter(m -> m.getUserId().equals(userId) && m.getGroup().getId().equals(groupId)).findFirst();
   }
