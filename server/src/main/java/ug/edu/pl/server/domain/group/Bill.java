@@ -40,6 +40,11 @@ class Bill extends BaseEntity {
   @JoinColumn(name = "group_id", nullable = false)
   private Group group;
 
+  void addExpense(Expense expense) {
+    this.expenses.add(expense);
+    expense.setBill(this);
+  }
+
   BillDto dto() {
     var expensesSet = expenses.stream()
             .map(Expense::dto)
@@ -53,7 +58,7 @@ class Bill extends BaseEntity {
             .expenses(expensesSet)
             .totalAmount(totalAmount)
             .lender(lenderDto)
-            .groupId(getGroup().getId())
+            .groupId(getGroup().getId().toString())
             .version(getVersion())
             .createdAt(getCreatedAt())
             .updatedAt(getUpdatedAt())

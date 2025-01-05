@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Builder
 public record PaymentDto(
-        Long id,
+        String id,
         MemberDto receiver,
         MemberDto sender,
         BigDecimal amount,

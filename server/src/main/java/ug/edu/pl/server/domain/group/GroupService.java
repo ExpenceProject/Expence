@@ -38,8 +38,8 @@ class GroupService {
     this.userFacade = userFacade;
   }
 
-  GroupDto getById(Long id) {
-    return groupRepository.findByIdOrThrow(id).dto();
+  GroupDto getById(String id) {
+    return groupRepository.findByIdOrThrow(Long.valueOf(id)).dto();
   }
 
   GroupDto createGroup(CreateGroupDto dto, UserDto currentUser) {
@@ -49,8 +49,8 @@ class GroupService {
     return groupRepository.saveOrThrow(group).dto();
   }
 
-  GroupDto updateGroup(Long id, UpdateGroupDto dto) {
-    var group = groupRepository.findByIdOrThrow(id);
+  GroupDto updateGroup(String id, UpdateGroupDto dto) {
+    var group = groupRepository.findByIdOrThrow(Long.valueOf(id));
     group.setName(dto.name());
     if (dto.file() != null && !dto.file().isEmpty()) {
       var imageKey = storageFacade.upload(dto.file());
@@ -59,40 +59,40 @@ class GroupService {
     return groupRepository.saveOrThrow(group).dto();
   }
 
-  void deleteGroup(Long id) {
-    groupRepository.deleteById(id);
+  void deleteGroup(String id) {
+    groupRepository.deleteById(Long.valueOf(id));
   }
 
-  void deleteMember(Long groupId, Long memberId) {
-    var group = groupRepository.findByIdOrThrow(groupId);
+  void deleteMember(String groupId, String memberId) {
+    var group = groupRepository.findByIdOrThrow(Long.valueOf(groupId));
     var member = group.getMembers().stream()
-        .filter(m -> m.getId().equals(memberId))
+        .filter(m -> m.getId().equals(Long.valueOf(memberId)))
         .findFirst()
-        .orElseThrow(() -> new NotFoundException(Member.class.getName(), memberId));
+        .orElseThrow(() -> new NotFoundException(Member.class.getName(), Long.valueOf(memberId)));
     group.getMembers().remove(member);
     groupRepository.saveOrThrow(group);
   }
 
-  MemberDto updateMemberRole(Long groupId, Long memberId, String roleName) {
-    var member = memberRepository.findByIdAndGroupIdOrThrow(memberId, groupId);
+  MemberDto updateMemberRole(String groupId, String memberId, String roleName) {
+    var member = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(memberId), Long.valueOf(groupId));
     var role = groupRoleRepository.findByNameOrThrow(GroupRoleName.valueOf(roleName));
 
     member.setGroupRole(role);
     return memberRepository.saveOrThrow(member).dto();
   }
 
-  MemberDto updateMemberNickname(Long groupId, Long memberId, String nickname) {
-    var member = memberRepository.findByIdAndGroupIdOrThrow(memberId, groupId);
+  MemberDto updateMemberNickname(String groupId, String memberId, String nickname) {
+    var member = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(memberId), Long.valueOf(groupId));
     member.setNickname(nickname);
     return memberRepository.saveOrThrow(member).dto();
   }
 
-  Collection<GroupDto> findAllGroupsByUserId(Long userId) {
-    return groupRepository.findAllGroupsByUserId(userId).stream().map(Group::dto).collect(Collectors.toList());
+  Collection<GroupDto> findAllGroupsByUserId(String userId) {
+    return groupRepository.findAllGroupsByUserId(Long.valueOf(userId)).stream().map(Group::dto).collect(Collectors.toList());
   }
 
-  Collection<MemberDto> findAllMembersByGroupId(Long groupId) {
-    return groupRepository.findByIdOrThrow(groupId).getMembers().stream().map(Member::dto).collect(Collectors.toList());
+  Collection<MemberDto> findAllMembersByGroupId(String groupId) {
+    return groupRepository.findByIdOrThrow(Long.valueOf(groupId)).getMembers().stream().map(Member::dto).collect(Collectors.toList());
   }
 
   private Group createGroupEntity(CreateGroupDto dto) {
@@ -123,10 +123,10 @@ class GroupService {
             .orElseThrow(() -> new NotFoundException(Group.class.getName(), Long.valueOf(currentUser.id())));
 
     Set<Invitation> invitations = new HashSet<>();
-    for (Long id : dto.inviteesId()) {
-      if (userFacade.getById(id) != null) {
+    for (String id : dto.inviteesId()) {
+      if (userFacade.getById(Long.valueOf(id)) != null) {
         var invitation = new Invitation();
-        invitation.setInviteeId(id);
+        invitation.setInviteeId(Long.valueOf(id));
         invitation.setInviter(inviter);
         invitation.setGroup(group);
         invitation.setStatus(InvitationStatus.SENT);

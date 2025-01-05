@@ -12,7 +12,7 @@ public record BillDto(String id,
                       Set<ExpenseDto> expenses,
                       BigDecimal totalAmount,
                       MemberDto lender,
-                      Long groupId,
+                      String groupId,
                       Long version,
                       Instant createdAt,
                       Instant updatedAt) {}

@@ -55,7 +55,7 @@ class GroupControllerTest extends IntegrationTest {
         groupFacade.create(SampleGroups.VALID_GROUP_WITH_FILE_AND_NO_INVITEES, registeredUser);
 
     // when
-    var result = getById(Long.valueOf(createdGroup.id()));
+    var result = getById(createdGroup.id());
 
     // then
     result
@@ -74,7 +74,7 @@ class GroupControllerTest extends IntegrationTest {
         groupFacade.create(SampleGroups.VALID_GROUP_WITH_FILE_AND_NO_INVITEES, registeredUser);
 
     // when
-    var result = getById(Long.valueOf(createdGroup.id()));
+    var result = getById(createdGroup.id());
 
     // then
     result.andExpect(status().isUnauthorized());
@@ -150,7 +150,7 @@ class GroupControllerTest extends IntegrationTest {
                 SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
     var result =
         create(
-            SampleGroups.validGroupWithFileAndInvitees(Set.of(Long.valueOf(userCreated.id()))),
+            SampleGroups.validGroupWithFileAndInvitees(Set.of(userCreated.id())),
             authenticatedUser);
 
     // then
@@ -207,7 +207,7 @@ class GroupControllerTest extends IntegrationTest {
         authFacade.authenticateAndGenerateToken(
             new LoginDto(
                 SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
-    var result = create(SampleGroups.validGroupWithFileAndInvitees(Set.of(1L)), authenticatedUser);
+    var result = create(SampleGroups.validGroupWithFileAndInvitees(Set.of("1")), authenticatedUser);
 
     // then
     result.andExpect(status().isNotFound());
@@ -223,7 +223,7 @@ class GroupControllerTest extends IntegrationTest {
     result.andExpect(status().isUnauthorized());
   }
 
-  private ResultActions getById(Long id) throws Exception {
+  private ResultActions getById(String id) throws Exception {
     return mockMvc.perform(get(URL + "/" + id).contentType(MediaType.APPLICATION_JSON));
   }
 

@@ -2,6 +2,7 @@ package ug.edu.pl.server.domain.group;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import ug.edu.pl.server.domain.common.exception.DeleteException;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.exception.SavingException;
 
@@ -12,6 +13,25 @@ interface BillRepository extends Repository<Bill, Long> {
     Bill save(Bill bill);
 
     Optional<Bill> findById(Long id);
+
+    Collection<Bill> findAllByGroup_Id(Long groupId);
+
+    @Query("SELECT b FROM Bill b " +
+            "LEFT JOIN b.expenses e " +
+            "WHERE (b.lender.userId = :userId OR e.borrower.userId = :userId) " +
+            "AND b.group.id = :groupId")
+    Collection<Bill> findAllByUserIdAndGroupId(Long userId, Long groupId);
+
+    Void deleteById(Long id);
+
+    default Void deleteByIdOrThrow(Long id) {
+        try {
+            return deleteById(id);
+        } catch (Exception ex) {
+            throw new DeleteException(ex.getMessage());
+        }
+
+    }
 
     default Bill findByIdOrThrow(Long id) {
         return findById(id).orElseThrow(() -> new NotFoundException(Bill.class.getName(), id));

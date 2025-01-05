@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public record CreateExpenseDto(
         @NotNull(message = "Lender ID must not be null")
         @Positive(message = "Lender ID must be a positive number")
-        Long borrowerId,
+        String borrowerId,
 
         @NotNull(message = "Amount must not be null")
         @DecimalMin(value = "0.01", message = "Total amount must be greater than 0")

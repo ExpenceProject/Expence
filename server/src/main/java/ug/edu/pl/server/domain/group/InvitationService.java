@@ -27,16 +27,16 @@ class InvitationService {
     }
 
     List<InvitationDto> create(CreateInvitationsDto invitationsDto) {
-        Group group = groupRepository.findByIdOrThrow(invitationsDto.groupId());
+        Group group = groupRepository.findByIdOrThrow(Long.valueOf(invitationsDto.groupId()));
 
-        Member inviter = memberRepository.findByUserIdAndGroupIdOrThrow(invitationsDto.inviterId(), group.getId());
+        Member inviter = memberRepository.findByUserIdAndGroupIdOrThrow(Long.valueOf(invitationsDto.inviterId()), group.getId());
         if (inviter.getGroupRole().getName() != GroupRoleName.ROLE_OWNER) {
             throw new ForbiddenException("You are not allowed to invite to this group.");
         }
 
         return invitationsDto.inviteeIds().stream().map(inviteeId -> {
             Invitation invitation = new Invitation();
-            invitation.setInviteeId(inviteeId);
+            invitation.setInviteeId(Long.valueOf(inviteeId));
             invitation.setInviter(inviter);
             invitation.setGroup(group);
             invitation.setStatus(InvitationStatus.SENT);
@@ -45,24 +45,24 @@ class InvitationService {
         }).collect(Collectors.toList());
     }
 
-    InvitationDto getById(Long id) {
-        return invitationRepository.findByIdOrThrow(id).dto();
+    InvitationDto getById(String id) {
+        return invitationRepository.findByIdOrThrow(Long.valueOf(id)).dto();
     }
 
-    InvitationDto getByGroupAndInviteeId(Long groupId, Long inviteeId) {
-        return invitationRepository.findByGroupAndInviteeIdOrThrow(groupId, inviteeId).dto();
+    InvitationDto getByGroupAndInviteeId(String groupId, String inviteeId) {
+        return invitationRepository.findByGroupAndInviteeIdOrThrow(Long.valueOf(groupId), Long.valueOf(inviteeId)).dto();
     }
 
-    Collection<InvitationDto> getByInviteeId(Long id, InvitationStatus status) {
-        return invitationRepository.findInvitationsByInviteeIdFilterByStatus(id, status).stream().map(Invitation::dto).collect(Collectors.toList());
+    Collection<InvitationDto> getByInviteeId(String id, InvitationStatus status) {
+        return invitationRepository.findInvitationsByInviteeIdFilterByStatus(Long.valueOf(id), status).stream().map(Invitation::dto).collect(Collectors.toList());
     }
 
-    Collection<InvitationDto> getByGroupId(Long id, InvitationStatus status) {
-        return invitationRepository.findInvitationsByGroupIdFilterByStatus(id, status).stream().map(Invitation::dto).collect(Collectors.toList());
+    Collection<InvitationDto> getByGroupId(String id, InvitationStatus status) {
+        return invitationRepository.findInvitationsByGroupIdFilterByStatus(Long.valueOf(id), status).stream().map(Invitation::dto).collect(Collectors.toList());
     }
 
-    void updateInvitationStatus(Long id, InvitationStatus invitationStatus, UserDto currentUser) {
-        var invitation = invitationRepository.findByIdOrThrow(id);
+    void updateInvitationStatus(String id, InvitationStatus invitationStatus, UserDto currentUser) {
+        var invitation = invitationRepository.findByIdOrThrow(Long.valueOf(id));
         var group = invitation.getGroup();
 
         if (invitationStatus != InvitationStatus.CANCELLED
@@ -80,6 +80,6 @@ class InvitationService {
             group.getMembers().add(member);
             groupRepository.saveOrThrow(group);
         }
-        invitationRepository.updateStatusByIdOrThrow(id, invitationStatus);
+        invitationRepository.updateStatusByIdOrThrow(Long.valueOf(id), invitationStatus);
     }
 }
