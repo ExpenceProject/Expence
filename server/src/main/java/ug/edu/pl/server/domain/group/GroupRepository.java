@@ -80,4 +80,61 @@ interface MemberRepository extends Repository<Member, Long> {
 
     return members;
   }
+
+
+  @Query(value = """
+    WITH amounts_owed_to_user AS (
+        SELECT
+            u.id AS userId,
+            m.id AS memberId,
+            m.nickname AS memberNickname,
+            SUM(e.amount) - COALESCE(SUM(p.amount), 0) AS amountOwed
+        FROM expenses e
+                 JOIN bills b ON e.bill_id = b.id
+                 JOIN members m ON e.borrower_id = m.id
+                 JOIN users u ON m.user_id = u.id
+                 LEFT JOIN payments p
+                           ON p.receiver_id = b.lender_id
+                               AND p.sender_id = m.id
+                               AND p.group_id = b.group_id
+        WHERE b.lender_id = :memberId AND m.id != :memberId
+        GROUP BY u.id, m.id, m.nickname
+    ),
+         amounts_owed_by_user AS (
+             SELECT
+                 u.id AS userId,
+                 m.id AS memberId,
+                 m.nickname AS memberNickname,
+                 SUM(e.amount) - COALESCE(SUM(p.amount), 0) AS amountOwed
+             FROM expenses e
+                      JOIN bills b ON e.bill_id = b.id
+                      JOIN members m ON e.borrower_id = m.id
+                      JOIN users u ON b.lender_id = u.id
+                      LEFT JOIN payments p
+                                ON p.receiver_id = m.id
+                                    AND p.sender_id = b.lender_id
+                                    AND p.group_id = b.group_id
+             WHERE m.id = :memberId AND b.lender_id != :memberId
+             GROUP BY u.id, m.id, m.nickname
+         )
+    SELECT
+        COALESCE(a.userId, b.userId) AS userId,
+        COALESCE(a.memberId, b.memberId) AS memberId,
+        COALESCE(a.memberNickname, b.memberNickname) AS memberNickname,
+        COALESCE(a.amountOwed, 0) - COALESCE(b.amountOwed, 0) AS amount
+    FROM amounts_owed_to_user a
+             FULL OUTER JOIN amounts_owed_by_user b ON a.userId = b.userId
+    ORDER BY amount DESC
+""", nativeQuery = true)
+  Collection<Object[]> findMemberBalance(
+          Long memberId
+  );
+
+  default Collection<Object[]> findMemberBalanceOrThrow(Long memberId){
+    Collection<Object[]> balance = findMemberBalance(memberId);
+    if(balance.isEmpty()){
+      throw new NotFoundException(Member.class.getName(), memberId);
+    }
+    return balance;
+  }
 }

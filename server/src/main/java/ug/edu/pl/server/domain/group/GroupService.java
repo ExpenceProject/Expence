@@ -3,13 +3,11 @@ package ug.edu.pl.server.domain.group;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.persistance.Image;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
-import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
-import ug.edu.pl.server.domain.group.dto.GroupDto;
-import ug.edu.pl.server.domain.group.dto.MemberDto;
-import ug.edu.pl.server.domain.group.dto.UpdateGroupDto;
+import ug.edu.pl.server.domain.group.dto.*;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -139,4 +137,16 @@ class GroupService {
     }
     group.setInvitations(invitations);
   }
+
+  Collection<MemberBalanceDto> getMemberBalance(Long memberId){
+    Collection<Object[]> results = memberRepository.findMemberBalanceOrThrow(memberId);
+
+    return results.stream()
+            .map(result -> new MemberBalanceDto(
+                    ((Number) result[0]).longValue(),
+                    ((Number) result[1]).longValue(),
+                    (String) result[2],
+                    ((BigDecimal) result[3])
+            ))
+            .collect(Collectors.toList());  }
 }

@@ -3,10 +3,7 @@ package ug.edu.pl.server.infrastructure.group.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ug.edu.pl.server.domain.group.GroupFacade;
-import ug.edu.pl.server.domain.group.dto.CreateGroupDto;
-import ug.edu.pl.server.domain.group.dto.GroupDto;
-import ug.edu.pl.server.domain.group.dto.MemberDto;
-import ug.edu.pl.server.domain.group.dto.UpdateGroupDto;
+import ug.edu.pl.server.domain.group.dto.*;
 import ug.edu.pl.server.domain.user.UserFacade;
 import ug.edu.pl.server.domain.user.dto.UserDto;
 import ug.edu.pl.server.infrastructure.security.auth.CurrentUserContext;
@@ -68,6 +65,11 @@ class GroupController {
   ResponseEntity<Void> deleteGroup(@PathVariable String id) {
       groupFacade.deleteGroup(id);
       return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/member/{memberId}/balance")
+  ResponseEntity<Collection<MemberBalanceDto>> getMemberBalance(@PathVariable Long memberId){
+    return ResponseEntity.ok(groupFacade.getMemberBalance(memberId));
   }
 
   @DeleteMapping("/{groupId}/members/{memberId}")

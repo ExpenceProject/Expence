@@ -45,6 +45,11 @@ public class GroupFacade {
   }
 
   @Transactional
+  public Collection<MemberBalanceDto> getMemberBalance(Long memberId) {
+    return groupService.getMemberBalance(memberId);
+  }
+
+  @Transactional
   public void deleteMember(String groupId, String memberId) {
     groupService.deleteMember(groupId, memberId);
   }

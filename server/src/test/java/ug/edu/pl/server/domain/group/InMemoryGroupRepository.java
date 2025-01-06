@@ -257,6 +257,11 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   }
 
   @Override
+  public Collection<Object[]> findMemberBalance(Long memberId) {
+    return null;
+  }
+
+  @Override
   public String findUserIdByIdAndGroupId(String memberId, String groupId) {
     return memberMap.values().stream()
             .filter(member -> member.getId().toString().equals(memberId) && member.getGroup().getId().toString().equals(groupId))
@@ -270,4 +275,5 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   public Optional<Member> findByUserIdAndGroupId(Long userId, Long groupId) {
     return memberMap.values().stream().filter(m -> m.getUserId().equals(userId) && m.getGroup().getId().equals(groupId)).findFirst();
   }
+
 }
