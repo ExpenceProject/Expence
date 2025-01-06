@@ -67,7 +67,7 @@ class GroupController {
       return ResponseEntity.noContent().build();
   }
 
-  @GetMapping("/member/{memberId}/balance")
+  @GetMapping("/members/{memberId}/balance")
   ResponseEntity<Collection<MemberBalanceDto>> getMemberBalance(@PathVariable Long memberId){
     return ResponseEntity.ok(groupFacade.getMemberBalance(memberId));
   }

@@ -1,6 +1,8 @@
 package ug.edu.pl.server.domain.group;
 
+import ug.edu.pl.server.domain.common.exception.ForbiddenException;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
+import ug.edu.pl.server.domain.common.exception.SavingException;
 import ug.edu.pl.server.domain.common.persistance.Image;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.group.dto.*;
@@ -63,6 +65,19 @@ class GroupService {
 
   void deleteMember(String groupId, String memberId) {
     var group = groupRepository.findByIdOrThrow(Long.valueOf(groupId));
+    if (group.getBills().stream()
+            .anyMatch(b ->
+                    b.getLender().getId().equals(Long.valueOf(memberId)) ||
+                            b.getExpenses().stream().anyMatch(e -> e.getBorrower().getId().equals(Long.valueOf(memberId)))
+            ) ||
+            group.getPayments().stream()
+                    .anyMatch(p ->
+                            p.getReceiver().getId().equals(Long.valueOf(memberId)) ||
+                                    p.getSender().getId().equals(Long.valueOf(memberId))
+                    )) {
+      throw new ForbiddenException("You cannot remove member with associated expenses or payments!");
+    }
+
     var member = group.getMembers().stream()
         .filter(m -> m.getId().equals(Long.valueOf(memberId)))
         .findFirst()
