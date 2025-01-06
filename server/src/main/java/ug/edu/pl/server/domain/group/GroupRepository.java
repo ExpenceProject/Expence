@@ -137,4 +137,19 @@ interface MemberRepository extends Repository<Member, Long> {
     }
     return balance;
   }
+
+  @Query("SELECT CASE WHEN EXISTS (" +
+          "    SELECT 1 " +
+          "    FROM Expense e " +
+          "    JOIN e.bill b " +
+          "    WHERE (e.borrower.id = :memberId OR b.lender.id = :memberId) AND b.group.id = :groupId" +
+          ") OR EXISTS (" +
+          "    SELECT 1 " +
+          "    FROM Payment p " +
+          "    WHERE (p.sender.id = :memberId OR p.receiver.id = :memberId) AND p.group.id = :groupId" +
+          ") THEN TRUE ELSE FALSE END " +
+          "FROM Member m " +
+          "WHERE m.id = :memberId AND m.group.id = :groupId")
+  Boolean isMemberIncludedInGroupHistory(Long memberId, Long groupId);
+
 }

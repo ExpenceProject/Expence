@@ -65,16 +65,7 @@ class GroupService {
 
   void deleteMember(String groupId, String memberId) {
     var group = groupRepository.findByIdOrThrow(Long.valueOf(groupId));
-    if (group.getBills().stream()
-            .anyMatch(b ->
-                    b.getLender().getId().equals(Long.valueOf(memberId)) ||
-                            b.getExpenses().stream().anyMatch(e -> e.getBorrower().getId().equals(Long.valueOf(memberId)))
-            ) ||
-            group.getPayments().stream()
-                    .anyMatch(p ->
-                            p.getReceiver().getId().equals(Long.valueOf(memberId)) ||
-                                    p.getSender().getId().equals(Long.valueOf(memberId))
-                    )) {
+    if (memberRepository.isMemberIncludedInGroupHistory(Long.valueOf(memberId), Long.valueOf(groupId))) {
       throw new ForbiddenException("You cannot remove member with associated expenses or payments!");
     }
 

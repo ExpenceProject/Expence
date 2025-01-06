@@ -262,6 +262,11 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   }
 
   @Override
+  public Boolean isMemberIncludedInGroupHistory(Long memberId, Long groupId) {
+    return null;
+  }
+
+  @Override
   public String findUserIdByIdAndGroupId(String memberId, String groupId) {
     return memberMap.values().stream()
             .filter(member -> member.getId().toString().equals(memberId) && member.getGroup().getId().toString().equals(groupId))
