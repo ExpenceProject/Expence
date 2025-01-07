@@ -1,6 +1,7 @@
 package ug.edu.pl.server.domain.group;
 
 import org.junit.jupiter.api.Test;
+import ug.edu.pl.server.domain.common.exception.ForbiddenException;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
 import ug.edu.pl.server.domain.common.exception.SavingException;
 import ug.edu.pl.server.domain.group.dto.*;
@@ -669,5 +670,138 @@ class GroupFacadeTest {
 
     // then
     assertThat(payments).containsExactly(paymentDto);
+  }
+
+  @Test
+  void shouldNotDeleteMemberWhenCheckingIfUserIsIncludedInGroupHistoryWhenMemberAssociatedWithPayment() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(members.get(0).id(), members.get(1).id(), new BigDecimal("100.00"), groupDto.id());
+    groupFacade.createPayment(createPaymentDto);
+
+
+    // when & then
+    assertThatThrownBy(() -> groupFacade.deleteMember(groupDto.id(), members.get(0).id()))
+            .isInstanceOf(ForbiddenException.class);
+  }
+
+  @Test
+  void shouldDeleteMemberWhenCheckingIfUserIsIncludedInGroupHistoryWhenMemberNotAssociatedWithPayment() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    UserDto anotherInvitee = userFacade.create(SampleUsers.VALID_USER_3);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id(), anotherInvitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByInviteeId(invitee.id(), InvitationStatus.SENT).stream().findFirst();
+    var secondInvitation = groupFacade.getInvitationsByInviteeId(anotherInvitee.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+    groupFacade.updateInvitationStatus(secondInvitation.get().id(), InvitationStatus.ACCEPTED, anotherInvitee);
+
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(3);
+
+    // given
+    CreatePaymentDto createPaymentDto = new CreatePaymentDto(members.get(0).id(), members.get(1).id(), new BigDecimal("100.00"), groupDto.id());
+    groupFacade.createPayment(createPaymentDto);
+
+
+    // when & then
+    groupFacade.deleteMember(groupDto.id(), members.get(2).id());
+  }
+
+  @Test
+  void shouldNotDeleteMemberWhenCheckingIfUserIsIncludedInGroupHistoryWhenMemberAssociatedWithExpenses() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByGroupId(groupDto.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(2);
+
+    // given
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    groupFacade.createBill(createBillDto);
+
+    // when & then
+    assertThatThrownBy(() -> groupFacade.deleteMember(groupDto.id(), members.get(0).id()))
+            .isInstanceOf(ForbiddenException.class);
+  }
+
+  @Test
+  void shouldDeleteMemberWhenCheckingIfUserIsIncludedInGroupHistoryWhenMemberNotAssociatedWithExpenses() {
+    // given
+    UserDto invitee = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+    UserDto anotherInvitee = userFacade.create(SampleUsers.VALID_USER_3);
+    var groupToCreate = SampleGroups.validGroupWithFileAndInvitees(Set.of(invitee.id(), anotherInvitee.id()));
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    var invitation = groupFacade.getInvitationsByInviteeId(invitee.id(), InvitationStatus.SENT).stream().findFirst();
+    var secondInvitation = groupFacade.getInvitationsByInviteeId(anotherInvitee.id(), InvitationStatus.SENT).stream().findFirst();
+
+    // when
+    groupFacade.updateInvitationStatus(invitation.get().id(), InvitationStatus.ACCEPTED, invitee);
+    groupFacade.updateInvitationStatus(secondInvitation.get().id(), InvitationStatus.ACCEPTED, anotherInvitee);
+
+    // then
+    var members = groupFacade.findAllMembersByGroupId(groupDto.id())
+            .stream()
+            .sorted(Comparator.comparing(MemberDto::id))
+            .toList();
+
+    assertThat(members).hasSize(3);
+
+    // given
+    Set<CreateExpenseDto> createExpenseDtos = Set.of(
+            new CreateExpenseDto(members.get(1).id(), new BigDecimal(100)),
+            new CreateExpenseDto(members.get(0).id(), new BigDecimal(50)));
+
+
+    CreateBillDto createBillDto =
+            new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), groupDto.id());
+
+    groupFacade.createBill(createBillDto);
+
+    // when & then
+    groupFacade.deleteMember(groupDto.id(), members.get(2).id());
   }
 }
