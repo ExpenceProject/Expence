@@ -2,7 +2,6 @@ package ug.edu.pl.server.domain.group;
 
 import ug.edu.pl.server.domain.common.exception.ForbiddenException;
 import ug.edu.pl.server.domain.common.exception.NotFoundException;
-import ug.edu.pl.server.domain.common.exception.SavingException;
 import ug.edu.pl.server.domain.common.persistance.Image;
 import ug.edu.pl.server.domain.common.storage.StorageFacade;
 import ug.edu.pl.server.domain.group.dto.*;
@@ -49,8 +48,11 @@ class GroupService {
     return groupRepository.saveOrThrow(group).dto();
   }
 
-  GroupDto updateGroup(String id, UpdateGroupDto dto) {
+  GroupDto updateGroup(String id, UpdateGroupDto dto, String userId) {
     var group = groupRepository.findByIdOrThrow(Long.valueOf(id));
+    verifyIfGroupIsNotSettledDown(group.getSettledDown());
+    verifyUserIsTheOwnerOfGroup(group, userId);
+
     group.setName(dto.name());
     if (dto.file() != null && !dto.file().isEmpty()) {
       var imageKey = storageFacade.upload(dto.file());
@@ -59,12 +61,50 @@ class GroupService {
     return groupRepository.saveOrThrow(group).dto();
   }
 
-  void deleteGroup(String id) {
+  GroupDto updateGroupSettledDown(String id, String userId) {
+    var group = groupRepository.findByIdOrThrow(Long.valueOf(id));
+    verifyUserIsTheOwnerOfGroup(group, userId);
+
+    group.setSettledDown(!group.getSettledDown());
+    return groupRepository.saveOrThrow(group).dto();
+  }
+
+  void verifyIfGroupIsNotSettledDown(String id) {
+    var settledDown = groupRepository.findByIdOrThrow(Long.valueOf(id)).getSettledDown();
+    verifyIfGroupIsNotSettledDown(settledDown);
+  }
+
+  private void verifyIfGroupIsNotSettledDown(boolean settledDown) {
+    if (settledDown) {
+      throw new ForbiddenException("Action denied: This group is settled down and no further actions are allowed.");
+    }
+  }
+
+  void verifyUserIsTheOwnerOfGroup(String groupId, String userId) {
+    var group = groupRepository.findByIdOrThrow(Long.valueOf(groupId));
+    verifyUserIsTheOwnerOfGroup(group, userId);
+  }
+
+  void verifyUserIsTheOwnerOfGroup(Group group, String userId) {
+    boolean isOwner = group.getMembers().stream()
+            .anyMatch(member -> member.getUserId().equals(Long.valueOf(userId))
+                    && member.getGroupRole().getName().equals(GroupRoleName.ROLE_OWNER));
+
+    if (!isOwner) {
+      throw new ForbiddenException("User is not the owner of the group");
+    }
+  }
+
+  void deleteGroup(String id, String userId) {
+    verifyUserIsTheOwnerOfGroup(id, userId);
     groupRepository.deleteById(Long.valueOf(id));
   }
 
-  void deleteMember(String groupId, String memberId) {
+  void deleteMember(String groupId, String memberId, String userId) {
     var group = groupRepository.findByIdOrThrow(Long.valueOf(groupId));
+    verifyIfGroupIsNotSettledDown(group.getSettledDown());
+    verifyUserIsTheOwnerOfGroup(group, userId);
+
     if (memberRepository.isMemberIncludedInGroupHistory(Long.valueOf(memberId), Long.valueOf(groupId))) {
       throw new ForbiddenException("You cannot remove member with associated expenses or payments!");
     }
@@ -81,7 +121,11 @@ class GroupService {
     return memberRepository.findUserIdByIdAndGroupId(memberId, groupId);
   }
 
-  MemberDto updateMemberRole(String groupId, String memberId, String roleName) {
+  MemberDto updateMemberRole(String groupId, String memberId, String roleName, String userId) {
+    var group = groupRepository.findByIdOrThrow(Long.valueOf(groupId));
+    verifyIfGroupIsNotSettledDown(group.getSettledDown());
+    verifyUserIsTheOwnerOfGroup(group, userId);
+
     var member = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(memberId), Long.valueOf(groupId));
     var role = groupRoleRepository.findByNameOrThrow(GroupRoleName.valueOf(roleName));
 
@@ -90,6 +134,7 @@ class GroupService {
   }
 
   MemberDto updateMemberNickname(String groupId, String memberId, String nickname) {
+    verifyIfGroupIsNotSettledDown(groupId);
     var member = memberRepository.findByIdAndGroupIdOrThrow(Long.valueOf(memberId), Long.valueOf(groupId));
     member.setNickname(nickname);
     return memberRepository.saveOrThrow(member).dto();
@@ -101,6 +146,19 @@ class GroupService {
 
   Collection<MemberDto> findAllMembersByGroupId(String groupId) {
     return groupRepository.findByIdOrThrow(Long.valueOf(groupId)).getMembers().stream().map(Member::dto).collect(Collectors.toList());
+  }
+
+  Collection<MemberBalanceDto> getMemberBalance(Long memberId) {
+    Collection<Object[]> results = memberRepository.findMemberBalanceOrThrow(memberId);
+
+    return results.stream()
+            .map(result -> new MemberBalanceDto(
+                    ((Number) result[0]).longValue(),
+                    ((Number) result[1]).longValue(),
+                    (String) result[2],
+                    ((BigDecimal) result[3])
+            ))
+            .collect(Collectors.toList());
   }
 
   private Group createGroupEntity(CreateGroupDto dto) {
@@ -143,16 +201,4 @@ class GroupService {
     }
     group.setInvitations(invitations);
   }
-
-  Collection<MemberBalanceDto> getMemberBalance(Long memberId){
-    Collection<Object[]> results = memberRepository.findMemberBalanceOrThrow(memberId);
-
-    return results.stream()
-            .map(result -> new MemberBalanceDto(
-                    ((Number) result[0]).longValue(),
-                    ((Number) result[1]).longValue(),
-                    (String) result[2],
-                    ((BigDecimal) result[3])
-            ))
-            .collect(Collectors.toList());  }
 }
