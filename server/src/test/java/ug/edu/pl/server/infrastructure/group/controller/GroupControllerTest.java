@@ -277,11 +277,13 @@ class GroupControllerTest extends IntegrationTest {
 
     groupFacade.createBill(new CreateBillDto("group", createExpenseDtos, new BigDecimal(150), members.get(0).id(), group.id()));
 
+    // authenticate and generate token
+    var authenticatedUser = authFacade.authenticateAndGenerateToken(
+            new LoginDto(SampleRegisterUsers.VALID_USER.email(), SampleRegisterUsers.VALID_USER.password()));
 
-    var result = removeMember(group.id(), members.get(2).id());
+    var result = removeMember(group.id(), members.get(2).id(), authenticatedUser);
 
     result.andExpect(status().isNoContent());
-
   }
 
   private ResultActions getById(String id) throws Exception {
@@ -323,4 +325,9 @@ class GroupControllerTest extends IntegrationTest {
     return mockMvc.perform(delete(URL + "/" + groupId + "/members/" + memberId).contentType(MediaType.APPLICATION_JSON));
   }
 
+  private ResultActions removeMember(String groupId, String memberId, AuthDto authDto) throws Exception {
+    return mockMvc.perform(delete(URL + "/" + groupId + "/members/" + memberId)
+            .header(HttpHeaders.AUTHORIZATION, authDto.tokenType() + " " + authDto.token())
+            .contentType(MediaType.APPLICATION_JSON));
+  }
 }
