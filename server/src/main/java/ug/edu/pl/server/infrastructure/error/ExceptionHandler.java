@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import ug.edu.pl.server.domain.common.exception.DeleteException;
-import ug.edu.pl.server.domain.common.exception.DuplicateException;
-import ug.edu.pl.server.domain.common.exception.NotFoundException;
-import ug.edu.pl.server.domain.common.exception.SavingException;
+import ug.edu.pl.server.domain.common.exception.*;
 import ug.edu.pl.server.infrastructure.base.BaseExceptionHandler;
 
 import java.time.Instant;
@@ -34,6 +31,19 @@ class ExceptionHandler extends BaseExceptionHandler {
                     ErrorDto.builder()
                             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
                             .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                            .message(ex.getMessage())
+                            .path(getPath(request))
+                            .timestamp(Instant.now())
+                            .build());
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(ForbiddenException.class)
+  ResponseEntity<ErrorDto> handleForbiddenException(ForbiddenException ex, WebRequest request) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(
+                    ErrorDto.builder()
+                            .statusCode(HttpStatus.FORBIDDEN.value())
+                            .status(HttpStatus.FORBIDDEN)
                             .message(ex.getMessage())
                             .path(getPath(request))
                             .timestamp(Instant.now())

@@ -33,7 +33,7 @@ class Group extends BaseEntity {
   @Column(nullable = false)
   private Boolean settledDown;
 
-  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Member> members = new HashSet<>();
 
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)

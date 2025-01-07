@@ -125,6 +125,9 @@ class InMemoryBillRepository implements BillRepository, InMemoryRepository<Bill>
         InMemoryExpenseRepository.expenseMap.remove(expense.getId());  // Remove orphaned expenses
       }
     } else {
+      var currentBillsInGroup = billIdMap.values().stream().filter(b -> b.getGroup().getId().equals(bill.getGroup().getId())).collect(Collectors.toSet());
+      currentBillsInGroup.add(bill);
+      InMemoryGroupRepository.groupIdMap.get(bill.getGroup().getId()).setBills(currentBillsInGroup);
       billIdMap.put(bill.getId(), bill);
     }
 
@@ -185,6 +188,9 @@ class InMemoryPaymentRepository implements PaymentRepository, InMemoryRepository
   public Payment save(Payment payment) {
     updateTimestampsAndVersion(payment);
     paymentMap.put(payment.getId(), payment);
+    var currentPaymentsInGroup = paymentMap.values().stream().filter(p -> p.getGroup().getId().equals(payment.getGroup().getId())).collect(Collectors.toSet());
+    currentPaymentsInGroup.add(payment);
+    InMemoryGroupRepository.groupIdMap.get(payment.getGroup().getId()).setPayments(currentPaymentsInGroup);
     return payment;
   }
 
@@ -236,6 +242,7 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
 
   @Override
   public Member save(Member member) {
+    updateTimestampsAndVersion(member);
     memberMap.put(member.getId(), member);
     return member;
   }
@@ -257,6 +264,28 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   }
 
   @Override
+  public Collection<Object[]> findMemberBalance(Long memberId) {
+    return null;
+  }
+
+  @Override
+  public Boolean isMemberIncludedInGroupHistory(Long memberId, Long groupId) {
+    return memberMap.values().stream()
+            .filter(member -> member.getId().equals(memberId) && member.getGroup().getId().equals(groupId))
+            .anyMatch(member ->
+                    member.getGroup().getBills().stream().anyMatch(bill ->
+                            bill.getLender().getId().equals(memberId) ||
+                                    bill.getExpenses().stream()
+                                            .anyMatch(expense -> expense.getBorrower().getId().equals(memberId))
+                    ) ||
+                            member.getGroup().getPayments().stream().anyMatch(payment ->
+                                    payment.getSender().getId().equals(memberId) ||
+                                            payment.getReceiver().getId().equals(memberId)
+                            )
+            );
+  }
+
+  @Override
   public String findUserIdByIdAndGroupId(String memberId, String groupId) {
     return memberMap.values().stream()
             .filter(member -> member.getId().toString().equals(memberId) && member.getGroup().getId().toString().equals(groupId))
@@ -270,4 +299,5 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   public Optional<Member> findByUserIdAndGroupId(Long userId, Long groupId) {
     return memberMap.values().stream().filter(m -> m.getUserId().equals(userId) && m.getGroup().getId().equals(groupId)).findFirst();
   }
+
 }
