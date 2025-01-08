@@ -697,7 +697,7 @@ class GroupFacadeTest {
 
 
     // when & then
-    assertThatThrownBy(() -> groupFacade.deleteMember(groupDto.id(), members.get(0).id()))
+    assertThatThrownBy(() -> groupFacade.deleteMember(groupDto.id(), members.get(0).id(), currentUser.id()))
             .isInstanceOf(ForbiddenException.class);
   }
 
@@ -730,7 +730,7 @@ class GroupFacadeTest {
 
 
     // when & then
-    groupFacade.deleteMember(groupDto.id(), members.get(2).id());
+    groupFacade.deleteMember(groupDto.id(), members.get(2).id(), currentUser.id());
   }
 
   @Test
@@ -764,7 +764,7 @@ class GroupFacadeTest {
     groupFacade.createBill(createBillDto);
 
     // when & then
-    assertThatThrownBy(() -> groupFacade.deleteMember(groupDto.id(), members.get(0).id()))
+    assertThatThrownBy(() -> groupFacade.deleteMember(groupDto.id(), members.get(0).id(), currentUser.id()))
             .isInstanceOf(ForbiddenException.class);
   }
 
@@ -802,6 +802,32 @@ class GroupFacadeTest {
     groupFacade.createBill(createBillDto);
 
     // when & then
-    groupFacade.deleteMember(groupDto.id(), members.get(2).id());
+    groupFacade.deleteMember(groupDto.id(), members.get(2).id(), currentUser.id());
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUpdatingSettledDownGroup() {
+    // given
+    var groupToCreate = SampleGroups.VALID_GROUP_NO_FILE_AND_INVITEES;
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    groupFacade.updateGroupSettledDown(groupDto.id(), currentUser.id());
+
+    // when & then
+    assertThatThrownBy(() -> groupFacade.updateGroup(groupDto.id(), new UpdateGroupDto("New Group Name", null), currentUser.id()))
+            .isInstanceOf(ForbiddenException.class)
+            .hasMessageContaining("Action denied: This group is settled down and no further actions are allowed.");
+  }
+
+  @Test
+  void shouldThrowExceptionWhenMemberIsNotOwnerAndTriesToUpdateGroup() {
+    // given
+    var groupToCreate = SampleGroups.VALID_GROUP_NO_FILE_AND_INVITEES;
+    var groupDto = groupFacade.create(groupToCreate, currentUser);
+    UserDto anotherUser = userFacade.create(SampleUsers.ANOTHER_VALID_USER);
+
+    // when & then
+    assertThatThrownBy(() -> groupFacade.updateGroup(groupDto.id(), new UpdateGroupDto("New Group Name", null), anotherUser.id()))
+            .isInstanceOf(ForbiddenException.class)
+            .hasMessageContaining("User is not the owner of the group");
   }
 }

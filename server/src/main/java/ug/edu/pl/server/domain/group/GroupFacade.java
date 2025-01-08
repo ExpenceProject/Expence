@@ -35,38 +35,18 @@ public class GroupFacade {
   }
 
   @Transactional
-  public GroupDto updateGroup(String id, UpdateGroupDto dto) {
-    return groupService.updateGroup(id, dto);
+  public GroupDto updateGroup(String id, UpdateGroupDto dto, String userId) {
+    return groupService.updateGroup(id, dto, userId);
   }
 
   @Transactional
-  public void deleteGroup(String id) {
-    groupService.deleteGroup(id);
+  public GroupDto updateGroupSettledDown(String id, String userId) {
+    return groupService.updateGroupSettledDown(id, userId);
   }
 
   @Transactional
-  public Collection<MemberBalanceDto> getMemberBalance(Long memberId) {
-    return groupService.getMemberBalance(memberId);
-  }
-
-  @Transactional
-  public void deleteMember(String groupId, String memberId) {
-    groupService.deleteMember(groupId, memberId);
-  }
-
-  @Transactional
-  public String getUserIdByMemberIdAndGroupId(String memberId, String groupId) {
-    return groupService.getUserIdFromMember(memberId, groupId);
-  }
-
-  @Transactional
-  public MemberDto updateMemberRole(String groupId, String memberId, String role) {
-    return groupService.updateMemberRole(groupId, memberId, role);
-  }
-
-  @Transactional
-  public MemberDto updateMemberNickname(String groupId, String memberId, String nickname) {
-    return groupService.updateMemberNickname(groupId, memberId, nickname);
+  public void deleteGroup(String id, String userId) {
+    groupService.deleteGroup(id, userId);
   }
 
   @Transactional
@@ -75,8 +55,33 @@ public class GroupFacade {
   }
 
   @Transactional
+  public Collection<MemberBalanceDto> getMemberBalance(Long memberId) {
+    return groupService.getMemberBalance(memberId);
+  }
+
+  @Transactional
+  public String getUserIdByMemberIdAndGroupId(String memberId, String groupId) {
+    return groupService.getUserIdFromMember(memberId, groupId);
+  }
+
+  @Transactional
+  public MemberDto updateMemberRole(String groupId, String memberId, String role, String userId) {
+    return groupService.updateMemberRole(groupId, memberId, role, userId);
+  }
+
+  @Transactional
+  public MemberDto updateMemberNickname(String groupId, String memberId, String nickname) {
+    return groupService.updateMemberNickname(groupId, memberId, nickname);
+  }
+
+  @Transactional
   public Collection<MemberDto> findAllMembersByGroupId(String groupId) {
     return groupService.findAllMembersByGroupId(groupId);
+  }
+
+  @Transactional
+  public void deleteMember(String groupId, String memberId, String userId) {
+    groupService.deleteMember(groupId, memberId, userId);
   }
 
   @Transactional(readOnly = true)
@@ -86,6 +91,7 @@ public class GroupFacade {
 
   @Transactional
   public BillDto createBill(@Valid CreateBillDto dto) {
+    groupService.verifyIfGroupIsNotSettledDown(dto.groupId());
     return billService.create(dto);
   }
 
@@ -94,7 +100,6 @@ public class GroupFacade {
     return billService.getBillsByGroupId(groupId);
   }
 
-
   @Transactional
   public Collection<BillDto> getBillsByUserIdAndGroupId(String userId, String groupId) {
     return billService.getBillsByUserIdAndGroupId(userId, groupId);
@@ -102,16 +107,19 @@ public class GroupFacade {
 
   @Transactional
   public BillDto updateBill(@Valid CreateBillDto dto, String billId) {
+    groupService.verifyIfGroupIsNotSettledDown(dto.groupId());
     return billService.update(billId, dto);
   }
 
   @Transactional
   public Void deleteBill(String id) {
+    groupService.verifyIfGroupIsNotSettledDown(billService.getById(id).groupId());
     return billService.deleteBill(id);
   }
 
   @Transactional
   public PaymentDto createPayment(@Valid CreatePaymentDto dto) {
+    groupService.verifyIfGroupIsNotSettledDown(dto.groupId());
     return billService.createPayment(dto);
   }
 
@@ -142,11 +150,13 @@ public class GroupFacade {
 
   @Transactional
   public Void deletePayment(String id) {
+    groupService.verifyIfGroupIsNotSettledDown(billService.getPaymentById(id).group().id());
     return billService.deletePayment(id);
   }
 
   @Transactional
   public List<InvitationDto> createInvitations(@Valid CreateInvitationsDto dto) {
+    groupService.verifyIfGroupIsNotSettledDown(dto.groupId());
     return invitationService.create(dto);
   }
 
@@ -172,6 +182,7 @@ public class GroupFacade {
 
   @Transactional
   public void updateInvitationStatus(String id, InvitationStatus invitationStatus, UserDto currentUser) {
-      invitationService.updateInvitationStatus(id, invitationStatus, currentUser);
+    groupService.verifyIfGroupIsNotSettledDown(invitationService.getById(id).groupId());
+    invitationService.updateInvitationStatus(id, invitationStatus, currentUser);
   }
 }
