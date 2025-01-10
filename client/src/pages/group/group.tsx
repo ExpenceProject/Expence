@@ -1,4 +1,5 @@
 import GroupIcon from '@/assets/images/group_icon.svg';
+import { BillsGroup } from '@/components/custom/bills-group/bills-group';
 import { GroupEditImageModal } from '@/components/custom/group-image-dialog/group-image-dialog';
 import { CameraIcon } from '@/components/icons/camera';
 import { GroupIcon as GroupIconComponent } from '@/components/icons/group';
@@ -397,11 +398,7 @@ export const GroupPage = () => {
           bg="hover"
           w={{ base: '100%', lg: '65%' }}
         >
-          <Text>
-            TODO: Bill expenses etc. here, use Chakra components like expand for
-            expenses, try to seperate the components, don't make group.tsx file
-            much longer, it's already too long
-          </Text>
+          <BillsGroup groupId={groupId} />
         </Flex>
       </Flex>
       <GroupEditImageModal
