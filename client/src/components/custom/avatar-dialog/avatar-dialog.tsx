@@ -5,11 +5,18 @@ import {
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogRoot,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverRoot,
+  PopoverTitle,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { User } from '@/types';
 import {
   closeAvatarModalAtom,
@@ -40,6 +47,7 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
   const currentTheme = useColorModeValue('light', 'dark');
   const [isAvatarModalOpen] = useAtom(isAvatarModalOpenAtom);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState<boolean>(false);
   const [, closeAvatarModal] = useAtom(closeAvatarModalAtom);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -97,7 +105,6 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
     if (files && files.length > 0) {
       const file = files[0];
       setUploadedImage(file);
-      console.log('File:', file);
     }
   };
 
@@ -128,7 +135,7 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
       <DialogContent shadow="xl" p="4">
         <DialogCloseTrigger _icon={{ w: 6, h: 6 }} onClick={closeAvatarModal} />
         <DialogHeader>
-          <DialogTitle fontSize="xl">Change your photo</DialogTitle>
+          <DialogTitle fontSize="xl">Change Your Photo</DialogTitle>
         </DialogHeader>
         <DialogBody
           data-theme={currentTheme}
@@ -136,7 +143,7 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
           alignItems="center"
           justifyContent="center"
           flexDirection="column"
-          p={{ base: 2, md: 8 }}
+          p={6}
         >
           <Avatar
             src={userAvatarSource}
@@ -184,7 +191,8 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
                 fontSize={{ base: 'sm', md: 'md' }}
                 onClick={handleAvatarUpdate}
               >
-                <IoMdCheckmark /> Save
+                <IoMdCheckmark />
+                <Text display={{ base: 'none', sm: 'unset' }}>Save</Text>
               </Button>
               <Button
                 display="flex"
@@ -194,10 +202,11 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
                 color="textBg"
                 _hover={{ bg: 'hoverPrimary' }}
                 bgColor="primary"
-                fontSize={{ base: 'md', md: 'md' }}
+                fontSize={{ base: 'sm', md: 'md' }}
                 onClick={handleInputClick}
               >
-                <FiUpload /> Upload
+                <FiUpload />{' '}
+                <Text display={{ base: 'none', sm: 'unset' }}>Upload</Text>
               </Button>
               <Input
                 type="file"
@@ -207,26 +216,65 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
                 accept="image/*"
                 max={1}
               />
-              <Button
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flex={1}
-                variant="outline"
-                outlineColor="textError"
-                _hover={{ bg: 'backgroundErrorHover' }}
-                color="textError"
-                bgColor="backgroundError"
-                fontSize={{ base: 'sm', md: 'md' }}
-                onClick={handleAvatarDelete}
+              <PopoverRoot
+                open={isAlertDialogOpen}
+                onOpenChange={(e) => setIsAlertDialogOpen(e.open)}
+                positioning={{
+                  placement: 'bottom-end',
+                  offset: { crossAxis: 0, mainAxis: 46 },
+                }}
               >
-                <MdDelete />
-                Delete
-              </Button>
+                <PopoverTrigger asChild>
+                  <Button
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    flex={1}
+                    variant="outline"
+                    outlineColor="textError"
+                    _hover={{ bg: 'backgroundErrorHover' }}
+                    color="textError"
+                    bgColor="backgroundError"
+                    fontSize={{ base: 'sm', md: 'md' }}
+                  >
+                    <MdDelete />
+                    <Text display={{ base: 'none', sm: 'unset' }}>Delete</Text>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow position={'top-end'} />
+                  <PopoverBody>
+                    <PopoverTitle>
+                      Are you sure you want to delete your avatar?
+                    </PopoverTitle>
+                    <Flex gap={4} pt={4}>
+                      <Button
+                        flex={1}
+                        color="textError"
+                        _hover={{ bg: 'backgroundErrorHover' }}
+                        bgColor="backgroundError"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={handleAvatarDelete}
+                      >
+                        Yes
+                      </Button>
+                      <Button
+                        flex={1}
+                        color="textBg"
+                        _hover={{ bg: 'hoverPrimary' }}
+                        bgColor="primary"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={() => setIsAlertDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </PopoverBody>
+                </PopoverContent>
+              </PopoverRoot>
             </Flex>
           </Flex>
         </DialogBody>
-        <DialogFooter fontSize="md"></DialogFooter>
       </DialogContent>
     </DialogRoot>
   );

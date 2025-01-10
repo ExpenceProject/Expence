@@ -38,6 +38,12 @@ const semanticTokens = {
         _dark: '#ffffff',
       },
     },
+    textDimmed: {
+      value: {
+        _light: '#a0a0a0',
+        _dark: '#a0a0a0',
+      },
+    },
     background: {
       value: {
         _light: '#faf9f7',
@@ -70,8 +76,8 @@ const semanticTokens = {
     },
     hover: {
       value: {
-        _light: '#e1e1e1',
-        _dark: '#393939',
+        _light: '#e9e9e9',
+        _dark: '#262626',
       },
     },
     hoverPrimary: {
@@ -82,7 +88,7 @@ const semanticTokens = {
     },
     disabled: {
       value: {
-        _light: '#a0a0a0',
+        _light: '#d3d3d3',
         _dark: '#4a4a4a',
       },
     },
@@ -106,12 +112,16 @@ const globalCss = {
   '*': {
     boxSizing: 'border-box',
   },
+  html: {
+    width: '100vw',
+    overflowY: 'overlay',
+  },
   'html, body, #root': {
     margin: 0,
     padding: 0,
     minHeight: '100vh',
+    overflowX: 'hidden',
     fontFamily: 'Neue Montreal',
-    width: '100vw',
     color: 'var(--ck-colors-text)',
     backgroundColor: 'var(--ck-colors-background)',
   },

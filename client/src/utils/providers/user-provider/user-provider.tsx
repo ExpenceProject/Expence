@@ -22,6 +22,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         .post('/auth/login', userCredentials)
         .then((response) => {
           const { user, token, tokenType } = response.data;
+          apiClient.defaults.headers['Authorization'] = `${tokenType} ${token}`;
           localStorage.setItem('authToken', token);
           localStorage.setItem('authTokenType', tokenType);
           localStorage.setItem('user', JSON.stringify(user));

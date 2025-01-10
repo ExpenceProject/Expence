@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
-const Drawer = () => {
+export const Drawer = () => {
   const { open, onOpen, onClose } = useDisclosure();
 
   const currentTheme = useColorModeValue('light', 'dark');
@@ -51,12 +51,10 @@ const Drawer = () => {
           <CloseTriggerIcon onClick={onClose} />
         </DrawerHeader>
         <DrawerBody>
-          <HeaderNav direction="column" />
+          <HeaderNav direction="column" closeDrawer={onClose} />
         </DrawerBody>
         <DrawerCloseTrigger />
       </DrawerContent>
     </DrawerRoot>
   );
 };
-
-export default Drawer;

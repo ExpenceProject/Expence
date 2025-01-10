@@ -1,20 +1,28 @@
 import ButtonLink from '@/components/custom/button-link/button-link';
 import ErrorNotFound from '@/components/custom/error/error-not-found';
-import { coreMobilePaddingX, corePaddingX } from '@/style/variables';
 import { Box, Flex, Text } from '@chakra-ui/react';
 
 export const PageNotFound = () => {
   return (
     <Box
       bg="background"
-      w="100%"
+      w="100vw"
+      h="100vh"
       display="flex"
       alignItems="center"
       justifyContent="center"
-      px={{ base: coreMobilePaddingX, md: corePaddingX }}
-      pt={20}
+      p={5}
+      margin="auto"
     >
-      <Flex direction="column" alignItems="center" width={{ lgDown: '100%' }}>
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        w="100%"
+        h="100%"
+        margin="auto"
+        mt={-8}
+      >
         <ErrorNotFound />
         <Text
           color="text"
@@ -22,6 +30,7 @@ export const PageNotFound = () => {
           py={3}
           maxW={{ base: '300px', sm: '400px', md: '500px' }}
           display="block"
+          textAlign="center"
         >
           <Text as="span" display="inline" color="primary">
             Oops!

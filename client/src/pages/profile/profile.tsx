@@ -68,6 +68,14 @@ export const ProfilePage = () => {
     [user],
   );
 
+  if (!user) {
+    return (
+      <PageLayout>
+        <Text>Something went wrong...</Text>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout direction="row">
       <Flex
@@ -75,7 +83,15 @@ export const ProfilePage = () => {
         h="100%"
         justifyContent={{ base: 'center', md: 'unset' }}
       >
-        <Flex direction="column" gap={10} w="100%">
+        <Flex
+          direction="column"
+          gap={10}
+          w="100%"
+          h="min-content"
+          p={{ base: 4, md: 7 }}
+          borderRadius={10}
+          bg="hover"
+        >
           <Flex direction="column" alignItems="center">
             <Box position="relative" w={200} h={200}>
               <Avatar
@@ -109,6 +125,7 @@ export const ProfilePage = () => {
                 outlineColor="primary"
                 outlineOffset={-1}
                 outlineStyle="solid"
+                transition="all 0.15s ease"
                 onClick={openAvatarModal}
               >
                 <CameraIcon />

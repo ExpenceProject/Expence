@@ -8,10 +8,34 @@
   padding: 0 32px;
 }
 
-@media (max-height: 650px) {
+.chakra-menu__positioner {
+  min-width: 0 !important;
+}
+
+.multi-select {
+  padding-bottom: 20px;
+  color: black !important;
+}
+
+@media (max-width: 360px) {
+  .chakra-menu__positioner {
+    padding-right: 30px !important;
+  }
+}
+
+@media (max-height: 700px) {
   .modalAvatar {
     max-height: 150px !important;
     max-width: 150px !important;
+  }
+
+  .camera-icon-group-creation {
+    bottom: 12px !important;
+    right: 30px !important;
+  }
+
+  .source-group-creation {
+    padding-top: 12px !important;
   }
 }
 

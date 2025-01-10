@@ -1,5 +1,6 @@
-import Drawer from '@/components/custom/drawer/drawer';
-import UserMenu from '@/components/custom/user-menu/user-menu';
+import { Drawer } from '@/components/custom/drawer/drawer';
+import { Notifications } from '@/components/custom/notifications/notifications';
+import { UserMenu } from '@/components/custom/user-menu/user-menu';
 import { LogoIcon } from '@/components/icons/logo';
 import { ColorModeButton } from '@/components/ui/color-mode';
 import {
@@ -34,6 +35,8 @@ const Header = () => {
 
   const { user } = useUser();
 
+  const headerHeight = import.meta.env.VITE_REACT_HEADER_HEIGHT;
+
   return (
     <Box
       as="header"
@@ -44,6 +47,7 @@ const Header = () => {
       px={{ base: coreMobilePaddingX, md: corePaddingX }}
       py={4}
       w="100%"
+      h={`${headerHeight}px`}
       borderBottom="1px solid rgba(161, 161, 161, 0.3)"
     >
       <Flex
@@ -61,14 +65,13 @@ const Header = () => {
           </Flex>
         </StyledLogoLink>
         <Flex align="center" justify="center" gap={{ base: 2, md: 6 }}>
-          {currentBreakpoint === 'sm' || !currentBreakpoint ? (
-            <Drawer />
-          ) : (
-            <HeaderNav />
-          )}
+          {!currentBreakpoint ? <Drawer /> : <HeaderNav />}
           <ColorModeButton />
           {user ? (
-            <UserMenu />
+            <Flex align="center" justify="center" gap={{ base: 4, md: 6 }}>
+              <Notifications />
+              {currentBreakpoint && <UserMenu />}
+            </Flex>
           ) : (
             <Button
               fontSize="lg"

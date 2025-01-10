@@ -103,8 +103,8 @@ const RegisterDialog = () => {
         </DialogHeader>
         <DialogBody data-theme={currentTheme}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl isInvalid={!!errors.firstName}>
-              <FormLabel htmlFor="firstName">First name*</FormLabel>
+            <FormControl isInvalid={!!errors.firstName} isRequired>
+              <FormLabel htmlFor="firstName">First name</FormLabel>
               <Input
                 id="firstName"
                 type="text"
@@ -125,9 +125,9 @@ const RegisterDialog = () => {
                 {errors.firstName?.message as string}
               </FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.lastName}>
+            <FormControl isInvalid={!!errors.lastName} isRequired>
               <FormLabel htmlFor="lastName" mt={16}>
-                Last name*
+                Last name
               </FormLabel>
               <Input
                 id="lastName"
@@ -157,7 +157,7 @@ const RegisterDialog = () => {
                 id="phoneNumber"
                 type="tel"
                 css={{
-                  '-moz-appearance': 'textfield',
+                  MozAppearance: 'textfield',
                   '&::-webkit-inner-spin-button': { display: 'none' },
                   '&::-webkit-outer-spin-button': { display: 'none' },
                 }}
@@ -177,10 +177,9 @@ const RegisterDialog = () => {
                 {errors.phoneNumber?.message as string}
               </FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.password}></FormControl>
-            <FormControl isInvalid={!!errors.email}>
+            <FormControl isInvalid={!!errors.email} isRequired>
               <FormLabel htmlFor="email" mt={16}>
-                E-mail*
+                E-mail
               </FormLabel>
               <Input
                 id="email"
@@ -201,9 +200,9 @@ const RegisterDialog = () => {
                 {errors.email?.message as string}
               </FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.password}>
+            <FormControl isInvalid={!!errors.password} isRequired>
               <FormLabel htmlFor="password" mt={16}>
-                Password*
+                Password
               </FormLabel>
               <Input
                 id="password"
@@ -234,7 +233,7 @@ const RegisterDialog = () => {
               fontSize="lg"
               bg="primary"
               color="textBg"
-              _hover={{ bg: 'hover' }}
+              _hover={{ bg: 'hoverPrimary' }}
               disabled={isLoading}
               type="submit"
               mt={8}
