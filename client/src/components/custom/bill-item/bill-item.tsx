@@ -7,6 +7,7 @@ import {
   Flex,
   HStack,
 } from '@chakra-ui/react';
+import { DateTime } from 'luxon';
 import { FC } from 'react';
 import { FiEdit } from 'react-icons/fi';
 
@@ -55,7 +56,8 @@ export const BillItem: FC<BillItemProps> = ({ bill }) => {
           <Flex direction="column" p={2}>
             <Flex justify="space-between" mb={2}>
               <Flex align="center" color="textDimmed" fontSize="sm">
-                Created at: {new Date(bill.createdAt).toLocaleDateString()}
+                Created at:{' '}
+                {DateTime.fromISO(bill.createdAt).toFormat('dd/MM/yyyy')}
               </Flex>
             </Flex>
             {bill.expenses.map((expense, index) => (
