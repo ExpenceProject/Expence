@@ -150,7 +150,7 @@ public class GroupFacade {
 
   @Transactional
   public Void deletePayment(String id) {
-    groupService.verifyIfGroupIsNotSettledDown(billService.getPaymentById(id).group().id());
+    groupService.verifyIfGroupIsNotSettledDown(billService.getPaymentById(id).groupId());
     return billService.deletePayment(id);
   }
 

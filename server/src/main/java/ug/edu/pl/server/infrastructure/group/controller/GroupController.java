@@ -9,6 +9,7 @@ import ug.edu.pl.server.domain.user.dto.UserDto;
 import ug.edu.pl.server.infrastructure.security.auth.CurrentUserContext;
 
 import java.util.Collection;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/groups")
@@ -77,7 +78,8 @@ class GroupController {
   }
 
   @PatchMapping("/{groupId}/members/{memberId}/nickname")
-  ResponseEntity<MemberDto> updateMemberNickname(@PathVariable String groupId, @PathVariable String memberId, @RequestBody String nickname) {
+  ResponseEntity<MemberDto> updateMemberNickname(@PathVariable String groupId, @PathVariable String memberId, @RequestBody Map<String, String> request) {
+    String nickname = request.get("nickname");
     return ResponseEntity.ok(groupFacade.updateMemberNickname(groupId, memberId, nickname));
   }
 

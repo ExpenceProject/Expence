@@ -485,7 +485,7 @@ class GroupFacadeTest {
     assertThat(paymentDto.sender().id()).isEqualTo(members.get(0).id());
     assertThat(paymentDto.receiver().id()).isEqualTo(members.get(1).id());
     assertThat(paymentDto.amount()).isEqualTo(new BigDecimal("100.00"));
-    assertThat(paymentDto.group().id()).isEqualTo(groupDto.id());
+    assertThat(paymentDto.groupId()).isEqualTo(groupDto.id());
     assertThat(paymentDto.version()).isNotNull();
     assertThat(paymentDto.createdAt()).isNotNull();
     assertThat(paymentDto.updatedAt()).isNotNull();

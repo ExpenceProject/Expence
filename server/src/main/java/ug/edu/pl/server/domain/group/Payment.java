@@ -37,7 +37,7 @@ class Payment extends BaseEntity {
             .receiver(receiver.dto())
             .sender(sender.dto())
             .amount(amount)
-            .group(group.dto())
+            .groupId(group.dto().id())
             .version(getVersion())
             .createdAt(getCreatedAt())
             .updatedAt(getUpdatedAt())

@@ -11,7 +11,7 @@ public record PaymentDto(
         MemberDto receiver,
         MemberDto sender,
         BigDecimal amount,
-        GroupDto group,
+        String groupId,
         Long version,
         Instant createdAt,
         Instant updatedAt
