@@ -101,3 +101,14 @@ export type InvitationWithInviter = Invitation &
 
 export type InvitationWithInviterAndGroup = InvitationWithInviter &
   DeepReadonly<{ group?: Group }>;
+
+export type Payment = DeepReadonly<{
+  id: string;
+  receiver: GroupMember;
+  sender: GroupMember;
+  amount: number;
+  groupId: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}>;
