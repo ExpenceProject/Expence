@@ -199,7 +199,6 @@ export const GroupPage = () => {
         setIsDeleteGroupPopoverOpen(false);
       });
   };
-  // ...existing code...
 
   useEffect(() => {
     getGroupAndMembers();
