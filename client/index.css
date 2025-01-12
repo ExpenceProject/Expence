@@ -12,7 +12,8 @@
   min-width: 0 !important;
 }
 
-.multi-select {
+.multi-select,
+.select {
   padding-bottom: 20px;
   color: black !important;
 }

@@ -542,7 +542,7 @@ export const GroupPage = () => {
           bg="hover"
           w={{ base: '100%', lg: '65%' }}
         >
-          <PaymentsGroup groupId={groupId} />
+          <PaymentsGroup groupId={groupId} members={members} owner={owner} />
         </Flex>
       </Flex>
       <GroupEditImageModal

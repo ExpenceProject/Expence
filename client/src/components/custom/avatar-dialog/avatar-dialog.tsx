@@ -132,7 +132,16 @@ export const AvatarDialog: FC<AvatarDialogProps> = ({
         _dark={{ bg: 'rgba(0, 0, 0, 0.7 )' }}
         css={{ backdropFilter: 'blur(2px)' }}
       />
-      <DialogContent shadow="xl" p="4">
+      <DialogContent
+        shadow="xl"
+        p="4"
+        css={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      >
         <DialogCloseTrigger _icon={{ w: 6, h: 6 }} onClick={closeAvatarModal} />
         <DialogHeader>
           <DialogTitle fontSize="xl">Change Your Photo</DialogTitle>
