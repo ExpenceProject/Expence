@@ -61,9 +61,13 @@ export const Member: FC<MemberProps> = ({
       }
 
       apiClient
-        .patch(`/groups/${groupId}/members/${member.id}/nickname`, nickname, {
-          headers: { 'Content-Type': 'application/json' },
-        })
+        .patch(
+          `/groups/${groupId}/members/${member.id}/nickname`,
+          { nickname: nickname },
+          {
+            headers: { 'Content-Type': 'application/json' },
+          },
+        )
         .then(() => {
           getGroupAndMembers();
           toast.success('Nickname updated successfully');

@@ -114,6 +114,17 @@ export type Bill = DeepReadonly<{
   updatedAt: string;
 }>;
 
+export type Payment = DeepReadonly<{
+  id: string;
+  receiver: GroupMember;
+  sender: GroupMember;
+  amount: number;
+  groupId: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}>;
+
 export type Expense = DeepReadonly<{
   borrower: GroupMember;
   amount: number;

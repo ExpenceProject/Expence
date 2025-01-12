@@ -2,6 +2,7 @@ import GroupIcon from '@/assets/images/group_icon.svg';
 import { BillsGroup } from '@/components/custom/bills-group/bills-group';
 import { GroupEditImageModal } from '@/components/custom/group-image-dialog/group-image-dialog';
 import { MembershipInvitationCreationDialog } from '@/components/custom/membership-invitation-dialog/membership-invitation-dialog';
+import { PaymentsGroup } from '@/components/custom/payments-group/payments-group';
 import { CameraIcon } from '@/components/icons/camera';
 import { GroupIcon as GroupIconComponent } from '@/components/icons/group';
 import { Avatar } from '@/components/ui/avatar';
@@ -38,12 +39,15 @@ import { FaLock, FaUnlock } from 'react-icons/fa';
 import { FaCalendarDays } from 'react-icons/fa6';
 import { FiEdit } from 'react-icons/fi';
 import { IoMdCheckmark } from 'react-icons/io';
+import { IoCloseOutline } from 'react-icons/io5';
 import { useParams } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { Member } from '../../components/custom/member/member';
 
 export const GroupPage = () => {
+  const navigate = useNavigate();
   const [group, setGroup] = useState<GroupWithMembers | null>(null);
   const [owner, setOwner] = useState<GroupMember | null>(null);
   const [members, setMembers] = useState<GroupMemberWithUser[]>([]);
@@ -53,7 +57,10 @@ export const GroupPage = () => {
     useState(false);
   const [groupName, setGroupName] = useState<string | null>(null);
   const { groupId } = useParams<{ groupId: string }>();
+  const [isDeleteGroupPopoverOpen, setIsDeleteGroupPopoverOpen] =
+    useState(false);
   const { user } = useUser();
+  const [isSettleDownPopoverOpen, setIsSettleDownPopoverOpen] = useState(false);
 
   const [, openGroupEditImageModal] = useAtom(openGroupEditImageModalAtom);
   const [, openMembershipInvitationModal] = useAtom(
@@ -188,6 +195,40 @@ export const GroupPage = () => {
     } else {
       setIsEditGroupNamePopoverOpen(false);
     }
+  };
+
+  const handleGroupDelete = () => {
+    apiClient
+      .delete(`/groups/${groupId}`)
+      .then(() => {
+        toast.success('Group deleted successfully');
+        navigate('/profile/groups');
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(
+          'Failed to delete group, please try again in a few minutes',
+        );
+      })
+      .finally(() => {
+        setIsDeleteGroupPopoverOpen(false);
+      });
+  };
+
+  const handleSettleDown = () => {
+    apiClient
+      .patch(`/groups/${groupId}/settledDown`)
+      .then(() => {
+        toast.success('Group settled down successfully');
+        getGroupAndMembers();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to settle down group, please try again later');
+      })
+      .finally(() => {
+        setIsSettleDownPopoverOpen(false);
+      });
   };
 
   useEffect(() => {
@@ -331,6 +372,110 @@ export const GroupPage = () => {
                 </PopoverContent>
               </PopoverRoot>
             )}
+            {isAdmin && (
+              <PopoverRoot
+                open={isDeleteGroupPopoverOpen}
+                onOpenChange={(e) => setIsDeleteGroupPopoverOpen(e.open)}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    bg="none"
+                    color="textError"
+                    minW={0}
+                    w={8}
+                    h={8}
+                    _hover={{ bg: 'backgroundErrorHover' }}
+                    p={0}
+                    mt={-1}
+                  >
+                    <IoCloseOutline style={{ width: '25px', height: '25px' }} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverBody>
+                    <PopoverTitle>
+                      Are you sure you want to delete this group?
+                    </PopoverTitle>
+                    <Flex gap={4} pt={4}>
+                      <Button
+                        flex={1}
+                        color="textError"
+                        _hover={{ bg: 'backgroundErrorHover' }}
+                        bgColor="backgroundError"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={handleGroupDelete}
+                      >
+                        Yes
+                      </Button>
+                      <Button
+                        flex={1}
+                        color="textBg"
+                        _hover={{ bg: 'hoverPrimary' }}
+                        bgColor="primary"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={() => setIsDeleteGroupPopoverOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </PopoverBody>
+                </PopoverContent>
+              </PopoverRoot>
+            )}
+            {isAdmin && !group.settledDown && (
+              <PopoverRoot
+                open={isSettleDownPopoverOpen}
+                onOpenChange={(e) => setIsSettleDownPopoverOpen(e.open)}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    color="textBg"
+                    _hover={{ bg: 'hoverPrimary' }}
+                    border="none"
+                    bg="none"
+                    minW={0}
+                    size={'xs'}
+                    w={8}
+                    h={8}
+                    p={0}
+                    mt={-1}
+                  >
+                    <FaLock style={{ width: '16px', height: '16px' }} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverBody>
+                    <PopoverTitle>
+                      Are you sure you want to settle down this group?
+                    </PopoverTitle>
+                    <Flex gap={4} pt={4}>
+                      <Button
+                        flex={1}
+                        color="textError"
+                        _hover={{ bg: 'backgroundErrorHover' }}
+                        bgColor="backgroundError"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={handleSettleDown}
+                      >
+                        Yes
+                      </Button>
+                      <Button
+                        flex={1}
+                        color="textBg"
+                        _hover={{ bg: 'hoverPrimary' }}
+                        bgColor="primary"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={() => setIsSettleDownPopoverOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </PopoverBody>
+                </PopoverContent>
+              </PopoverRoot>
+            )}
           </Flex>
           <Flex
             align={{ base: 'flex-start', lg: 'center' }}
@@ -424,6 +569,7 @@ export const GroupPage = () => {
           w={{ base: '100%', lg: '65%' }}
         >
           <BillsGroup groupId={groupId} />
+          <PaymentsGroup groupId={groupId} />
         </Flex>
       </Flex>
       <GroupEditImageModal
