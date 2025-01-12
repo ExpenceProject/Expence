@@ -112,3 +112,10 @@ export type Payment = DeepReadonly<{
   createdAt: string;
   updatedAt: string;
 }>;
+
+export type Balance = DeepReadonly<{
+  userId: string;
+  memberId: string;
+  memberNickname: string;
+  amount: number;
+}>;

@@ -55,6 +55,7 @@ export const GroupPage = () => {
   const [isDeleteGroupPopoverOpen, setIsDeleteGroupPopoverOpen] =
     useState(false);
   const { user } = useUser();
+  const [isSettleDownPopoverOpen, setIsSettleDownPopoverOpen] = useState(false);
 
   const [, openGroupEditImageModal] = useAtom(openGroupEditImageModalAtom);
 
@@ -198,6 +199,22 @@ export const GroupPage = () => {
       })
       .finally(() => {
         setIsDeleteGroupPopoverOpen(false);
+      });
+  };
+
+  const handleSettleDown = () => {
+    apiClient
+      .patch(`/groups/${groupId}/settledDown`)
+      .then(() => {
+        toast.success('Group settled down successfully');
+        getGroupAndMembers();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to settle down group, please try again later');
+      })
+      .finally(() => {
+        setIsSettleDownPopoverOpen(false);
       });
   };
 
@@ -385,6 +402,59 @@ export const GroupPage = () => {
                         bgColor="primary"
                         fontSize={{ base: 'sm', md: 'md' }}
                         onClick={() => setIsDeleteGroupPopoverOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </PopoverBody>
+                </PopoverContent>
+              </PopoverRoot>
+            )}
+            {isAdmin && !group.settledDown && (
+              <PopoverRoot
+                open={isSettleDownPopoverOpen}
+                onOpenChange={(e) => setIsSettleDownPopoverOpen(e.open)}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    color="textBg"
+                    _hover={{ bg: 'hoverPrimary' }}
+                    border="none"
+                    bg="none"
+                    minW={0}
+                    size={'xs'}
+                    w={8}
+                    h={8}
+                    p={0}
+                    mt={-1}
+                  >
+                    <FaLock style={{ width: '16px', height: '16px' }} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverBody>
+                    <PopoverTitle>
+                      Are you sure you want to settle down this group?
+                    </PopoverTitle>
+                    <Flex gap={4} pt={4}>
+                      <Button
+                        flex={1}
+                        color="textError"
+                        _hover={{ bg: 'backgroundErrorHover' }}
+                        bgColor="backgroundError"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={handleSettleDown}
+                      >
+                        Yes
+                      </Button>
+                      <Button
+                        flex={1}
+                        color="textBg"
+                        _hover={{ bg: 'hoverPrimary' }}
+                        bgColor="primary"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        onClick={() => setIsSettleDownPopoverOpen(false)}
                       >
                         Cancel
                       </Button>
