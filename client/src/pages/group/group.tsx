@@ -1,6 +1,7 @@
 import GroupIcon from '@/assets/images/group_icon.svg';
 import { BillsGroup } from '@/components/custom/bills-group/bills-group';
 import { GroupEditImageModal } from '@/components/custom/group-image-dialog/group-image-dialog';
+import { MembershipInvitationCreationDialog } from '@/components/custom/membership-invitation-dialog/membership-invitation-dialog';
 import { CameraIcon } from '@/components/icons/camera';
 import { GroupIcon as GroupIconComponent } from '@/components/icons/group';
 import { Avatar } from '@/components/ui/avatar';
@@ -15,7 +16,10 @@ import {
 } from '@/components/ui/popover';
 import { PageLayout } from '@/layout/page-layout';
 import { GroupMember, GroupMemberWithUser, GroupWithMembers } from '@/types';
-import { openGroupEditImageModalAtom } from '@/utils/atoms/modal-atoms';
+import {
+  openGroupEditImageModalAtom,
+  openMembershipInvitationModalAtom,
+} from '@/utils/atoms/modal-atoms';
 import { apiClient } from '@/utils/http-clients/api-http-client';
 import { useUser } from '@/utils/providers/user-provider/use-user';
 import {
@@ -52,6 +56,9 @@ export const GroupPage = () => {
   const { user } = useUser();
 
   const [, openGroupEditImageModal] = useAtom(openGroupEditImageModalAtom);
+  const [, openMembershipInvitationModal] = useAtom(
+    openMembershipInvitationModalAtom,
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +67,11 @@ export const GroupPage = () => {
   const groupImage =
     group?.image.key &&
     `${import.meta.env.VITE_REACT_IMAGES_URL}/${import.meta.env.VITE_REACT_IMAGES_BUCKET}/${group.image.key}`;
+
+  const handleOpenMemberInvitationModal = () => {
+    window.scrollTo(0, 0);
+    openMembershipInvitationModal();
+  };
 
   const getGroup = async () => {
     return apiClient
@@ -367,9 +379,22 @@ export const GroupPage = () => {
           minW={{ base: '100%', lg: '350px' }}
         >
           <Flex direction="column" gap={5} p={7} borderRadius={10} bg="hover">
-            <Text color="textRaw" fontSize={{ base: 'sm', lg: 'md' }}>
-              Members
-            </Text>
+            <Flex bg="hover" align="center" justify="space-between">
+              <Text color="textRaw" fontSize={{ base: 'sm', lg: 'md' }}>
+                Members
+              </Text>
+              <Button
+                bg="primary"
+                _hover={{ bg: 'hoverPrimary' }}
+                transition={'all 0.15s ease'}
+                color="textBg"
+                fontSize={'md'}
+                onClick={handleOpenMemberInvitationModal}
+              >
+                + Add Members
+              </Button>
+            </Flex>
+
             <Flex direction="column" gap={5}>
               {owner && (
                 <Member
@@ -404,6 +429,12 @@ export const GroupPage = () => {
       <GroupEditImageModal
         group={group}
         getGroupAndMembers={getGroupAndMembers}
+      />
+
+      <MembershipInvitationCreationDialog
+        currentMembers={members}
+        groupId={group.id}
+        inviterId={user?.id}
       />
     </PageLayout>
   );

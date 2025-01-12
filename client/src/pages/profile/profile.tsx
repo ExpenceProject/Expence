@@ -10,7 +10,6 @@ import { AxiosResponse } from 'axios';
 import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import { HiMiniUser, HiMiniUserGroup } from 'react-icons/hi2';
-import { MdMoneyOff } from 'react-icons/md';
 import { Outlet } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -147,9 +146,6 @@ export const ProfilePage = () => {
             </StyledLink>
             <StyledLink to="groups">
               <HiMiniUserGroup size={20} /> Groups
-            </StyledLink>
-            <StyledLink to="debt">
-              <MdMoneyOff size={20} /> Debt
             </StyledLink>
           </Flex>
         </Flex>

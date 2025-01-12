@@ -119,6 +119,7 @@ export const GroupCreationDialog: FC<GroupCreationDialogProps> = ({
       })
       .catch((error) => {
         console.error(error);
+        toast.error('Failed to create group, please try again later!');
       })
       .finally(() => {
         reset();

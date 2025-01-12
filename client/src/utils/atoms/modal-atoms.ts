@@ -56,3 +56,15 @@ export const openGroupEditImageModalAtom = atom(null, (_, set) => {
 export const closeGroupEditImageModalAtom = atom(null, (_, set) => {
   set(isGroupEditImageModalOpenAtom, false);
 });
+
+// Membership invitation
+
+export const isMembershipInvitationModalOpenAtom = atom(false);
+
+export const openMembershipInvitationModalAtom = atom(null, (_, set) => {
+  set(isMembershipInvitationModalOpenAtom, true);
+});
+
+export const closeMembershipInvitationModalAtom = atom(null, (_, set) => {
+  set(isMembershipInvitationModalOpenAtom, false);
+});
