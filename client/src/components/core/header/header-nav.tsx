@@ -41,7 +41,6 @@ const HeaderNav: FC<HeaderNavProps> = ({ direction = 'row', closeDrawer }) => {
           />
         </>
       )}
-      <HeaderLink text="Tracker" href="/" onClick={closeDrawer} />
       <HeaderLink text="About" href="/" onClick={closeDrawer} />
       {!currentBreakpoint && user && (
         <Button

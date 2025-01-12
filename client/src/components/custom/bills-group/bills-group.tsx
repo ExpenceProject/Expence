@@ -25,6 +25,7 @@ export const BillsGroup: FC<BillsGroupProps> = ({ groupId }) => {
     getBills();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <>
       <Flex bg="hover" align="center" justify="space-between">
@@ -48,7 +49,7 @@ export const BillsGroup: FC<BillsGroupProps> = ({ groupId }) => {
       <Flex direction="column" gap={5}>
         <AccordionRoot collapsible>
           {bills.map((bill) => (
-            <BillItem bill={bill} />
+            <BillItem bill={bill} getBills={getBills} />
           ))}
         </AccordionRoot>
       </Flex>
