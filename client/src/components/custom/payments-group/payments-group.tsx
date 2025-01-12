@@ -9,12 +9,14 @@ import { PaymentCreationDialog } from '../payment-creation-dialog/payment-creati
 import { PaymentItem } from '../payment-item/payment-item';
 
 type PaymentsGroupProps = {
+  isSettledDown: boolean;
   groupId: string | undefined;
   members: GroupMemberWithUser[];
   owner: GroupMember | null;
 };
 
 export const PaymentsGroup: FC<PaymentsGroupProps> = ({
+  isSettledDown,
   groupId,
   members,
   owner,
@@ -53,16 +55,18 @@ export const PaymentsGroup: FC<PaymentsGroupProps> = ({
         >
           Payments
         </Heading>
-        <Button
-          bg="primary"
-          _hover={{ bg: 'hoverPrimary' }}
-          transition={'all 0.15s ease'}
-          color="textBg"
-          onClick={handleOpenPaymentCreationModal}
-          fontSize={'md'}
-        >
-          + Create Payment
-        </Button>
+        {!isSettledDown && (
+          <Button
+            bg="primary"
+            _hover={{ bg: 'hoverPrimary' }}
+            transition={'all 0.15s ease'}
+            color="textBg"
+            onClick={handleOpenPaymentCreationModal}
+            fontSize={'md'}
+          >
+            + Create Payment
+          </Button>
+        )}
       </Flex>
       <Flex direction="column" gap={5}>
         <AccordionRoot collapsible>
