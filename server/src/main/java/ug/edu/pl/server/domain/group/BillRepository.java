@@ -69,8 +69,7 @@ interface PaymentRepository extends Repository<Payment, Long> {
     @Query("SELECT p FROM Payment p WHERE p.receiver.id = :receiverId AND p.group.id = :groupId")
     Collection<Payment> findAllByReceiverIdAndGroupId(Long receiverId, Long groupId);
 
-    @Query("SELECT p FROM Payment p WHERE p.group.id = :groupId")
-    Collection<Payment> findAllByGroupId(Long groupId);
+    Collection<Payment> findAllByGroupIdOrderByCreatedAtDesc(Long groupId);
 
     @Query("SELECT p FROM Payment p WHERE p.group.id = :groupId AND p.sender.id = :senderId AND p.receiver.id = :receiverId")
     Collection<Payment> findAllByGroupIdAndSenderIdAndReceiverId(Long groupId, Long senderId, Long receiverId);

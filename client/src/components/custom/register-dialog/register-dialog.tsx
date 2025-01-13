@@ -93,7 +93,16 @@ const RegisterDialog = () => {
         css={{ backdropFilter: 'blur(2px)' }}
       />
       <DialogTrigger />
-      <DialogContent shadow="xl" p="4">
+      <DialogContent
+        shadow="xl"
+        p="4"
+        css={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      >
         <DialogCloseTrigger
           _icon={{ w: 6, h: 6 }}
           onClick={closeRegisterModal}

@@ -28,6 +28,7 @@
     "react-multi-select-component": "^4.3.4",
     "react-router": "^6.27.0",
     "react-router-dom": "^6.27.0",
+    "react-select": "^5.9.0",
     "react-toastify": "^10.0.6",
     "styled-components": "^6.1.13"
   },

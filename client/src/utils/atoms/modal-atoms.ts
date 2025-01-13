@@ -56,3 +56,15 @@ export const openGroupEditImageModalAtom = atom(null, (_, set) => {
 export const closeGroupEditImageModalAtom = atom(null, (_, set) => {
   set(isGroupEditImageModalOpenAtom, false);
 });
+
+// Payment creation modal
+
+export const isPaymentCreationModalOpenAtom = atom(false);
+
+export const openPaymentCreationModalAtom = atom(null, (_, set) => {
+  set(isPaymentCreationModalOpenAtom, true);
+});
+
+export const closePaymentCreationModalAtom = atom(null, (_, set) => {
+  set(isPaymentCreationModalOpenAtom, false);
+});
