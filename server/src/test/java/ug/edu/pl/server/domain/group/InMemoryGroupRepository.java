@@ -214,7 +214,7 @@ class InMemoryPaymentRepository implements PaymentRepository, InMemoryRepository
   }
 
   @Override
-  public Collection<Payment> findAllByGroupId(Long groupId) {
+  public Collection<Payment> findAllByGroupIdOrderByCreatedAtDesc(Long groupId) {
     return paymentMap.values().stream()
             .filter(payment -> payment.getGroup().getId().equals(groupId))
             .collect(Collectors.toList());

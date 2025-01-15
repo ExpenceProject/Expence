@@ -182,9 +182,10 @@ export const GroupCreationDialog: FC<GroupCreationDialogProps> = ({
         shadow="xl"
         p={4}
         css={{
-          position: 'absolute',
+          position: 'fixed',
+          top: '50%',
           left: '50%',
-          transform: 'translateX(-50%)',
+          transform: 'translate(-50%, -50%)',
         }}
       >
         <DialogCloseTrigger

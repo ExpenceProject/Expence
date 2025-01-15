@@ -136,7 +136,7 @@ class BillService {
     }
 
     Collection<PaymentDto> getPaymentsByGroupId(String groupId) {
-        return paymentRepository.findAllByGroupId(Long.valueOf(groupId)).stream().map(Payment::dto)
+        return paymentRepository.findAllByGroupIdOrderByCreatedAtDesc(Long.valueOf(groupId)).stream().map(Payment::dto)
                 .collect(Collectors.toList());
     }
 

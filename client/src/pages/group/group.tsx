@@ -569,7 +569,12 @@ export const GroupPage = () => {
           w={{ base: '100%', lg: '65%' }}
         >
           <BillsGroup groupId={groupId} />
-          <PaymentsGroup groupId={groupId} />
+          <PaymentsGroup
+            isSettledDown={group.settledDown}
+            groupId={groupId}
+            members={members}
+            owner={owner}
+          />
         </Flex>
       </Flex>
       <GroupEditImageModal
