@@ -51,6 +51,7 @@ export const GroupPage = () => {
   const [group, setGroup] = useState<GroupWithMembers | null>(null);
   const [owner, setOwner] = useState<GroupMember | null>(null);
   const [members, setMembers] = useState<GroupMemberWithUser[]>([]);
+  const [allMembers, setAllMembers] = useState<GroupMemberWithUser[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditGroupNamePopoverOpen, setIsEditGroupNamePopoverOpen] =
@@ -135,6 +136,7 @@ export const GroupPage = () => {
 
         if (owner) {
           setOwner(owner);
+          setAllMembers(members);
           setMembers(members.filter((member) => member.id !== owner.id));
         }
 
@@ -568,7 +570,24 @@ export const GroupPage = () => {
           bg="hover"
           w={{ base: '100%', lg: '65%' }}
         >
-          <BillsGroup groupId={groupId} />
+          <BillsGroup groupId={groupId} members={allMembers} owner={owner} />
+        </Flex>
+      </Flex>
+      <Flex
+        w="100%"
+        gap={5}
+        direction={{ base: 'column', lg: 'row' }}
+        h="min-content"
+        pt={4}
+      >
+        <Flex
+          direction="column"
+          gap={5}
+          p={7}
+          borderRadius={10}
+          bg="hover"
+          w={{ base: '100%', lg: '65%' }}
+        >
           <PaymentsGroup
             isSettledDown={group.settledDown}
             groupId={groupId}

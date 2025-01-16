@@ -48,7 +48,7 @@ export const BillItem: FC<BillItemProps> = ({ bill, getBills }) => {
 
   return (
     <Flex align="center" justify="space-between" mb={2}>
-      <AccordionItem key={bill.id} value={bill.id} w="100%">
+      <AccordionItem value={bill.id} w="100%">
         <AccordionItemTrigger>
           <HStack w="100%">
             <Flex align="center" justify="space-between" w="100%" pr={2}>

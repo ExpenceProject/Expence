@@ -104,7 +104,7 @@ export const MembershipInvitationCreationDialog: FC<
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [currentMembers]);
 
   useEffect(() => {}, []);
 

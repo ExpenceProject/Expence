@@ -67,6 +67,7 @@ export const openMembershipInvitationModalAtom = atom(null, (_, set) => {
 
 export const closeMembershipInvitationModalAtom = atom(null, (_, set) => {
   set(isMembershipInvitationModalOpenAtom, false);
+});
 
 // Payment creation modal
 
@@ -78,4 +79,16 @@ export const openPaymentCreationModalAtom = atom(null, (_, set) => {
 
 export const closePaymentCreationModalAtom = atom(null, (_, set) => {
   set(isPaymentCreationModalOpenAtom, false);
+});
+
+// Bill creation modal
+
+export const isBillCreationModalOpenAtom = atom(false);
+
+export const openBillCreationModalAtom = atom(null, (_, set) => {
+  set(isBillCreationModalOpenAtom, true);
+});
+
+export const closeBillCreationModalAtom = atom(null, (_, set) => {
+  set(isBillCreationModalOpenAtom, false);
 });
