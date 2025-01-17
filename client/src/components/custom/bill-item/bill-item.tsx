@@ -1,7 +1,6 @@
 import {
   PopoverArrow,
   PopoverBody,
-  PopoverCloseTrigger,
   PopoverContent,
   PopoverRoot,
   PopoverTitle,
@@ -19,7 +18,6 @@ import {
 } from '@chakra-ui/react';
 import { DateTime } from 'luxon';
 import { FC, useState } from 'react';
-import { FiEdit } from 'react-icons/fi';
 import { IoCloseOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 
@@ -90,27 +88,6 @@ export const BillItem: FC<BillItemProps> = ({ bill, getBills }) => {
         </AccordionItemContent>
       </AccordionItem>
       <Flex gap={2}>
-        <PopoverRoot>
-          <PopoverTrigger asChild>
-            <Button
-              bg="none"
-              color="text"
-              minW={0}
-              w={8}
-              h={8}
-              _hover={{ bg: 'disabled' }}
-              p={0}
-              mt={-1}
-            >
-              <FiEdit style={{ width: '20px', height: '20px' }} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <PopoverArrow position={'top-end'} />
-            <PopoverBody></PopoverBody>
-            <PopoverCloseTrigger />
-          </PopoverContent>
-        </PopoverRoot>
         <PopoverRoot
           open={isDeleteBillPopoverOpen}
           onOpenChange={(e) => setIsDeleteBillPopoverOpen(e.open)}
