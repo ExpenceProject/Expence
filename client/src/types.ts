@@ -102,6 +102,18 @@ export type InvitationWithInviter = Invitation &
 export type InvitationWithInviterAndGroup = InvitationWithInviter &
   DeepReadonly<{ group?: Group }>;
 
+export type Bill = DeepReadonly<{
+  id: string;
+  name: string;
+  expenses: Expense[];
+  totalAmount: number;
+  lender: GroupMember;
+  groupId: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}>;
+
 export type Payment = DeepReadonly<{
   id: string;
   receiver: GroupMember;
@@ -111,4 +123,14 @@ export type Payment = DeepReadonly<{
   version: number;
   createdAt: string;
   updatedAt: string;
+}>;
+
+export type Expense = DeepReadonly<{
+  borrower: GroupMember;
+  amount: number;
+}>;
+
+export type ExpenseForm = DeepReadonly<{
+  borrowerId: string;
+  amount: number;
 }>;
