@@ -39,6 +39,23 @@ The application is divided into two main components:
 - **Server:** The backend, developed in Java with Spring Boot, follows a **hexagonal architecture**. This design ensures a clean separation between the business logic and external systems (e.g., database, API clients), making the application modular, maintainable, and easy to test.
 
 ## Setup
+To run the application, follow these steps:
+
+- **Configuration file**:  
+   Make sure you have a proper `.env` file located in the `client` folder.
+
+- **Docker**:  
+   Start the necessary services using Docker. Run the following command in the project root directory: `docker compose up -d`
+
+- **Client**:  
+   Navigate to the `client` folder and run the following commands:  
+   - `npm install` to install the required dependencies.  
+   - `npm run dev` to start the development server.  
+   The application should now be running on `http://localhost:5173`.
+
+- **Server**:  
+   Navigate to the `server` folder and run the application using your IDE or the following command: `./gradlew bootRun`  
+   The server should now be running on `http://localhost:8080`.
 
 ## Authors
 Project created by:
