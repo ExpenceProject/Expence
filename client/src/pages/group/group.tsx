@@ -1,5 +1,6 @@
 import GroupIcon from '@/assets/images/group_icon.svg';
 import { BillsGroup } from '@/components/custom/bills-group/bills-group';
+import { GroupBalance } from '@/components/custom/group-balance/group-balance';
 import { GroupEditImageModal } from '@/components/custom/group-image-dialog/group-image-dialog';
 import { MembershipInvitationCreationDialog } from '@/components/custom/membership-invitation-dialog/membership-invitation-dialog';
 import { PaymentsGroup } from '@/components/custom/payments-group/payments-group';
@@ -16,7 +17,12 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { PageLayout } from '@/layout/page-layout';
-import { GroupMember, GroupMemberWithUser, GroupWithMembers } from '@/types';
+import {
+  Balance,
+  GroupMember,
+  GroupMemberWithUser,
+  GroupWithMembers,
+} from '@/types';
 import {
   openGroupEditImageModalAtom,
   openMembershipInvitationModalAtom,
@@ -62,6 +68,8 @@ export const GroupPage = () => {
     useState(false);
   const { user } = useUser();
   const [isSettleDownPopoverOpen, setIsSettleDownPopoverOpen] = useState(false);
+  const [member, setMember] = useState<GroupMember | null>(null);
+  const [memberBalance, setMemberBalance] = useState<Balance[]>([]);
 
   const [, openGroupEditImageModal] = useAtom(openGroupEditImageModalAtom);
   const [, openMembershipInvitationModal] = useAtom(
@@ -127,28 +135,37 @@ export const GroupPage = () => {
     Promise.all([getGroup(), getMembers()])
       .then(([group, members]) => {
         setGroup(group);
-
-        const owner = members.find(
-          (member) =>
-            member.groupRole.name ===
-            import.meta.env.VITE_REACT_ROLE_OWNER_NAME,
-        );
-
-        if (owner) {
-          setOwner(owner);
-          setAllMembers(members);
-          setMembers(members.filter((member) => member.id !== owner.id));
-        }
-
-        if (owner?.user === user?.id) {
-          setIsAdmin(true);
-        }
-
+        findAndSetMember(members);
+        findAndSetOwnerAndMembers(members);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
       });
+  };
+
+  const findAndSetMember = (members: GroupMember[]) => {
+    const member = members.find((member) => member.user === user?.id);
+    if (member) {
+      setMember(member);
+    }
+  };
+
+  const findAndSetOwnerAndMembers = (members: GroupMemberWithUser[]) => {
+    const owner = members.find(
+      (member) =>
+        member.groupRole.name === import.meta.env.VITE_REACT_ROLE_OWNER_NAME,
+    );
+
+    if (owner) {
+      setOwner(owner);
+      setAllMembers(members);
+      setMembers(members.filter((member) => member.id !== owner.id));
+    }
+
+    if (owner?.user === user?.id) {
+      setIsAdmin(true);
+    }
   };
 
   const clearGroupNameInput = () => {
@@ -237,6 +254,18 @@ export const GroupPage = () => {
     getGroupAndMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupId, user]);
+
+  useEffect(() => {
+    if (!member?.id) return;
+    apiClient
+      .get(`/groups/members/${member?.id}/balance`)
+      .then((response) => {
+        setMemberBalance(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [member]);
 
   if (isLoading) {
     return (
@@ -527,9 +556,13 @@ export const GroupPage = () => {
         >
           <Flex direction="column" gap={5} p={7} borderRadius={10} bg="hover">
             <Flex bg="hover" align="center" justify="space-between">
-              <Text color="textRaw" fontSize={{ base: 'sm', lg: 'md' }}>
+              <Heading
+                color="textRaw"
+                fontSize={{ base: 'md', lg: 'xl' }}
+                lineHeight={1.3}
+              >
                 Members
-              </Text>
+              </Heading>
               <Button
                 bg="primary"
                 _hover={{ bg: 'hoverPrimary' }}
@@ -562,6 +595,33 @@ export const GroupPage = () => {
             </Flex>
           </Flex>
         </Flex>
+        {memberBalance && memberBalance.length > 0 && (
+          <Flex direction="column" gap={5} p={7} borderRadius={10} bg="hover">
+            <Heading
+              color="textRaw"
+              fontSize={{ base: 'md', lg: 'xl' }}
+              lineHeight={1.3}
+            >
+              Balance
+            </Heading>
+            <Flex direction="column" gap={5}>
+              {memberBalance?.map((balance) => {
+                const member = members.find(
+                  (member) => member.user === balance.userId,
+                );
+                if (member) {
+                  return (
+                    <GroupBalance
+                      key={balance.memberId}
+                      balance={balance}
+                      member={member}
+                    />
+                  );
+                }
+              })}
+            </Flex>
+          </Flex>
+        )}
         <Flex
           direction="column"
           gap={5}
@@ -570,7 +630,7 @@ export const GroupPage = () => {
           bg="hover"
           w={{ base: '100%', lg: '65%' }}
         >
-          <BillsGroup groupId={groupId} members={allMembers} owner={owner} />
+          <BillsGroup groupId={groupId} members={allMembers} member={member} />
         </Flex>
       </Flex>
       <Flex
@@ -591,8 +651,8 @@ export const GroupPage = () => {
           <PaymentsGroup
             isSettledDown={group.settledDown}
             groupId={groupId}
-            members={members}
-            owner={owner}
+            members={allMembers}
+            member={member}
           />
         </Flex>
       </Flex>

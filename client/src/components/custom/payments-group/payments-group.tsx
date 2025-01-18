@@ -12,14 +12,14 @@ type PaymentsGroupProps = {
   isSettledDown: boolean;
   groupId: string | undefined;
   members: GroupMemberWithUser[];
-  owner: GroupMember | null;
+  member: GroupMember | null;
 };
 
 export const PaymentsGroup: FC<PaymentsGroupProps> = ({
   isSettledDown,
   groupId,
   members,
-  owner,
+  member,
 }) => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [, openPaymentCreationModal] = useAtom(openPaymentCreationModalAtom);
@@ -83,7 +83,7 @@ export const PaymentsGroup: FC<PaymentsGroupProps> = ({
         getPayments={getPayments}
         setPayments={setPayments}
         members={members}
-        owner={owner}
+        member={member}
         groupId={groupId}
       />
     </>

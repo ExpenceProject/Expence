@@ -153,12 +153,12 @@ class GroupService {
 
     return results.stream()
             .map(result -> new MemberBalanceDto(
-                    ((Number) result[0]).longValue(),
-                    ((Number) result[1]).longValue(),
+                    String.valueOf(result[0]),
+                    String.valueOf(result[1]),
                     (String) result[2],
                     ((BigDecimal) result[3])
             ))
-            .collect(Collectors.toList());
+            .toList();
   }
 
   private Group createGroupEntity(CreateGroupDto dto) {
