@@ -134,3 +134,10 @@ export type ExpenseForm = DeepReadonly<{
   borrowerId: string;
   amount: number;
 }>;
+
+export type Balance = DeepReadonly<{
+  userId: string;
+  memberId: string;
+  memberNickname: string;
+  amount: number;
+}>;

@@ -33,7 +33,7 @@ type PaymentCreationDialogProps = {
   getPayments: () => Promise<Payment[]>;
   setPayments: Dispatch<SetStateAction<Payment[]>>;
   members: GroupMemberWithUser[];
-  owner: GroupMemberWithUser | null;
+  member: GroupMemberWithUser | null;
   groupId: string | undefined;
 };
 
@@ -45,7 +45,7 @@ export const PaymentCreationDialog: FC<PaymentCreationDialogProps> = ({
   getPayments,
   setPayments,
   members,
-  owner,
+  member,
   groupId,
 }) => {
   const [isPaymentCreationModalOpen] = useAtom(isPaymentCreationModalOpenAtom);
@@ -90,7 +90,7 @@ export const PaymentCreationDialog: FC<PaymentCreationDialogProps> = ({
     setIsLoading(true);
 
     const paymentData = {
-      senderId: owner?.id,
+      senderId: member?.id,
       receiverId: (selectedMember as Option).value.id,
       amount: data.amount,
       groupId: groupId,

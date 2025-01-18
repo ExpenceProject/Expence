@@ -11,13 +11,13 @@ import { BillItem } from '../bill-item/bill-item';
 type BillsGroupProps = {
   groupId: string | undefined;
   members: GroupMemberWithUser[];
-  owner: GroupMember | null;
+  member: GroupMember | null;
 };
 
 export const BillsGroup: FC<BillsGroupProps> = ({
   groupId,
   members,
-  owner,
+  member,
 }) => {
   const [bills, setBills] = useState<Bill[]>([]);
   const [, openBillCreationModal] = useAtom(openBillCreationModalAtom);
@@ -78,7 +78,7 @@ export const BillsGroup: FC<BillsGroupProps> = ({
         getBills={getBills}
         setBills={setBills}
         members={members}
-        lender={owner}
+        lender={member}
         groupId={groupId}
       />
     </>
