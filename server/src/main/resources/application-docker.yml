@@ -1,0 +1,39 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://postgres:5432/expence
+    username: root
+    password: postgres_secret
+
+web:
+  filter:
+    cors:
+      allowed-headers: Origin,Content-Type,Accept,Authorization
+      allowed-methods: GET,POST,PUT,PATCH,DELETE,ORIGIN
+      allowed-origins: http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1,https://localhost,https://127.0.0.1
+  security:
+    jwt:
+      secret: ===================================================aSecretThatCannotBeRevealed===================================================
+      expiration-ms: 86400000
+      issuer: "expence-server"
+
+storage:
+  access-key: root
+  secret-key: minio_secret
+  region: eu-central-1
+  url: http://minio:9000
+  bucket-name: expence
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+
+scheduler:
+  event:
+    publish: 3000
+    clean-up: 60000

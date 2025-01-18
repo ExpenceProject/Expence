@@ -1,0 +1,2 @@
+ALTER TABLE roles
+    ALTER COLUMN version SET NOT NULL;

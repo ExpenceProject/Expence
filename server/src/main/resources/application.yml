@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: server
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  datasource:
+    hikari:
+      auto-commit: false
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB

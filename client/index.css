@@ -1,0 +1,89 @@
+@import 'react-toastify/dist/ReactToastify.css';
+
+.Toastify__toast-body {
+  font-family: 'Neue Montreal';
+}
+
+.chakra-dialog__positioner {
+  padding: 0 32px;
+}
+
+.chakra-menu__positioner {
+  min-width: 0 !important;
+}
+
+.multi-select,
+.select {
+  padding-bottom: 20px;
+  color: black !important;
+}
+
+@media (max-width: 360px) {
+  .chakra-menu__positioner {
+    padding-right: 30px !important;
+  }
+}
+
+@media (max-height: 700px) {
+  .modalAvatar {
+    max-height: 150px !important;
+    max-width: 150px !important;
+  }
+
+  .camera-icon-group-creation {
+    bottom: 12px !important;
+    right: 30px !important;
+  }
+
+  .source-group-creation {
+    padding-top: 12px !important;
+  }
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-Thin.otf')
+    format('opentype');
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-Book.otf')
+    format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-Italic.otf')
+    format('opentype');
+  font-weight: 450;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-Medium.otf')
+    format('opentype');
+  font-weight: 530;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-SemiBolditalic.otf')
+    format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('./src/assets/fonts/NeueMontreal/PPNeueMontreal-Bold.otf')
+    format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}

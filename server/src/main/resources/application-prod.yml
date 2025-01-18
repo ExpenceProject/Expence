@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+
+web:
+  filter:
+    cors:
+      allowed-headers: ${ALLOWED_HEADERS}
+      allowed-methods: ${ALLOWED_METHODS}
+      allowed-origins: ${ALLOWED_ORIGINS}
+  security:
+    jwt:
+      secret: ${SECRET}
+      expiration-ms: ${EXPIRATION_MS}
+      issuer: ${ISSUER}
+
+storage:
+  access-key: ${STORAGE_ACCESS_KEY}
+  secret-key: ${STORAGE_SECRET_KEY}
+  region: ${STORAGE_REGION}
+  url: ${STORAGE_URL}
+  bucket-name: ${STORAGE_BUCKET_NAME}
+
+springdoc:
+  api-docs:
+    enabled: false
+
+scheduler:
+  event:
+    publish: ${SCHEDULER_EVENT_PUBLISH:3000}
+    clean-up: ${SCHEDULER_EVENT_CLEAN_UP:60000}
