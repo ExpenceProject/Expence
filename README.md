@@ -69,7 +69,6 @@ You can access the Miro board [here](https://miro.com/app/board/uXjVLKygdSg=/?sh
 
 The process of creating a bill involves several steps, as outlined below:
 
----
 
 ### 1. **Find the Lender and Group**
 Before creating a bill, we need to find the **lender** (the member lending the money) and the **group** where the bill will belong. If either is not found, an error is thrown.
@@ -154,8 +153,6 @@ Here’s the implementation:
 ```java
 return billRepository.saveOrThrow(bill).dto();
 ```
-
----
 
 ## Authors
 Project created by:
