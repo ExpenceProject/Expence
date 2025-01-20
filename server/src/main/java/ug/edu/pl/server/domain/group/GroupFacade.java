@@ -55,8 +55,8 @@ public class GroupFacade {
   }
 
   @Transactional
-  public Collection<MemberBalanceDto> getMemberBalance(Long memberId) {
-    return groupService.getMemberBalance(memberId);
+  public Collection<MemberBalanceDto> getMemberBalance(Long memberId, Long groupId) {
+    return groupService.getMemberBalance(memberId, groupId);
   }
 
   @Transactional

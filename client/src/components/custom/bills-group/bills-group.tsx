@@ -12,12 +12,14 @@ type BillsGroupProps = {
   groupId: string | undefined;
   members: GroupMemberWithUser[];
   member: GroupMember | null;
+  getBalance: () => void;
 };
 
 export const BillsGroup: FC<BillsGroupProps> = ({
   groupId,
   members,
   member,
+  getBalance,
 }) => {
   const [bills, setBills] = useState<Bill[]>([]);
   const [, openBillCreationModal] = useAtom(openBillCreationModalAtom);
@@ -80,6 +82,7 @@ export const BillsGroup: FC<BillsGroupProps> = ({
         members={members}
         lender={member}
         groupId={groupId}
+        getBalance={getBalance}
       />
     </>
   );

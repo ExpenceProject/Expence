@@ -148,8 +148,8 @@ class GroupService {
     return groupRepository.findByIdOrThrow(Long.valueOf(groupId)).getMembers().stream().map(Member::dto).collect(Collectors.toList());
   }
 
-  Collection<MemberBalanceDto> getMemberBalance(Long memberId) {
-    Collection<Object[]> results = memberRepository.findMemberBalanceOrThrow(memberId);
+  Collection<MemberBalanceDto> getMemberBalance(Long memberId, Long groupId) {
+    Collection<Object[]> results = memberRepository.findMemberBalanceOrThrow(memberId, groupId);
 
     return results.stream()
             .map(result -> new MemberBalanceDto(

@@ -13,6 +13,7 @@ type PaymentsGroupProps = {
   groupId: string | undefined;
   members: GroupMemberWithUser[];
   member: GroupMember | null;
+  getBalance: () => void;
 };
 
 export const PaymentsGroup: FC<PaymentsGroupProps> = ({
@@ -20,6 +21,7 @@ export const PaymentsGroup: FC<PaymentsGroupProps> = ({
   groupId,
   members,
   member,
+  getBalance,
 }) => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [, openPaymentCreationModal] = useAtom(openPaymentCreationModalAtom);
@@ -85,6 +87,7 @@ export const PaymentsGroup: FC<PaymentsGroupProps> = ({
         members={members}
         member={member}
         groupId={groupId}
+        getBalance={getBalance}
       />
     </>
   );
