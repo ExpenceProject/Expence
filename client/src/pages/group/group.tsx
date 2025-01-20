@@ -595,8 +595,33 @@ export const GroupPage = () => {
             </Flex>
           </Flex>
         </Flex>
+        <Flex
+          direction="column"
+          gap={5}
+          p={7}
+          borderRadius={10}
+          bg="hover"
+          w={{ base: '100%', lg: '65%' }}
+        >
+          <BillsGroup groupId={groupId} members={allMembers} member={member} />
+        </Flex>
+      </Flex>
+      <Flex
+        w="100%"
+        gap={5}
+        direction={{ base: 'column', lg: 'row' }}
+        h="min-content"
+        pt={4}
+      >
         {memberBalance && memberBalance.length > 0 && (
-          <Flex direction="column" gap={5} p={7} borderRadius={10} bg="hover">
+          <Flex
+            direction="column"
+            gap={5}
+            p={7}
+            borderRadius={10}
+            bg="hover"
+            w={{ base: '100%', lg: '35%' }}
+          >
             <Heading
               color="textRaw"
               fontSize={{ base: 'md', lg: 'xl' }}
@@ -622,24 +647,6 @@ export const GroupPage = () => {
             </Flex>
           </Flex>
         )}
-        <Flex
-          direction="column"
-          gap={5}
-          p={7}
-          borderRadius={10}
-          bg="hover"
-          w={{ base: '100%', lg: '65%' }}
-        >
-          <BillsGroup groupId={groupId} members={allMembers} member={member} />
-        </Flex>
-      </Flex>
-      <Flex
-        w="100%"
-        gap={5}
-        direction={{ base: 'column', lg: 'row' }}
-        h="min-content"
-        pt={4}
-      >
         <Flex
           direction="column"
           gap={5}
