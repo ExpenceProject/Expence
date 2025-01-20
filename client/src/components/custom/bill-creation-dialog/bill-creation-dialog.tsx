@@ -43,6 +43,7 @@ type BillCreationDialogProps = {
   members: GroupMemberWithUser[];
   lender: GroupMemberWithUser | null;
   groupId: string | undefined;
+  getBalance: () => void;
 };
 
 const StyledForm = styled('form')`
@@ -55,6 +56,7 @@ export const BillCreationDialog: FC<BillCreationDialogProps> = ({
   members,
   lender,
   groupId,
+  getBalance,
 }) => {
   const [isBillCreationModalOpen] = useAtom(isBillCreationModalOpenAtom);
   const [, closeBillCreationModal] = useAtom(closeBillCreationModalAtom);
@@ -128,6 +130,7 @@ export const BillCreationDialog: FC<BillCreationDialogProps> = ({
         getBills().then((Bills) => {
           setBills(Bills);
         });
+        getBalance();
         handleCloseModal();
         toast.success('Bill created successfully');
       })

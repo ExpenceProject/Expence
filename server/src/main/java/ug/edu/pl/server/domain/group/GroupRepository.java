@@ -81,41 +81,68 @@ interface MemberRepository extends Repository<Member, Long> {
     return members;
   }
 
-
-  @Query(value = """
+  @Query(
+      value =
+          """
     WITH amounts_owed_to_user AS (
         SELECT
             u.id AS userId,
             m.id AS memberId,
             m.nickname AS memberNickname,
-            SUM(e.amount) - COALESCE(SUM(p.amount), 0) AS amountOwed
-        FROM expenses e
-                 JOIN bills b ON e.bill_id = b.id
-                 JOIN members m ON e.borrower_id = m.id
-                 JOIN users u ON m.user_id = u.id
-                 LEFT JOIN payments p
-                           ON p.receiver_id = b.lender_id
-                               AND p.sender_id = m.id
-                               AND p.group_id = b.group_id
-        WHERE b.lender_id = :memberId AND m.id != :memberId
-        GROUP BY u.id, m.id, m.nickname
+            COALESCE(expenseAmount, 0) + COALESCE(paymentAmount, 0) AS amountOwed
+        FROM members m
+                 INNER JOIN users u ON m.user_id = u.id
+                 LEFT JOIN (
+            SELECT
+                m.id AS memberId,
+                SUM(e.amount) AS expenseAmount
+            FROM expenses e
+                     JOIN bills b ON e.bill_id = b.id
+                     JOIN members m ON e.borrower_id = m.id
+            WHERE b.lender_id = :memberId
+              AND m.id != :memberId
+              AND b.group_id = :groupId
+            GROUP BY m.id
+        ) AS expenses ON m.id = expenses.memberId
+                 LEFT JOIN (
+            SELECT
+                m.id AS memberId,
+                SUM(p.amount) AS paymentAmount
+            FROM members m
+                     LEFT JOIN payments p ON p.receiver_id = m.id
+            WHERE p.sender_id = :memberId AND p.group_id = :groupId
+            GROUP BY m.id
+        ) AS payments ON m.id = payments.memberId
+        WHERE m.id != :memberId AND m.group_id = :groupId
+        GROUP BY u.id, m.id, m.nickname, amountOwed
     ),
          amounts_owed_by_user AS (
              SELECT
                  u.id AS userId,
                  m.id AS memberId,
                  m.nickname AS memberNickname,
-                 SUM(e.amount) - COALESCE(SUM(p.amount), 0) AS amountOwed
-             FROM expenses e
-                      JOIN bills b ON e.bill_id = b.id
-                      JOIN members m ON e.borrower_id = m.id
-                      JOIN users u ON b.lender_id = u.id
-                      LEFT JOIN payments p
-                                ON p.receiver_id = m.id
-                                    AND p.sender_id = b.lender_id
-                                    AND p.group_id = b.group_id
-             WHERE m.id = :memberId AND b.lender_id != :memberId
-             GROUP BY u.id, m.id, m.nickname
+                 COALESCE(expenseAmount, 0) + COALESCE(paymentAmount, 0) AS amountOwed
+             FROM members m
+                      JOIN users u ON m.user_id = u.id
+                      LEFT JOIN (
+                 SELECT
+                     b.lender_id AS lenderId,
+                     SUM(e.amount) AS expenseAmount
+                 FROM expenses e
+                          JOIN bills b ON e.bill_id = b.id
+                 WHERE e.borrower_id = :memberId AND b.group_id = :groupId
+                 GROUP BY lenderId
+             ) AS expenses ON m.id = expenses.lenderId
+                      LEFT JOIN (
+                 SELECT
+                     p.sender_id AS senderId,
+                     SUM(p.amount) AS paymentAmount
+                 FROM payments p
+                 WHERE p.receiver_id = :memberId AND p.group_id = :groupId
+                 GROUP BY senderId
+             ) AS payments ON m.id = payments.senderId
+             WHERE m.id != :memberId AND m.group_id = :groupId
+             GROUP BY u.id, m.id, m.nickname, amountOwed
          )
     SELECT
         COALESCE(a.userId, b.userId) AS userId,
@@ -125,13 +152,12 @@ interface MemberRepository extends Repository<Member, Long> {
     FROM amounts_owed_to_user a
              FULL OUTER JOIN amounts_owed_by_user b ON a.userId = b.userId
     ORDER BY amount DESC
-""", nativeQuery = true)
-  Collection<Object[]> findMemberBalance(
-          Long memberId
-  );
+""",
+      nativeQuery = true)
+  Collection<Object[]> findMemberBalance(Long memberId, Long groupId);
 
-  default Collection<Object[]> findMemberBalanceOrThrow(Long memberId){
-    Collection<Object[]> balance = findMemberBalance(memberId);
+  default Collection<Object[]> findMemberBalanceOrThrow(Long memberId, Long groupId){
+    Collection<Object[]> balance = findMemberBalance(memberId, groupId);
     if(balance.isEmpty()){
       throw new NotFoundException(Member.class.getName(), memberId);
     }

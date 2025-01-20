@@ -264,7 +264,7 @@ class InMemoryMemberRepository implements MemberRepository, InMemoryRepository<M
   }
 
   @Override
-  public Collection<Object[]> findMemberBalance(Long memberId) {
+  public Collection<Object[]> findMemberBalance(Long memberId, Long groupId) {
     return null;
   }
 

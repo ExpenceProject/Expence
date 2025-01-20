@@ -255,16 +255,21 @@ export const GroupPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupId, user]);
 
-  useEffect(() => {
-    if (!member?.id) return;
+  const getBalance = () => {
     apiClient
-      .get(`/groups/members/${member?.id}/balance`)
+      .get(`/groups/${groupId}/members/${member?.id}/balance`)
       .then((response) => {
         setMemberBalance(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
+  };
+
+  useEffect(() => {
+    if (!member?.id) return;
+    getBalance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [member]);
 
   if (isLoading) {
@@ -595,33 +600,6 @@ export const GroupPage = () => {
             </Flex>
           </Flex>
         </Flex>
-        {memberBalance && memberBalance.length > 0 && (
-          <Flex direction="column" gap={5} p={7} borderRadius={10} bg="hover">
-            <Heading
-              color="textRaw"
-              fontSize={{ base: 'md', lg: 'xl' }}
-              lineHeight={1.3}
-            >
-              Balance
-            </Heading>
-            <Flex direction="column" gap={5}>
-              {memberBalance?.map((balance) => {
-                const member = members.find(
-                  (member) => member.user === balance.userId,
-                );
-                if (member) {
-                  return (
-                    <GroupBalance
-                      key={balance.memberId}
-                      balance={balance}
-                      member={member}
-                    />
-                  );
-                }
-              })}
-            </Flex>
-          </Flex>
-        )}
         <Flex
           direction="column"
           gap={5}
@@ -630,7 +608,12 @@ export const GroupPage = () => {
           bg="hover"
           w={{ base: '100%', lg: '65%' }}
         >
-          <BillsGroup groupId={groupId} members={allMembers} member={member} />
+          <BillsGroup
+            groupId={groupId}
+            members={allMembers}
+            member={member}
+            getBalance={getBalance}
+          />
         </Flex>
       </Flex>
       <Flex
@@ -646,6 +629,38 @@ export const GroupPage = () => {
           p={7}
           borderRadius={10}
           bg="hover"
+          w={{ base: '100%', lg: '35%' }}
+        >
+          <Heading
+            color="textRaw"
+            fontSize={{ base: 'md', lg: 'xl' }}
+            lineHeight={1.3}
+          >
+            Balance
+          </Heading>
+          <Flex direction="column" gap={5}>
+            {memberBalance?.map((balance) => {
+              const member = allMembers.find(
+                (member) => member.user === balance.userId,
+              );
+              if (member) {
+                return (
+                  <GroupBalance
+                    key={balance.memberId}
+                    balance={balance}
+                    member={member}
+                  />
+                );
+              }
+            })}
+          </Flex>
+        </Flex>
+        <Flex
+          direction="column"
+          gap={5}
+          p={7}
+          borderRadius={10}
+          bg="hover"
           w={{ base: '100%', lg: '65%' }}
         >
           <PaymentsGroup
@@ -653,6 +668,7 @@ export const GroupPage = () => {
             groupId={groupId}
             members={allMembers}
             member={member}
+            getBalance={getBalance}
           />
         </Flex>
       </Flex>

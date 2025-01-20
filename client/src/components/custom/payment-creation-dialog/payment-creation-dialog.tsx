@@ -35,6 +35,7 @@ type PaymentCreationDialogProps = {
   members: GroupMemberWithUser[];
   member: GroupMemberWithUser | null;
   groupId: string | undefined;
+  getBalance: () => void;
 };
 
 const StyledForm = styled('form')`
@@ -47,6 +48,7 @@ export const PaymentCreationDialog: FC<PaymentCreationDialogProps> = ({
   members,
   member,
   groupId,
+  getBalance,
 }) => {
   const [isPaymentCreationModalOpen] = useAtom(isPaymentCreationModalOpenAtom);
   const [, closePaymentCreationModal] = useAtom(closePaymentCreationModalAtom);
@@ -110,6 +112,7 @@ export const PaymentCreationDialog: FC<PaymentCreationDialogProps> = ({
         closePaymentCreationModal();
         reset();
         setSelectedMember(null);
+        getBalance();
         toast.success('Payment created successfully');
       })
       .catch((error) => {
